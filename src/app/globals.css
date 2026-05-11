@@ -15,6 +15,30 @@ html {
   color-scheme: light dark;
 }
 
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+
+  --font-size-sm: 11px;
+  --font-size-base: 13px;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+
+  --line-height-base: 1.4;
+
+  /*
+   * Colors. light-dark() resolves against the active color-scheme;
+   * the html element above declares `light dark` so the browser picks
+   * the arm matching the user's OS preference.
+   */
+  --color-fg-muted: light-dark(oklch(0.47 0 0), oklch(0.68 0 0));
+  --color-warn: light-dark(oklch(0.5 0.13 80), oklch(0.78 0.15 80));
+  --color-error: light-dark(oklch(0.5 0.2 27), oklch(0.73 0.2 27));
+}
+
 body {
   font-family: var(--font-jetbrains-mono), ui-monospace, "SF Mono", Menlo,
     Consolas, monospace;

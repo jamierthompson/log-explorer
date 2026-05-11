@@ -1,0 +1,30 @@
+.line {
+  display: grid;
+  grid-template-columns: auto auto auto 1fr;
+  column-gap: var(--space-2);
+  padding: var(--space-1) var(--space-4);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+}
+
+.time,
+.instance {
+  color: var(--color-fg-muted);
+}
+
+.level {
+  text-align: right;
+  font-weight: var(--font-weight-medium);
+}
+
+.level[data-level="DEBUG"] {
+  color: var(--color-fg-muted);
+}
+
+.level[data-level="WARN"] {
+  color: var(--color-warn);
+}
+
+.level[data-level="ERROR"] {
+  color: var(--color-error);
+}
