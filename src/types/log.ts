@@ -4,6 +4,7 @@ export type LogLine = {
   readonly id: string;
   readonly timestamp: number;
   readonly instance: string;
+  readonly requestId?: string;
   readonly level: Level;
   readonly message: string;
 };

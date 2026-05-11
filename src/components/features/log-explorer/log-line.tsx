@@ -16,6 +16,7 @@ export function LogLine({ line }: { line: LogLineType }) {
       <span className={styles.level} data-level={line.level}>
         {line.level}
       </span>
+      <span className={styles.requestId}>{line.requestId ?? ""}</span>
       <span className={styles.message}>{line.message}</span>
     </div>
   );

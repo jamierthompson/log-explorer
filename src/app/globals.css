@@ -21,6 +21,9 @@ html {
   --space-3: 12px;
   --space-4: 16px;
 
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", Menlo,
+    Consolas, monospace;
+
   --font-size-sm: 11px;
   --font-size-base: 13px;
 
@@ -29,19 +32,29 @@ html {
 
   --line-height-base: 1.4;
 
+  --radius-1: 4px;
+
+  --duration-fast: 120ms;
+  --ease-standard: cubic-bezier(0.32, 0.72, 0, 1);
+
   /*
    * Colors. light-dark() resolves against the active color-scheme;
    * the html element above declares `light dark` so the browser picks
    * the arm matching the user's OS preference.
    */
+  --color-bg: light-dark(oklch(1 0 0), oklch(0.145 0 0));
+  --color-fg: light-dark(oklch(0.205 0 0), oklch(0.946 0 0));
   --color-fg-muted: light-dark(oklch(0.47 0 0), oklch(0.68 0 0));
+  --color-border: light-dark(oklch(0.92 0 0), oklch(0.285 0 0));
+  --color-accent: light-dark(oklch(0.485 0.18 349.8), oklch(0.725 0.175 349.8));
   --color-warn: light-dark(oklch(0.5 0.13 80), oklch(0.78 0.15 80));
   --color-error: light-dark(oklch(0.5 0.2 27), oklch(0.73 0.2 27));
 }
 
 body {
-  font-family: var(--font-jetbrains-mono), ui-monospace, "SF Mono", Menlo,
-    Consolas, monospace;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-mono);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
