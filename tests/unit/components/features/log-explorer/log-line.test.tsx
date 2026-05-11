@@ -28,4 +28,14 @@ describe("LogLine", () => {
       unmount();
     }
   });
+
+  it("renders the requestId when present and nothing when absent", () => {
+    const { rerender } = render(
+      <LogLine line={{ ...base, requestId: "r4d8a2" }} />,
+    );
+    expect(screen.getByText("r4d8a2")).toBeInTheDocument();
+
+    rerender(<LogLine line={base} />);
+    expect(screen.queryByText("r4d8a2")).not.toBeInTheDocument();
+  });
 });

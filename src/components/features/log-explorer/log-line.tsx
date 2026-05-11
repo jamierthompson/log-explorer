@@ -17,6 +17,9 @@ export function LogLine({ line }: { line: LogLineType }) {
         {line.level}
       </span>
       <span className={styles.message}>{line.message}</span>
+      {line.requestId ? (
+        <span className={styles.requestId}>{line.requestId}</span>
+      ) : null}
     </div>
   );
 }

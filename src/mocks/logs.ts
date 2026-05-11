@@ -3,23 +3,65 @@ import type { LogLine } from "@/types/log";
 const ANCHOR = new Date("2026-05-11T13:00:00Z").getTime();
 const t = (seconds: number): number => ANCHOR + seconds * 1000;
 
+export const INSTANCES = ["kc4qn", "m7w3p", "t2x8r"] as const;
+export type InstanceId = (typeof INSTANCES)[number];
+
+/**
+ * Request ids that appear in the fixture, mapped to their owning
+ * instance. The `satisfies` clause enforces that every value is one
+ * of the known InstanceIds.
+ */
+export const REQUEST_IDS = {
+  r4d8a2: "kc4qn",
+  k9b3c7: "m7w3p",
+  p2x6n1: "t2x8r",
+} as const satisfies Record<string, InstanceId>;
+
+export type RequestId = keyof typeof REQUEST_IDS;
+
+type Builder = (
+  seconds: number,
+  instance: InstanceId,
+  message: string,
+  requestId?: RequestId,
+) => LogLine;
+
+let nextIdNum = 0;
+const id = (): string => `log_${String(++nextIdNum).padStart(4, "0")}`;
+
+const lvl =
+  (level: LogLine["level"]): Builder =>
+  (seconds, instance, message, requestId) => ({
+    id: id(),
+    timestamp: t(seconds),
+    instance,
+    level,
+    message,
+    ...(requestId ? { requestId } : {}),
+  });
+
+const info = lvl("INFO");
+const warn = lvl("WARN");
+const err = lvl("ERROR");
+const dbg = lvl("DEBUG");
+
 export const mockLogs: readonly LogLine[] = [
-  { id: "log_0001", timestamp: t(0),   instance: "kc4qn", level: "INFO",  message: "Server listening on port 3000" },
-  { id: "log_0002", timestamp: t(8),   instance: "m7w3p", level: "INFO",  message: "Healthcheck OK" },
-  { id: "log_0003", timestamp: t(19),  instance: "kc4qn", level: "DEBUG", message: "Connection pool: 3/20 active" },
-  { id: "log_0004", timestamp: t(31),  instance: "t2x8r", level: "INFO",  message: "Cache warmed (12 keys)" },
-  { id: "log_0005", timestamp: t(44),  instance: "m7w3p", level: "INFO",  message: "Heartbeat sent" },
-  { id: "log_0006", timestamp: t(58),  instance: "kc4qn", level: "WARN",  message: "Slow upstream: api.stripe.com responded in 678ms" },
-  { id: "log_0007", timestamp: t(72),  instance: "t2x8r", level: "INFO",  message: "GET /api/orders 200 in 51ms" },
-  { id: "log_0008", timestamp: t(89),  instance: "kc4qn", level: "ERROR", message: "db query failed: pq: too many connections" },
-  { id: "log_0009", timestamp: t(101), instance: "m7w3p", level: "INFO",  message: "POST /api/sessions 201 in 64ms" },
-  { id: "log_0010", timestamp: t(116), instance: "kc4qn", level: "INFO",  message: "GET /api/users 200 in 38ms" },
-  { id: "log_0011", timestamp: t(133), instance: "t2x8r", level: "DEBUG", message: "GC paused 14ms" },
-  { id: "log_0012", timestamp: t(148), instance: "m7w3p", level: "WARN",  message: "Cache miss rate elevated: 0.36" },
-  { id: "log_0013", timestamp: t(162), instance: "kc4qn", level: "INFO",  message: "Background job completed in 47ms" },
-  { id: "log_0014", timestamp: t(177), instance: "t2x8r", level: "INFO",  message: "Healthcheck OK" },
-  { id: "log_0015", timestamp: t(193), instance: "kc4qn", level: "INFO",  message: "GET /api/products 200 in 33ms" },
-  { id: "log_0016", timestamp: t(208), instance: "m7w3p", level: "ERROR", message: "request timeout after 30000ms" },
-  { id: "log_0017", timestamp: t(224), instance: "t2x8r", level: "INFO",  message: "PATCH /api/orders/42 200 in 72ms" },
-  { id: "log_0018", timestamp: t(241), instance: "kc4qn", level: "INFO",  message: "Heartbeat sent" },
+  info(0,   "kc4qn", "Server listening on port 3000"),
+  info(8,   "m7w3p", "Healthcheck OK"),
+  dbg(19,  "kc4qn", "Connection pool: 3/20 active"),
+  info(31,  "t2x8r", "Cache warmed (12 keys)"),
+  info(44,  "m7w3p", "Heartbeat sent"),
+  warn(58,  "kc4qn", "Slow upstream: api.stripe.com responded in 678ms"),
+  info(72,  "t2x8r", "GET /api/orders 200 in 51ms", "p2x6n1"),
+  err(89,  "kc4qn", "db query failed: pq: too many connections"),
+  info(101, "m7w3p", "POST /api/sessions 201 in 64ms", "k9b3c7"),
+  info(116, "kc4qn", "GET /api/users 200 in 38ms", "r4d8a2"),
+  dbg(133, "t2x8r", "GC paused 14ms"),
+  warn(148, "m7w3p", "Cache miss rate elevated: 0.36"),
+  info(162, "kc4qn", "Background job completed in 47ms"),
+  info(177, "t2x8r", "Healthcheck OK"),
+  info(193, "kc4qn", "GET /api/products 200 in 33ms", "r4d8a2"),
+  err(208, "m7w3p", "request timeout after 30000ms", "k9b3c7"),
+  info(224, "t2x8r", "PATCH /api/orders/42 200 in 72ms", "p2x6n1"),
+  info(241, "kc4qn", "Heartbeat sent"),
 ];
