@@ -6,11 +6,6 @@ const t = (seconds: number): number => ANCHOR + seconds * 1000;
 export const INSTANCES = ["kc4qn", "m7w3p", "t2x8r"] as const;
 export type InstanceId = (typeof INSTANCES)[number];
 
-/**
- * Request ids that appear in the fixture, mapped to their owning
- * instance. The `satisfies` clause enforces that every value is one
- * of the known InstanceIds.
- */
 export const REQUEST_IDS = {
   r4d8a2: "kc4qn",
   k9b3c7: "m7w3p",
