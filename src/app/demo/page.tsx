@@ -3,8 +3,8 @@ import { mockLogs } from "@/mocks/logs";
 
 export default function DemoPage() {
   return (
-    <main>
-      <LogExplorer lines={mockLogs} />
+    <main id="main-content" tabIndex={-1}>
+      <LogExplorer lines={mockLogs.toReversed()} />
     </main>
   );
 }

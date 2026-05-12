@@ -3,3 +3,21 @@
   margin: 0;
   padding: var(--space-4) 0;
 }
+
+.list:focus-visible {
+  outline: 2px solid var(--color-fg-muted);
+  outline-offset: -2px;
+}
+
+/*
+ * Every row reserves a 4px left-border slot so the eventual active
+ * state can fill it without shifting the row's content.
+ */
+.list > li {
+  border-left: 4px solid transparent;
+}
+
+.list > li[data-focused="true"] {
+  outline: 2px solid var(--color-fg-muted);
+  outline-offset: -2px;
+}
