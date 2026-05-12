@@ -209,7 +209,12 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
 
     const mostRecent = openContexts[openContexts.length - 1];
     if (mostRecent) {
-      const anchorIdx = linesIndexById.get(mostRecent.selectedLineId) ?? -1;
+      const anchorIdx = linesIndexById.get(mostRecent.selectedLineId);
+      if (anchorIdx === undefined) {
+        throw new Error(
+          `open context references unknown line: ${mostRecent.selectedLineId}`,
+        );
+      }
       if (!isAtFileBoundary(anchorIdx, mostRecent.range, lines.length)) {
         items.push({
           keys: SHORTCUTS.expandContext.keys,

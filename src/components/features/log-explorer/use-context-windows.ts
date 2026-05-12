@@ -107,7 +107,12 @@ export function useContextWindows({
   const expandMostRecentContext = useCallback(() => {
     if (openContexts.length === 0) return;
     const last = openContexts[openContexts.length - 1];
-    const idx = linesIndexById.get(last.selectedLineId) ?? -1;
+    const idx = linesIndexById.get(last.selectedLineId);
+    if (idx === undefined) {
+      throw new Error(
+        `open context references unknown line: ${last.selectedLineId}`,
+      );
+    }
     if (isAtFileBoundary(idx, last.range, lines.length)) return;
 
     setOpenContexts((current) =>
