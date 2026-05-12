@@ -48,6 +48,8 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
     openContexts,
     toggleContext,
     expandMostRecentContext,
+    closeMostRecentContext,
+    closeAllContexts,
     selectedContextLineIds,
     expandPulseKey,
   } = useContextWindows({
@@ -105,6 +107,56 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
   }, [focusedLineId]);
 
   /*
+   * Document-level dismissal bindings. Esc pops the most recent
+   * context, or clears the filter if nothing's open. Shift+Esc clears
+   * every context at once. Bails on event.defaultPrevented so a future
+   * closeable surface (modal, popover) can consume Esc first, and on
+   * editable targets so inputs keep their own Esc semantics.
+   */
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented) return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      if (event.key !== "Escape") return;
+
+      const target = event.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if (event.shiftKey) {
+        if (openContexts.length > 0) {
+          event.preventDefault();
+          closeAllContexts();
+        }
+        return;
+      }
+
+      if (openContexts.length > 0) {
+        event.preventDefault();
+        closeMostRecentContext();
+      } else if (hasAnyFilter(filterState)) {
+        event.preventDefault();
+        dispatch({ type: "clear" });
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [
+    openContexts.length,
+    closeAllContexts,
+    closeMostRecentContext,
+    filterState,
+    dispatch,
+  ]);
+
+  /*
    * Translate app state into Legend entries. Items appear left to right
    * in the order they're pushed; the rightmost entry is the stable
    * "ground" position. Each entry is gated on whether its action is
@@ -148,6 +200,22 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
       }
     }
 
+    if (openContexts.length > 0) {
+      items.push({
+        keys: ["Esc"],
+        label: "Close",
+        ariaLabel: "Close the most recent context",
+        onClick: closeMostRecentContext,
+      });
+    } else if (hasAnyFilter(filterState)) {
+      items.push({
+        keys: ["Esc"],
+        label: "Clear filter",
+        ariaLabel: "Clear active filters",
+        onClick: () => dispatch({ type: "clear" }),
+      });
+    }
+
     return items;
   }, [
     openContexts,
@@ -155,6 +223,7 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
     lines.length,
     expandMostRecentContext,
     expandPulseKey,
+    closeMostRecentContext,
     focusedLineId,
     selectedContextLineIds,
     visibleLines,

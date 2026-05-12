@@ -94,6 +94,16 @@ export function useContextWindows({
     [filterState, linesById],
   );
 
+  const closeMostRecentContext = useCallback(() => {
+    setOpenContexts((current) =>
+      current.length === 0 ? current : current.slice(0, -1),
+    );
+  }, []);
+
+  const closeAllContexts = useCallback(() => {
+    setOpenContexts((current) => (current.length === 0 ? current : []));
+  }, []);
+
   const expandMostRecentContext = useCallback(() => {
     if (openContexts.length === 0) return;
     const last = openContexts[openContexts.length - 1];
@@ -133,6 +143,8 @@ export function useContextWindows({
     openContexts,
     toggleContext,
     expandMostRecentContext,
+    closeMostRecentContext,
+    closeAllContexts,
     selectedContextLineIds,
     expandPulseKey,
   };
