@@ -142,10 +142,9 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
   }, [focusedLineId]);
 
   /*
-   * Document-level bindings. Esc / Shift+Esc dismiss contexts and
-   * filters; ? opens the shortcut sheet. Bails on
-   * event.defaultPrevented so the open sheet can consume Esc first,
-   * and on editable targets so inputs keep their own key semantics.
+   * Document-level keyboard handler. Bails on event.defaultPrevented
+   * so an open modal can consume the event first, and on editable
+   * targets so inputs keep their own key semantics.
    */
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -199,10 +198,9 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
   ]);
 
   /*
-   * Translate app state into Legend entries. Items appear left to right
-   * in the order they're pushed; the rightmost entry is the stable
-   * "ground" position. Each entry is gated on whether its action is
-   * currently meaningful.
+   * Translate app state into Legend entries. Each entry is gated on
+   * whether its action is currently meaningful — the toolbar should
+   * never advertise a binding that wouldn't do anything if pressed.
    */
   const legendItems = useMemo<readonly LegendItem[]>(() => {
     const items: LegendItem[] = [];

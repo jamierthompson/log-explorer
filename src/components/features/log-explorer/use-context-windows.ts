@@ -42,17 +42,16 @@ export function useContextWindows({
   const [expandPulseKey, setExpandPulseKey] = useState(0);
 
   /*
-   * Drop a context only once every chip whose individual filter would
-   * match its anchor is inactive. Adding a second, more restrictive
-   * chip can hide the anchor in the view, but the context stays in
-   * state as long as the original matching chip is still active —
-   * so removing the restrictive chip brings the window back.
+   * Drop a context only once every scenario whose individual filter
+   * would match its anchor is inactive. Adding a more restrictive
+   * scenario can hide the anchor in the view, but the context stays
+   * in state as long as the original matching scenario is still
+   * active — so removing the restrictive scenario brings the window
+   * back. Clearing all filters clears everything.
    *
-   * Clearing all chips clears everything.
-   *
-   * Detected during render via the React-recommended "store previous"
-   * pattern so the new state lands before this render commits — no
-   * useEffect-then-cascade.
+   * Comparing previous vs incoming props during render lets the
+   * pruned state land in the same commit, instead of using a
+   * useEffect that would trigger a follow-up render.
    */
   const [previousFilter, setPreviousFilter] =
     useState<FilterState>(filterState);
