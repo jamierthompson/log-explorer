@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useReducer, useState } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 
 import { ScenarioChips } from "@/components/features/scenario-chips/scenario-chips";
 import {
@@ -16,6 +23,7 @@ import { useListboxKeyboard } from "./use-listbox-keyboard";
 export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
   const [filterState, dispatch] = useReducer(filterReducer, initialFilterState);
   const [focusedLineId, setFocusedLineId] = useState<string | null>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   const visibleLines = useMemo(
     () => lines.filter((line) => lineMatchesFilter(line, filterState)),
@@ -27,6 +35,17 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
     focusedLineId,
     setFocusedLineId,
   });
+
+  /*
+   * Land at the newest line on first paint, matching how tail-style log
+   * viewers open. useLayoutEffect runs before the browser paints, so
+   * the user never sees the unscrolled position flash by.
+   */
+  useLayoutEffect(() => {
+    const v = viewportRef.current;
+    if (!v) return;
+    v.scrollTop = v.scrollHeight;
+  }, []);
 
   useEffect(() => {
     if (!focusedLineId) return;
@@ -42,6 +61,7 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
         lines={visibleLines}
         focusedLineId={focusedLineId}
         onKeyDown={handleKeyDown}
+        viewportRef={viewportRef}
       />
     </>
   );

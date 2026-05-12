@@ -1,7 +1,29 @@
+.scrollRoot {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.scrollViewport {
+  height: 100%;
+  width: 100%;
+}
+
+/*
+ * Radix wraps the viewport content in a div with `display: table` to
+ * enable horizontal scrolling. We only scroll vertically; the table
+ * box throws off the row layout, so flatten back to block.
+ */
+.scrollViewport > div {
+  display: block !important;
+  min-width: 100% !important;
+}
+
 .list {
   list-style: none;
   margin: 0;
-  padding: var(--space-4) 0;
+  padding: var(--space-4) var(--content-padding-x);
 }
 
 .list:focus-visible {
@@ -9,15 +31,33 @@
   outline-offset: -2px;
 }
 
-/*
- * Every row reserves a 4px left-border slot so the eventual active
- * state can fill it without shifting the row's content.
- */
 .list > li {
-  border-left: 4px solid transparent;
+  border-left: var(--space-1) solid transparent;
 }
 
 .list > li[data-focused="true"] {
   outline: 2px solid var(--color-fg-muted);
   outline-offset: -2px;
+}
+
+.scrollbar {
+  display: flex;
+  user-select: none;
+  touch-action: none;
+  padding: 2px;
+  width: 0.625rem;
+  background: transparent;
+}
+
+.scrollbarThumb {
+  flex: 1;
+  position: relative;
+  background: color-mix(in oklch, var(--color-fg-muted) 30%, var(--color-bg));
+  border-radius: var(--radius-1);
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.scrollbarThumb:hover,
+.scrollbar:hover .scrollbarThumb {
+  background: var(--color-accent);
 }
