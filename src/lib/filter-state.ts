@@ -78,7 +78,9 @@ function removeScenario(state: FilterState, scenario: Scenario): FilterState {
   return {
     instances: state.instances.filter((v) => !scenario.instances.includes(v)),
     requestIds: state.requestIds.filter((v) => !scenario.requestIds.includes(v)),
-    levels: state.levels.filter((v) => !scenario.levels.includes(v as Level)),
+    levels: state.levels.filter(
+      (v) => !(scenario.levels as readonly string[]).includes(v),
+    ),
   };
 }
 
