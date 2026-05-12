@@ -14,6 +14,7 @@ import {
   ScenarioChips,
   SCENARIOS,
 } from "@/components/features/scenario-chips/scenario-chips";
+import { ShortcutSheet } from "@/components/features/shortcut-sheet/shortcut-sheet";
 import { Legend, type LegendItem } from "@/components/ui/legend";
 import { isAtFileBoundary } from "@/lib/context-state";
 import { deriveLines } from "@/lib/derive-lines";
@@ -22,6 +23,7 @@ import {
   hasAnyFilter,
   initialFilterState,
 } from "@/lib/filter-state";
+import { SHORTCUTS } from "@/lib/keyboard-shortcuts";
 import type { LogLine } from "@/types/log";
 
 import { LogList } from "./log-list";
@@ -31,6 +33,7 @@ import { useListboxKeyboard } from "./use-listbox-keyboard";
 export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
   const [filterState, dispatch] = useReducer(filterReducer, initialFilterState);
   const [focusedLineId, setFocusedLineId] = useState<string | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const viewportRef = useRef<HTMLDivElement>(null);
 
   const linesById = useMemo(() => {
@@ -139,17 +142,15 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
   }, [focusedLineId]);
 
   /*
-   * Document-level dismissal bindings. Esc pops the most recent
-   * context, or clears the filter if nothing's open. Shift+Esc clears
-   * every context at once. Bails on event.defaultPrevented so a future
-   * closeable surface (modal, popover) can consume Esc first, and on
-   * editable targets so inputs keep their own Esc semantics.
+   * Document-level bindings. Esc / Shift+Esc dismiss contexts and
+   * filters; ? opens the shortcut sheet. Bails on
+   * event.defaultPrevented so the open sheet can consume Esc first,
+   * and on editable targets so inputs keep their own key semantics.
    */
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.defaultPrevented) return;
       if (event.metaKey || event.ctrlKey || event.altKey) return;
-      if (event.key !== "Escape") return;
 
       const target = event.target as HTMLElement | null;
       if (
@@ -160,6 +161,15 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
       ) {
         return;
       }
+
+      // `?` is Shift+/ on most layouts; match the produced character.
+      if (event.key === "?") {
+        event.preventDefault();
+        setSheetOpen(true);
+        return;
+      }
+
+      if (event.key !== "Escape") return;
 
       if (event.shiftKey) {
         if (openContexts.length > 0) {
@@ -202,7 +212,7 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
       const anchorIdx = linesIndexById.get(mostRecent.selectedLineId) ?? -1;
       if (!isAtFileBoundary(anchorIdx, mostRecent.range, lines.length)) {
         items.push({
-          keys: ["Shift", "E"],
+          keys: SHORTCUTS.expandContext.keys,
           label: "Expand context",
           ariaLabel: "Expand the most recent context window",
           onClick: expandMostRecentContext,
@@ -222,7 +232,7 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
 
       if (focusedCanToggle || focusedIsAnchor) {
         items.push({
-          keys: ["E"],
+          keys: SHORTCUTS.toggleContext.keys,
           label: focusedIsAnchor ? "Hide context" : "View context",
           ariaLabel: focusedIsAnchor
             ? "Hide context on focused line"
@@ -234,17 +244,28 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
 
     if (openContexts.length > 0) {
       items.push({
-        keys: ["Esc"],
+        keys: SHORTCUTS.closeRecent.keys,
         label: "Close recent",
         ariaLabel: "Close the most recent context",
         onClick: closeMostRecentContext,
       });
     } else if (hasAnyFilter(filterState)) {
       items.push({
-        keys: ["Esc"],
+        keys: SHORTCUTS.closeRecent.keys,
         label: "Clear filter",
         ariaLabel: "Clear active filters",
         onClick: () => dispatch({ type: "clear" }),
+      });
+    }
+
+    // Fallback: keep the toolbar visible with a pointer to the full
+    // shortcut sheet whenever nothing else is contextually relevant.
+    if (items.length === 0) {
+      items.push({
+        keys: SHORTCUTS.openShortcuts.keys,
+        label: "for all shortcuts",
+        ariaLabel: "Show keyboard shortcuts",
+        onClick: () => setSheetOpen(true),
       });
     }
 
@@ -277,6 +298,7 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
         onToggleContext={toggleContext}
         viewportRef={viewportRef}
       />
+      <ShortcutSheet open={sheetOpen} onOpenChange={setSheetOpen} />
     </>
   );
 }

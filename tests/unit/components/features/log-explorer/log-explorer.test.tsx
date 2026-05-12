@@ -75,6 +75,38 @@ describe("LogExplorer", () => {
     expect(document.querySelector('[data-selected="true"]')).toBeNull();
   });
 
+  it("shows a fallback Legend entry pointing to the shortcut sheet when nothing else is contextually relevant", () => {
+    render(<LogExplorer lines={lines} />);
+    expect(
+      screen.getByRole("button", { name: /show keyboard shortcuts/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("pressing ? opens the shortcut sheet", async () => {
+    const user = userEvent.setup();
+    render(<LogExplorer lines={lines} />);
+    expect(screen.queryByText("Keyboard shortcuts")).not.toBeInTheDocument();
+
+    await user.keyboard("?");
+    expect(screen.getByText("Keyboard shortcuts")).toBeInTheDocument();
+  });
+
+  it("pressing Esc with the sheet open closes only the sheet", async () => {
+    const user = userEvent.setup();
+    render(<LogExplorer lines={lines} />);
+    await user.click(screen.getByRole("button", { name: /trace req=r4d8a2/i }));
+    await user.click(screen.getByText("GET /api/users"));
+    expect(document.querySelector('[data-selected="true"]')).not.toBeNull();
+
+    await user.keyboard("?");
+    expect(screen.getByText("Keyboard shortcuts")).toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+    expect(screen.queryByText("Keyboard shortcuts")).not.toBeInTheDocument();
+    // Context underneath stays open — Esc was consumed by the sheet.
+    expect(document.querySelector('[data-selected="true"]')).not.toBeNull();
+  });
+
   it("applies multiple chip filters at once and toggles them independently", async () => {
     const user = userEvent.setup();
     render(<LogExplorer lines={lines} />);
