@@ -4,16 +4,10 @@ const ANCHOR = new Date("2026-05-11T13:00:00Z").getTime();
 const t = (min: number, sec: number): number =>
   ANCHOR + min * 60_000 + sec * 1_000;
 
-export const INSTANCES = ["kc4qn", "m7w3p", "t2x8r"] as const;
-export type InstanceId = (typeof INSTANCES)[number];
+const INSTANCES = ["kc4qn", "m7w3p", "t2x8r"] as const;
+type InstanceId = (typeof INSTANCES)[number];
 
-export const REQUEST_IDS = {
-  r4d8a2: "kc4qn",
-  k9b3c7: "m7w3p",
-  p2x6n1: "t2x8r",
-} as const satisfies Record<string, InstanceId>;
-
-export type RequestId = keyof typeof REQUEST_IDS;
+type RequestId = "r4d8a2" | "k9b3c7" | "p2x6n1";
 
 type PartialLogLine = Omit<LogLine, "id">;
 
@@ -51,7 +45,7 @@ const dbg: typeof info = (min, sec, inst, msg, req) =>
  * Key narrative lines: each request flow lives somewhere in here with
  * at least one severity escalation, and a handful of standalone
  * WARN / ERROR lines exist outside any specific request so the
- * "Errors only" filter has variety beyond just request-bound errors.
+ * errors-only scenario has variety beyond just request-bound errors.
  */
 const STORY: readonly PartialLogLine[] = [
   // Boot
@@ -59,7 +53,7 @@ const STORY: readonly PartialLogLine[] = [
   info(0, 5, "m7w3p", "Server listening on port 3000"),
   info(0, 8, "t2x8r", "Server listening on port 3000"),
 
-  // r4d8a2 flow on kc4qn — three incident clusters across the hour
+  // First request flow: severity escalation across multiple incident clusters
   info(1, 38, "kc4qn", "GET /api/users 200 in 38ms", "r4d8a2"),
   info(3, 22, "kc4qn", "GET /api/users/me 200 in 21ms", "r4d8a2"),
   info(5, 12, "kc4qn", "GET /api/products/42 200 in 24ms", "r4d8a2"),
@@ -114,7 +108,7 @@ const STORY: readonly PartialLogLine[] = [
   info(57, 21, "kc4qn", "POST /api/events 202 in 13ms", "r4d8a2"),
   info(58, 55, "kc4qn", "GET /api/users/me 200 in 20ms", "r4d8a2"),
 
-  // k9b3c7 flow on m7w3p — three incident clusters
+  // Second request flow: webhook + timeout cascades on a different instance
   info(2, 11, "m7w3p", "POST /api/sessions 201 in 64ms", "k9b3c7"),
   info(4, 15, "m7w3p", "POST /api/sessions 201 in 58ms", "k9b3c7"),
   info(6, 48, "m7w3p", "GET /api/users 200 in 42ms", "k9b3c7"),
@@ -160,7 +154,7 @@ const STORY: readonly PartialLogLine[] = [
   warn(56, 24, "m7w3p", "Rate limit approaching for tenant 'acme' (84/100)", "k9b3c7"),
   info(59, 12, "m7w3p", "POST /api/sessions 201 in 60ms", "k9b3c7"),
 
-  // p2x6n1 flow on t2x8r — three incident clusters
+  // Third request flow: db pool exhaustion and recovery
   info(3, 8, "t2x8r", "GET /api/orders 200 in 51ms", "p2x6n1"),
   info(5, 34, "t2x8r", "PATCH /api/orders/41 200 in 67ms", "p2x6n1"),
   info(7, 22, "t2x8r", "GET /api/orders 200 in 54ms", "p2x6n1"),
@@ -288,19 +282,19 @@ function generateNoise(): PartialLogLine[] {
 
   // ── INFO patterns ──────────────────────────────────────────────
 
-  // Heartbeats (~40s cadence)
+  // Heartbeats
   let r = rotator(0);
   for (let s = 18; s < HOUR_SEC; s += 36 + (s % 11)) {
     noise.push(info(min(s), ss(s), r(), "Heartbeat sent"));
   }
 
-  // Healthchecks (~42s cadence)
+  // Healthchecks
   r = rotator(1);
   for (let s = 24; s < HOUR_SEC; s += 38 + (s % 9)) {
     noise.push(info(min(s), ss(s), r(), "Healthcheck OK"));
   }
 
-  // Generic API requests (~48s cadence)
+  // Generic API requests
   r = rotator(2);
   for (let s = 36; s < HOUR_SEC; s += 42 + (s % 13)) {
     const method = pick(METHODS, s);
@@ -310,7 +304,7 @@ function generateNoise(): PartialLogLine[] {
     noise.push(info(min(s), ss(s), r(), `${method} ${path} ${status} in ${ms}ms`));
   }
 
-  // DB queries (~95s)
+  // DB queries
   r = rotator(0);
   for (let s = 56; s < HOUR_SEC; s += 88 + (s % 15)) {
     const q = pick(QUERY_TARGETS, s);
@@ -318,21 +312,21 @@ function generateNoise(): PartialLogLine[] {
     noise.push(info(min(s), ss(s), r(), `DB query: ${q} (${ms}ms)`));
   }
 
-  // Cache invalidations (~150s)
+  // Cache invalidations
   r = rotator(1);
   for (let s = 89; s < HOUR_SEC; s += 140 + (s % 19)) {
     const key = pick(CACHE_KEYS, s);
     noise.push(info(min(s), ss(s), r(), `Cache invalidated: ${key}`));
   }
 
-  // Metrics flushes (~130s)
+  // Metrics flushes
   r = rotator(2);
   for (let s = 47; s < HOUR_SEC; s += 120 + (s % 17)) {
     const n = 18 + (s % 24);
     noise.push(info(min(s), ss(s), r(), `Metrics flushed (count=${n})`));
   }
 
-  // Background jobs (~135s)
+  // Background jobs
   r = rotator(0);
   for (let s = 71; s < HOUR_SEC; s += 125 + (s % 19)) {
     const job = pick(JOB_NAMES, s);
@@ -340,14 +334,14 @@ function generateNoise(): PartialLogLine[] {
     noise.push(info(min(s), ss(s), r(), `Background job '${job}' completed in ${ms}ms`));
   }
 
-  // Cache hit ratios (~160s)
+  // Cache hit ratios
   r = rotator(1);
   for (let s = 93; s < HOUR_SEC; s += 150 + (s % 21)) {
     const ratio = (88 + (s % 8)) / 100;
     noise.push(info(min(s), ss(s), r(), `Cache hit ratio: ${ratio.toFixed(2)}`));
   }
 
-  // Connection retry succeeded (~290s)
+  // Connection retry succeeded
   r = rotator(2);
   for (let s = 220; s < HOUR_SEC; s += 270 + (s % 31)) {
     const attempts = 2 + (s % 2);
@@ -358,14 +352,14 @@ function generateNoise(): PartialLogLine[] {
 
   // ── DEBUG patterns ─────────────────────────────────────────────
 
-  // GC paused (~155s)
+  // GC paused
   r = rotator(0);
   for (let s = 67; s < HOUR_SEC; s += 145 + (s % 23)) {
     const ms = 10 + (s % 12);
     noise.push(dbg(min(s), ss(s), r(), `GC paused ${ms}ms`));
   }
 
-  // Connection pool snapshots (~190s)
+  // Connection pool snapshots
   r = rotator(1);
   for (let s = 113; s < HOUR_SEC; s += 175 + (s % 13)) {
     const active = 3 + (s % 10);
@@ -374,7 +368,7 @@ function generateNoise(): PartialLogLine[] {
 
   // ── WARN patterns ──────────────────────────────────────────────
 
-  // Slow upstream (~215s)
+  // Slow upstream
   r = rotator(2);
   for (let s = 145; s < HOUR_SEC; s += 200 + (s % 27)) {
     const upstream = pick(UPSTREAMS, s);
@@ -384,7 +378,7 @@ function generateNoise(): PartialLogLine[] {
     );
   }
 
-  // Cache miss elevated (~270s)
+  // Cache miss elevated
   r = rotator(0);
   for (let s = 178; s < HOUR_SEC; s += 255 + (s % 23)) {
     const ratio = (31 + (s % 12)) / 100;
@@ -398,7 +392,7 @@ function generateNoise(): PartialLogLine[] {
     );
   }
 
-  // DB pool wait (~295s)
+  // DB pool wait
   r = rotator(1);
   for (let s = 230; s < HOUR_SEC; s += 280 + (s % 19)) {
     const ms = 8 + (s % 22);
@@ -407,7 +401,7 @@ function generateNoise(): PartialLogLine[] {
     );
   }
 
-  // Rate limit approaching (~330s)
+  // Rate limit approaching
   r = rotator(2);
   for (let s = 280; s < HOUR_SEC; s += 310 + (s % 29)) {
     const tenant = pick(TENANTS, s);
@@ -422,7 +416,7 @@ function generateNoise(): PartialLogLine[] {
     );
   }
 
-  // Slow query (~370s)
+  // Slow query
   r = rotator(0);
   for (let s = 312; s < HOUR_SEC; s += 350 + (s % 27)) {
     const q = pick(QUERY_TARGETS, s);
@@ -430,7 +424,7 @@ function generateNoise(): PartialLogLine[] {
     noise.push(warn(min(s), ss(s), r(), `Slow query: ${q} took ${ms}ms`));
   }
 
-  // Healthcheck slow (~430s)
+  // Healthcheck slow
   r = rotator(1);
   for (let s = 380; s < HOUR_SEC; s += 410 + (s % 29)) {
     const ms = 180 + (s % 220);
@@ -439,7 +433,7 @@ function generateNoise(): PartialLogLine[] {
 
   // ── ERROR patterns ─────────────────────────────────────────────
 
-  // Connection refused (~480s)
+  // Connection refused
   r = rotator(2);
   for (let s = 320; s < HOUR_SEC; s += 460 + (s % 37)) {
     noise.push(
@@ -452,19 +446,19 @@ function generateNoise(): PartialLogLine[] {
     );
   }
 
-  // Query failed (~540s)
+  // Query failed
   r = rotator(0);
   for (let s = 380; s < HOUR_SEC; s += 520 + (s % 41)) {
     noise.push(err(min(s), ss(s), r(), "db query failed: context deadline exceeded"));
   }
 
-  // Upstream exhausted (~620s)
+  // Upstream exhausted
   r = rotator(1);
   for (let s = 450; s < HOUR_SEC; s += 590 + (s % 47)) {
     noise.push(err(min(s), ss(s), r(), "upstream pool exhausted, dropping request"));
   }
 
-  // Validation failed (~680s)
+  // Validation failed
   r = rotator(2);
   for (let s = 540; s < HOUR_SEC; s += 650 + (s % 43)) {
     const path = pick(ENDPOINTS, s);

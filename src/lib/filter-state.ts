@@ -19,6 +19,15 @@ export const initialFilterState: FilterState = {
 /** A scenario contributes a partial filter — values to add or remove. */
 export type Scenario = FilterState;
 
+/** A labeled scenario, ready to render as a chip and consumed by the
+ * retention rule that decides which open contexts survive a filter
+ * change. */
+export type ScenarioPreset = {
+  readonly id: string;
+  readonly label: string;
+  readonly scenario: Scenario;
+};
+
 export type FilterAction =
   | { type: "toggleScenario"; scenario: Scenario }
   | { type: "clear" };
@@ -69,7 +78,9 @@ function removeScenario(state: FilterState, scenario: Scenario): FilterState {
   return {
     instances: state.instances.filter((v) => !scenario.instances.includes(v)),
     requestIds: state.requestIds.filter((v) => !scenario.requestIds.includes(v)),
-    levels: state.levels.filter((v) => !scenario.levels.includes(v as Level)),
+    levels: state.levels.filter(
+      (v) => !(scenario.levels as readonly string[]).includes(v),
+    ),
   };
 }
 

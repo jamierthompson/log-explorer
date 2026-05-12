@@ -129,4 +129,103 @@ describe("LogExplorer", () => {
     expect(screen.getByText("GET /api/users")).toBeInTheDocument();
     expect(screen.queryByText("request timeout")).not.toBeInTheDocument();
   });
+
+  it("pressing ? inside a focused input does not open the sheet", async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <input aria-label="search" />
+        <LogExplorer lines={lines} />
+      </>,
+    );
+
+    const input = screen.getByLabelText("search");
+    await user.click(input);
+    await user.keyboard("?");
+
+    expect(screen.queryByText("Keyboard shortcuts")).not.toBeInTheDocument();
+  });
+});
+
+describe("LogExplorer anchor cycling", () => {
+  /*
+   * Trace-filterable lines so multiple contexts can be opened at once,
+   * sandwiched between context-padding rows so anchors aren't at the
+   * file boundary.
+   */
+  const cyclingLines: readonly LogLine[] = [
+    { id: "pad-a", timestamp: 0, instance: "kc4qn", level: "INFO", message: "before" },
+    { id: "alpha", timestamp: 1, instance: "kc4qn", level: "INFO", message: "alpha trace", requestId: "r4d8a2" },
+    { id: "pad-b", timestamp: 2, instance: "kc4qn", level: "INFO", message: "middle" },
+    { id: "beta", timestamp: 3, instance: "kc4qn", level: "INFO", message: "beta trace", requestId: "r4d8a2" },
+    { id: "pad-c", timestamp: 4, instance: "kc4qn", level: "INFO", message: "between" },
+    { id: "gamma", timestamp: 5, instance: "kc4qn", level: "INFO", message: "gamma trace", requestId: "r4d8a2" },
+    { id: "pad-d", timestamp: 6, instance: "kc4qn", level: "INFO", message: "after" },
+  ];
+
+  async function openThreeContexts() {
+    const user = userEvent.setup();
+    render(<LogExplorer lines={cyclingLines} />);
+    await user.click(screen.getByRole("button", { name: /trace req=r4d8a2/i }));
+    await user.click(screen.getByText("alpha trace"));
+    await user.click(screen.getByText("beta trace"));
+    await user.click(screen.getByText("gamma trace"));
+    return user;
+  }
+
+  function focusedLineId(): string | null {
+    const list = document.querySelector('[role="listbox"]');
+    return list?.getAttribute("aria-activedescendant")?.replace("line_", "") ?? null;
+  }
+
+  it("] cycles to the next anchor in open order and wraps at the end", async () => {
+    const user = await openThreeContexts();
+    // Most recent click was gamma, so focus is on gamma.
+    expect(focusedLineId()).toBe("gamma");
+
+    await user.keyboard("]");
+    expect(focusedLineId()).toBe("alpha");
+    await user.keyboard("]");
+    expect(focusedLineId()).toBe("beta");
+    await user.keyboard("]");
+    expect(focusedLineId()).toBe("gamma");
+  });
+
+  it("[ cycles to the previous anchor and wraps at the start", async () => {
+    const user = await openThreeContexts();
+    expect(focusedLineId()).toBe("gamma");
+
+    await user.keyboard("[[");
+    expect(focusedLineId()).toBe("beta");
+    await user.keyboard("[[");
+    expect(focusedLineId()).toBe("alpha");
+    await user.keyboard("[[");
+    expect(focusedLineId()).toBe("gamma");
+  });
+
+  it("] from a non-anchor focus lands on the first anchor", async () => {
+    const user = userEvent.setup();
+    render(<LogExplorer lines={cyclingLines} />);
+    await user.click(screen.getByRole("button", { name: /trace req=r4d8a2/i }));
+    await user.click(screen.getByText("alpha trace"));
+    await user.click(screen.getByText("gamma trace"));
+
+    // Pad lines are filtered out under trace, so use the keyboard to
+    // shift focus away from any anchor before cycling.
+    await user.keyboard("g");
+    expect(focusedLineId()).toBe("alpha");
+    await user.keyboard("]");
+    // Cycling from a focused anchor moves to the next; alpha -> gamma.
+    expect(focusedLineId()).toBe("gamma");
+  });
+
+  it("] with no open contexts is a no-op", async () => {
+    const user = userEvent.setup();
+    render(<LogExplorer lines={cyclingLines} />);
+    await user.click(screen.getByText("before"));
+    const before = focusedLineId();
+
+    await user.keyboard("]");
+    expect(focusedLineId()).toBe(before);
+  });
 });

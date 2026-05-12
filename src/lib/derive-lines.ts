@@ -13,8 +13,8 @@ import { lineMatchesFilter, type FilterState } from "./filter-state";
  *
  * A context window is silent in the view when its anchor doesn't pass
  * the current filter. The open-context state itself is preserved
- * upstream by the chip-aware retention rule, so the window reappears
- * if a restrictive chip is later removed.
+ * upstream by the filter-aware retention rule, so the window
+ * reappears if a restrictive scenario is later removed.
  */
 export function deriveLines(
   lines: readonly LogLine[],

@@ -94,6 +94,13 @@ export function useListboxKeyboard({
         case "navigate-last":
           next = lines.length - 1;
           break;
+        default: {
+          // Exhaustiveness guard: a new Action variant that escapes
+          // the early-return arms above must declare a navigation
+          // target here or be handled before reaching this switch.
+          const _exhaustive: never = action;
+          return _exhaustive;
+        }
       }
 
       setFocusedLineId(lines[next].id);
