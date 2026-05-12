@@ -12,7 +12,7 @@ import {
 
 import styles from "./scenario-chips.module.css";
 
-export const SCENARIOS: readonly ScenarioPreset[] = [
+export const SCENARIOS = [
   {
     id: "errors",
     label: "Errors only",
@@ -28,7 +28,7 @@ export const SCENARIOS: readonly ScenarioPreset[] = [
     label: "Instance kc4qn",
     scenario: { instances: ["kc4qn"], requestIds: [], levels: [] },
   },
-];
+] as const satisfies readonly ScenarioPreset[];
 
 export function ScenarioChips({
   state,

@@ -30,7 +30,7 @@ export type ShortcutDef = {
   readonly description: string;
 };
 
-export const SHORTCUTS: Record<ShortcutId, ShortcutDef> = {
+export const SHORTCUTS = {
   navigateNext: {
     keys: ["J"],
     aliases: [["↓"]],
@@ -78,14 +78,14 @@ export const SHORTCUTS: Record<ShortcutId, ShortcutDef> = {
     keys: ["?"],
     description: "Show keyboard shortcuts",
   },
-};
+} as const satisfies Record<ShortcutId, ShortcutDef>;
 
 export type ShortcutGroup = {
   readonly title: string;
   readonly ids: readonly ShortcutId[];
 };
 
-export const SHORTCUT_GROUPS: readonly ShortcutGroup[] = [
+export const SHORTCUT_GROUPS = [
   {
     title: "Navigation",
     ids: [
@@ -105,4 +105,4 @@ export const SHORTCUT_GROUPS: readonly ShortcutGroup[] = [
     title: "Help",
     ids: ["openShortcuts"],
   },
-];
+] as const satisfies readonly ShortcutGroup[];

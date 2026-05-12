@@ -3,7 +3,11 @@
 import * as Dialog from "@radix-ui/react-dialog";
 
 import { KeycapSequence } from "@/components/ui/keycap/keycap";
-import { SHORTCUT_GROUPS, SHORTCUTS } from "@/lib/keyboard-shortcuts";
+import {
+  SHORTCUT_GROUPS,
+  SHORTCUTS,
+  type ShortcutDef,
+} from "@/lib/keyboard-shortcuts";
 
 import styles from "./shortcut-sheet.module.css";
 
@@ -32,7 +36,13 @@ export function ShortcutSheet({
                 <h3 className={styles.groupTitle}>{group.title}</h3>
                 <dl className={styles.list}>
                   {group.ids.map((id) => {
-                    const shortcut = SHORTCUTS[id];
+                    /*
+                     * Widen at the read site: `as const satisfies`
+                     * makes every entry's type literal, so iterating
+                     * by id would land us on a union that doesn't
+                     * uniformly carry `aliases`.
+                     */
+                    const shortcut: ShortcutDef = SHORTCUTS[id];
                     return (
                       <div key={id} className={styles.row}>
                         <dt className={styles.keys}>
