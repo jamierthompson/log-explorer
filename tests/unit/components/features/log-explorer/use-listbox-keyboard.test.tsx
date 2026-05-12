@@ -23,10 +23,23 @@ function fakeEvent(key: string, shiftKey = false) {
 
 function setup(focusedLineId: string | null) {
   const setFocusedLineId = vi.fn<(id: string) => void>();
+  const onToggleContext = vi.fn<(id: string) => void>();
+  const onExpandContext = vi.fn<() => void>();
   const { result } = renderHook(() =>
-    useListboxKeyboard({ lines, focusedLineId, setFocusedLineId }),
+    useListboxKeyboard({
+      lines,
+      focusedLineId,
+      setFocusedLineId,
+      onToggleContext,
+      onExpandContext,
+    }),
   );
-  return { handleKeyDown: result.current, setFocusedLineId };
+  return {
+    handleKeyDown: result.current,
+    setFocusedLineId,
+    onToggleContext,
+    onExpandContext,
+  };
 }
 
 describe("useListboxKeyboard", () => {
@@ -78,11 +91,32 @@ describe("useListboxKeyboard", () => {
     expect(setFocusedLineId).toHaveBeenCalledWith("c");
   });
 
+  it("E toggles context on the focused line", () => {
+    const { handleKeyDown, onToggleContext } = setup("b");
+    handleKeyDown(fakeEvent("e"));
+    expect(onToggleContext).toHaveBeenCalledWith("b");
+  });
+
+  it("Enter toggles context on the focused line (alias for E)", () => {
+    const { handleKeyDown, onToggleContext } = setup("b");
+    handleKeyDown(fakeEvent("Enter"));
+    expect(onToggleContext).toHaveBeenCalledWith("b");
+  });
+
+  it("E does nothing when no line is focused", () => {
+    const { handleKeyDown, onToggleContext } = setup(null);
+    handleKeyDown(fakeEvent("e"));
+    expect(onToggleContext).not.toHaveBeenCalled();
+  });
+
+  it("Shift+E expands the most-recent context", () => {
+    const { handleKeyDown, onExpandContext } = setup("b");
+    handleKeyDown(fakeEvent("E", true));
+    expect(onExpandContext).toHaveBeenCalledOnce();
+  });
+
   it("ignores modified keys (cmd/ctrl/alt)", () => {
-    const setFocusedLineId = vi.fn<(id: string) => void>();
-    const { result } = renderHook(() =>
-      useListboxKeyboard({ lines, focusedLineId: "a", setFocusedLineId }),
-    );
+    const { handleKeyDown, setFocusedLineId, onToggleContext } = setup("a");
     const event = {
       key: "j",
       shiftKey: false,
@@ -91,17 +125,22 @@ describe("useListboxKeyboard", () => {
       altKey: false,
       preventDefault: vi.fn(),
     } as unknown as React.KeyboardEvent<HTMLUListElement>;
-    result.current(event);
+    handleKeyDown(event);
     expect(setFocusedLineId).not.toHaveBeenCalled();
+    expect(onToggleContext).not.toHaveBeenCalled();
   });
 
   it("does nothing when lines is empty", () => {
     const setFocusedLineId = vi.fn<(id: string) => void>();
+    const onToggleContext = vi.fn<(id: string) => void>();
+    const onExpandContext = vi.fn<() => void>();
     const { result } = renderHook(() =>
       useListboxKeyboard({
         lines: [],
         focusedLineId: null,
         setFocusedLineId,
+        onToggleContext,
+        onExpandContext,
       }),
     );
     result.current(fakeEvent("j"));

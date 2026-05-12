@@ -1,9 +1,13 @@
 "use client";
 
 import * as ScrollArea from "@radix-ui/react-scroll-area";
-import type { KeyboardEvent as ReactKeyboardEvent, Ref } from "react";
+import type {
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  Ref,
+} from "react";
 
-import type { LogLine as LogLineType } from "@/types/log";
+import type { DerivedLogLine } from "@/types/log";
 
 import { LogLine } from "./log-line";
 import styles from "./log-list.module.css";
@@ -13,14 +17,35 @@ const lineDomId = (lineId: string) => `line_${lineId}`;
 export function LogList({
   lines,
   focusedLineId,
+  selectedContextLineIds,
+  hasAnyFilter,
   onKeyDown,
+  onLineFocus,
+  onToggleContext,
   viewportRef,
 }: {
-  lines: readonly LogLineType[];
+  lines: readonly DerivedLogLine[];
   focusedLineId: string | null;
+  selectedContextLineIds: ReadonlySet<string>;
+  hasAnyFilter: boolean;
   onKeyDown: (event: ReactKeyboardEvent<HTMLUListElement>) => void;
+  onLineFocus: (lineId: string) => void;
+  onToggleContext: (lineId: string) => void;
   viewportRef?: Ref<HTMLDivElement>;
 }) {
+  const handleClick = (
+    line: DerivedLogLine,
+    isSelected: boolean,
+    canToggle: boolean,
+    event: ReactMouseEvent<HTMLLIElement>,
+  ) => {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+    onLineFocus(line.id);
+    if (isSelected || canToggle) {
+      onToggleContext(line.id);
+    }
+  };
+
   return (
     <ScrollArea.Root className={styles.scrollRoot} type="hover">
       <ScrollArea.Viewport
@@ -39,6 +64,10 @@ export function LogList({
         >
           {lines.map((line) => {
             const isFocused = line.id === focusedLineId;
+            const isSelected = selectedContextLineIds.has(line.id);
+            const canToggle =
+              hasAnyFilter && line.isVisible && !line.isDimmed;
+            const isClickable = isSelected || canToggle;
             return (
               <li
                 key={line.id}
@@ -46,6 +75,10 @@ export function LogList({
                 role="option"
                 aria-selected={isFocused}
                 data-focused={isFocused || undefined}
+                data-selected={isSelected || undefined}
+                data-dimmed={line.isDimmed || undefined}
+                data-clickable={isClickable || undefined}
+                onClick={(e) => handleClick(line, isSelected, canToggle, e)}
               >
                 <LogLine line={line} />
               </li>

@@ -8,18 +8,22 @@ type Action =
   | "navigate-next"
   | "navigate-prev"
   | "navigate-first"
-  | "navigate-last";
+  | "navigate-last"
+  | "toggle-context"
+  | "expand-context";
 
 function matchAction(event: KeyboardEvent<HTMLUListElement>): Action | null {
   if (event.metaKey || event.ctrlKey || event.altKey) return null;
   const k = event.key;
   if (event.shiftKey) {
     if (k === "G" || k === "g") return "navigate-last";
+    if (k === "E" || k === "e") return "expand-context";
     return null;
   }
   if (k === "j" || k === "ArrowDown") return "navigate-next";
   if (k === "k" || k === "ArrowUp") return "navigate-prev";
   if (k === "g") return "navigate-first";
+  if (k === "e" || k === "Enter") return "toggle-context";
   return null;
 }
 
@@ -27,16 +31,30 @@ export function useListboxKeyboard({
   lines,
   focusedLineId,
   setFocusedLineId,
+  onToggleContext,
+  onExpandContext,
 }: {
   lines: readonly LogLine[];
   focusedLineId: string | null;
   setFocusedLineId: (id: string) => void;
+  onToggleContext: (lineId: string) => void;
+  onExpandContext: () => void;
 }) {
   return useCallback(
     (event: KeyboardEvent<HTMLUListElement>) => {
       const action = matchAction(event);
       if (action === null) return;
       event.preventDefault();
+
+      if (action === "toggle-context") {
+        if (focusedLineId) onToggleContext(focusedLineId);
+        return;
+      }
+      if (action === "expand-context") {
+        onExpandContext();
+        return;
+      }
+
       if (lines.length === 0) return;
 
       const current = focusedLineId
@@ -64,6 +82,6 @@ export function useListboxKeyboard({
 
       setFocusedLineId(lines[next].id);
     },
-    [lines, focusedLineId, setFocusedLineId],
+    [lines, focusedLineId, setFocusedLineId, onToggleContext, onExpandContext],
   );
 }

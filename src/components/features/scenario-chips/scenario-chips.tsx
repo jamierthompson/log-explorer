@@ -12,13 +12,13 @@ import {
 
 import styles from "./scenario-chips.module.css";
 
-type ScenarioPreset = {
+export type ScenarioPreset = {
   readonly id: string;
   readonly label: string;
   readonly scenario: Scenario;
 };
 
-const SCENARIOS: readonly ScenarioPreset[] = [
+export const SCENARIOS: readonly ScenarioPreset[] = [
   {
     id: "errors",
     label: "Errors only",

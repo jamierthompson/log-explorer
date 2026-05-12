@@ -33,11 +33,24 @@
 
 .list > li {
   border-left: var(--space-1) solid transparent;
+  padding-left: var(--space-2);
 }
 
 .list > li[data-focused="true"] {
   outline: 2px solid var(--color-fg-muted);
   outline-offset: -2px;
+}
+
+.list > li[data-selected="true"] {
+  border-left-color: var(--color-accent);
+}
+
+.list > li[data-dimmed="true"] {
+  opacity: 0.4;
+}
+
+.list > li[data-clickable="true"] {
+  cursor: pointer;
 }
 
 .scrollbar {
