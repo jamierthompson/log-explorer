@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -48,6 +49,8 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
     openContexts,
     toggleContext,
     expandMostRecentContext,
+    closeMostRecentContext,
+    closeAllContexts,
     selectedContextLineIds,
     expandPulseKey,
   } = useContextWindows({
@@ -78,12 +81,43 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
     [visibleLines],
   );
 
+  /*
+   * Anchor-cycling: from the focused anchor, move to the next or
+   * previous anchor in openContexts order, wrapping at the ends. When
+   * the focus isn't on any anchor, the next-anchor binding lands on
+   * the first anchor and the previous-anchor binding lands on the
+   * last. No-op when no contexts are open.
+   */
+  const navigateNextAnchor = useCallback(() => {
+    if (openContexts.length === 0) return;
+    const currentIdx = focusedLineId
+      ? openContexts.findIndex((c) => c.selectedLineId === focusedLineId)
+      : -1;
+    const nextIdx =
+      currentIdx === -1 ? 0 : (currentIdx + 1) % openContexts.length;
+    setFocusedLineId(openContexts[nextIdx].selectedLineId);
+  }, [openContexts, focusedLineId]);
+
+  const navigatePrevAnchor = useCallback(() => {
+    if (openContexts.length === 0) return;
+    const currentIdx = focusedLineId
+      ? openContexts.findIndex((c) => c.selectedLineId === focusedLineId)
+      : -1;
+    const prevIdx =
+      currentIdx === -1
+        ? openContexts.length - 1
+        : (currentIdx - 1 + openContexts.length) % openContexts.length;
+    setFocusedLineId(openContexts[prevIdx].selectedLineId);
+  }, [openContexts, focusedLineId]);
+
   const handleKeyDown = useListboxKeyboard({
     lines: navigableLines,
     focusedLineId,
     setFocusedLineId,
     onToggleContext: toggleContext,
     onExpandContext: expandMostRecentContext,
+    onNextAnchor: navigateNextAnchor,
+    onPrevAnchor: navigatePrevAnchor,
   });
 
   /*
@@ -103,6 +137,56 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
       .getElementById(`line_${focusedLineId}`)
       ?.scrollIntoView({ block: "nearest" });
   }, [focusedLineId]);
+
+  /*
+   * Document-level dismissal bindings. Esc pops the most recent
+   * context, or clears the filter if nothing's open. Shift+Esc clears
+   * every context at once. Bails on event.defaultPrevented so a future
+   * closeable surface (modal, popover) can consume Esc first, and on
+   * editable targets so inputs keep their own Esc semantics.
+   */
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented) return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      if (event.key !== "Escape") return;
+
+      const target = event.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if (event.shiftKey) {
+        if (openContexts.length > 0) {
+          event.preventDefault();
+          closeAllContexts();
+        }
+        return;
+      }
+
+      if (openContexts.length > 0) {
+        event.preventDefault();
+        closeMostRecentContext();
+      } else if (hasAnyFilter(filterState)) {
+        event.preventDefault();
+        dispatch({ type: "clear" });
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [
+    openContexts.length,
+    closeAllContexts,
+    closeMostRecentContext,
+    filterState,
+    dispatch,
+  ]);
 
   /*
    * Translate app state into Legend entries. Items appear left to right
@@ -148,6 +232,22 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
       }
     }
 
+    if (openContexts.length > 0) {
+      items.push({
+        keys: ["Esc"],
+        label: "Close recent",
+        ariaLabel: "Close the most recent context",
+        onClick: closeMostRecentContext,
+      });
+    } else if (hasAnyFilter(filterState)) {
+      items.push({
+        keys: ["Esc"],
+        label: "Clear filter",
+        ariaLabel: "Clear active filters",
+        onClick: () => dispatch({ type: "clear" }),
+      });
+    }
+
     return items;
   }, [
     openContexts,
@@ -155,6 +255,7 @@ export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
     lines.length,
     expandMostRecentContext,
     expandPulseKey,
+    closeMostRecentContext,
     focusedLineId,
     selectedContextLineIds,
     visibleLines,

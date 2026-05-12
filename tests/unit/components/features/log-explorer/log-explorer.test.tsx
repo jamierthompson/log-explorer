@@ -41,6 +41,40 @@ describe("LogExplorer", () => {
     expect(screen.getByText("GET /api/users")).toBeInTheDocument();
   });
 
+  it("pressing Esc closes an open context", async () => {
+    const user = userEvent.setup();
+    render(<LogExplorer lines={lines} />);
+    await user.click(screen.getByRole("button", { name: /trace req=r4d8a2/i }));
+    await user.click(screen.getByText("GET /api/users"));
+    expect(document.querySelector('[data-selected="true"]')).not.toBeNull();
+
+    await user.keyboard("{Escape}");
+    expect(document.querySelector('[data-selected="true"]')).toBeNull();
+  });
+
+  it("pressing Esc with no contexts but a filter active clears the filter", async () => {
+    const user = userEvent.setup();
+    render(<LogExplorer lines={lines} />);
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    expect(screen.queryByText("Healthcheck OK")).not.toBeInTheDocument();
+    expect(screen.getByText("request timeout")).toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+    expect(screen.getByText("Healthcheck OK")).toBeInTheDocument();
+    expect(screen.getByText("request timeout")).toBeInTheDocument();
+  });
+
+  it("pressing Shift+Esc closes every open context", async () => {
+    const user = userEvent.setup();
+    render(<LogExplorer lines={lines} />);
+    await user.click(screen.getByRole("button", { name: /trace req=r4d8a2/i }));
+    await user.click(screen.getByText("GET /api/users"));
+    expect(document.querySelector('[data-selected="true"]')).not.toBeNull();
+
+    await user.keyboard("{Shift>}{Escape}{/Shift}");
+    expect(document.querySelector('[data-selected="true"]')).toBeNull();
+  });
+
   it("applies multiple chip filters at once and toggles them independently", async () => {
     const user = userEvent.setup();
     render(<LogExplorer lines={lines} />);
