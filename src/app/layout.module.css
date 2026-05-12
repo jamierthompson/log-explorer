@@ -1,0 +1,46 @@
+.skipLink {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-4);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-1);
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  transform: translateY(calc(-100% - var(--space-4)));
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.skipLink::before,
+.skipLink::after {
+  display: inline-block;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+}
+
+.skipLink::before {
+  content: "[";
+  left: var(--space-1);
+}
+
+.skipLink::after {
+  content: "]";
+  right: var(--space-1);
+}
+
+.skipLink:focus {
+  transform: translateY(0);
+  outline: 0;
+}

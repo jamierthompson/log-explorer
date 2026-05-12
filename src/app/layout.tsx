@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 
 import "./globals.css";
+import styles from "./layout.module.css";
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -23,7 +24,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={jetbrainsMono.variable}>
-      <body>{children}</body>
+      <body>
+        <a href="#main-content" className={styles.skipLink}>
+          Skip to main content
+        </a>
+        {children}
+      </body>
     </html>
   );
 }

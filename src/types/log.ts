@@ -8,3 +8,8 @@ export type LogLine = {
   readonly level: Level;
   readonly message: string;
 };
+
+export type DerivedLogLine = LogLine & {
+  readonly isVisible: boolean;
+  readonly isDimmed: boolean;
+};
