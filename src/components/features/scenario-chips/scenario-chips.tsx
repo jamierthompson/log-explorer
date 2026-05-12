@@ -7,16 +7,10 @@ import {
   scenarioIsActive,
   type FilterAction,
   type FilterState,
-  type Scenario,
+  type ScenarioPreset,
 } from "@/lib/filter-state";
 
 import styles from "./scenario-chips.module.css";
-
-export type ScenarioPreset = {
-  readonly id: string;
-  readonly label: string;
-  readonly scenario: Scenario;
-};
 
 export const SCENARIOS: readonly ScenarioPreset[] = [
   {

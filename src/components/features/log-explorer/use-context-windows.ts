@@ -8,12 +8,12 @@ import {
   isAtFileBoundary,
   type OpenContext,
 } from "@/lib/context-state";
-import type { ScenarioPreset } from "@/components/features/scenario-chips/scenario-chips";
 import {
   hasAnyFilter,
   lineMatchesFilter,
   scenarioIsActive,
   type FilterState,
+  type ScenarioPreset,
 } from "@/lib/filter-state";
 import type { LogLine } from "@/types/log";
 

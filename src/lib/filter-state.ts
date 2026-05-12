@@ -19,6 +19,15 @@ export const initialFilterState: FilterState = {
 /** A scenario contributes a partial filter — values to add or remove. */
 export type Scenario = FilterState;
 
+/** A labeled scenario, ready to render as a chip and consumed by the
+ * retention rule that decides which open contexts survive a filter
+ * change. */
+export type ScenarioPreset = {
+  readonly id: string;
+  readonly label: string;
+  readonly scenario: Scenario;
+};
+
 export type FilterAction =
   | { type: "toggleScenario"; scenario: Scenario }
   | { type: "clear" };
