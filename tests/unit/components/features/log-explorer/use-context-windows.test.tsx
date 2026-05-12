@@ -26,17 +26,37 @@ const traceFilter: FilterState = {
   levels: [],
 };
 
-function setup() {
-  return renderHook(() =>
-    useContextWindows({
-      lines,
-      linesById,
-      linesIndexById,
-      filterState: traceFilter,
-      scenarios: SCENARIOS,
-    }),
+function setup(filterState: FilterState = traceFilter) {
+  return renderHook(
+    ({ filter }: { filter: FilterState }) =>
+      useContextWindows({
+        lines,
+        linesById,
+        linesIndexById,
+        filterState: filter,
+        scenarios: SCENARIOS,
+      }),
+    { initialProps: { filter: filterState } },
   );
 }
+
+const emptyFilter: FilterState = {
+  instances: [],
+  requestIds: [],
+  levels: [],
+};
+
+const errorsFilter: FilterState = {
+  instances: [],
+  requestIds: [],
+  levels: ["ERROR"],
+};
+
+const traceAndErrors: FilterState = {
+  instances: [],
+  requestIds: ["r4d8a2"],
+  levels: ["ERROR"],
+};
 
 describe("useContextWindows", () => {
   it("starts with no open contexts", () => {
@@ -91,5 +111,79 @@ describe("useContextWindows", () => {
     const before = result.current.expandPulseKey;
     act(() => result.current.expandMostRecentContext());
     expect(result.current.expandPulseKey).toBe(before + 1);
+  });
+
+  it("toggleContext is a no-op when no filter is active", () => {
+    const { result } = setup(emptyFilter);
+    act(() => result.current.toggleContext("31"));
+    expect(result.current.openContexts).toHaveLength(0);
+  });
+
+  it("toggleContext is a no-op on a line that doesn't pass the filter", () => {
+    const { result } = setup();
+    // line "5" has no requestId so doesn't match the trace filter.
+    act(() => result.current.toggleContext("5"));
+    expect(result.current.openContexts).toHaveLength(0);
+  });
+
+  it("expandMostRecentContext stops at the file boundary without bumping pulseKey", () => {
+    const { result } = setup();
+    // Anchor at index 0 — every expand grows symmetrically until the
+    // longer side meets the far end. After enough expands the range
+    // matches the longest distance and further expands must no-op.
+    act(() => result.current.toggleContext("1"));
+    while (true) {
+      const beforeRange = result.current.openContexts[0].range;
+      const beforePulse = result.current.expandPulseKey;
+      act(() => result.current.expandMostRecentContext());
+      if (
+        result.current.openContexts[0].range === beforeRange &&
+        result.current.expandPulseKey === beforePulse
+      ) {
+        break;
+      }
+    }
+    const settledRange = result.current.openContexts[0].range;
+    const settledPulse = result.current.expandPulseKey;
+    act(() => result.current.expandMostRecentContext());
+    expect(result.current.openContexts[0].range).toBe(settledRange);
+    expect(result.current.expandPulseKey).toBe(settledPulse);
+  });
+
+  it("retains contexts when a more restrictive chip is added but at least one active chip still matches the anchor", () => {
+    const { result, rerender } = setup();
+    // Open a context under the trace filter on the matching line "11".
+    act(() => result.current.toggleContext("11"));
+    expect(result.current.openContexts).toHaveLength(1);
+
+    // Layer on the errors chip — line "11" is INFO so it stops
+    // matching the combined filter, but the trace chip on its own
+    // still matches it. Retention rule: keep the context.
+    rerender({ filter: traceAndErrors });
+    expect(result.current.openContexts).toHaveLength(1);
+    expect(result.current.openContexts[0].selectedLineId).toBe("11");
+
+    // The anchor is filtered out of the view, so its accent goes silent.
+    expect(result.current.selectedContextLineIds.has("11")).toBe(false);
+  });
+
+  it("drops contexts when no remaining active chip matches the anchor", () => {
+    const { result, rerender } = setup();
+    act(() => result.current.toggleContext("11"));
+
+    // Swap trace for errors-only. No active chip individually matches
+    // an INFO line with requestId r4d8a2, so the context is dropped.
+    rerender({ filter: errorsFilter });
+    expect(result.current.openContexts).toHaveLength(0);
+  });
+
+  it("clearing all chips clears every open context", () => {
+    const { result, rerender } = setup();
+    act(() => result.current.toggleContext("11"));
+    act(() => result.current.toggleContext("41"));
+    expect(result.current.openContexts).toHaveLength(2);
+
+    rerender({ filter: emptyFilter });
+    expect(result.current.openContexts).toHaveLength(0);
   });
 });
