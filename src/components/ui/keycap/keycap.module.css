@@ -1,0 +1,90 @@
+/*
+ * Keycap is meant to be portable — drop the folder into any app and
+ * it should render correctly without external token definitions. So
+ * all visual values are declared inside this file:
+ *
+ *   --_keycap-*       private internal defaults (scoped to .cap / .sequence)
+ *   --legend-keycap-* public override surface a consumer can set at
+ *                     any cascade level to theme the cap
+ *
+ * Each property uses `var(--legend-keycap-X, var(--_keycap-X))` so a
+ * consumer's value wins when set; otherwise the built-in default
+ * applies. Light-mode swaps the shadow + gradient defaults so the
+ * cap doesn't read muddy on white surfaces.
+ */
+:where(.cap, .sequence) {
+  --_keycap-bg: light-dark(oklch(1 0 0), oklch(0.145 0 0));
+  --_keycap-color: light-dark(oklch(0.205 0 0), oklch(0.946 0 0));
+  --_keycap-size: 1.125rem;
+  --_keycap-radius: 0.25rem;
+  --_keycap-font: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --_keycap-font-size: 0.6875rem;
+  --_keycap-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 1px 0 rgba(0, 0, 0, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.3);
+  --_keycap-gradient: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+}
+
+@media (prefers-color-scheme: light) {
+  :where(.cap, .sequence) {
+    --_keycap-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.6),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.06),
+      0 0 0 1px rgba(0, 0, 0, 0.04),
+      0 1px 0 rgba(0, 0, 0, 0.06),
+      0 2px 4px rgba(0, 0, 0, 0.08);
+
+    --_keycap-gradient: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(0, 0, 0, 0.025) 100%
+    );
+  }
+}
+
+.cap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--legend-keycap-size, var(--_keycap-size));
+  min-width: var(--legend-keycap-size, var(--_keycap-size));
+  padding: 0 0.25rem;
+  background:
+    var(--legend-keycap-gradient, var(--_keycap-gradient)),
+    var(--legend-keycap-bg, var(--_keycap-bg));
+  box-shadow: var(--legend-keycap-shadow, var(--_keycap-shadow));
+  border-radius: var(--legend-keycap-radius, var(--_keycap-radius));
+  font-family: var(--legend-keycap-font, var(--_keycap-font));
+  font-size: var(--legend-keycap-font-size, var(--_keycap-font-size));
+  font-weight: 500;
+  color: var(--legend-keycap-color, var(--_keycap-color));
+  line-height: 1;
+}
+
+.sequence {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pair {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.plus {
+  color: inherit;
+  opacity: 0.6;
+  font-family: var(--legend-keycap-font, var(--_keycap-font));
+  font-size: var(--legend-keycap-font-size, var(--_keycap-font-size));
+}
