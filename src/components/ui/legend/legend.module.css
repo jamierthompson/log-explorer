@@ -1,0 +1,94 @@
+/*
+ * Legend is portable — the folder ships with its visual defaults so a
+ * consumer can drop it into any React app. The host's design tokens
+ * are not assumed; everything visible is defined here.
+ *
+ *   --_legend-*       private internal defaults
+ *   --legend-*        public override surface a consumer can set at
+ *                     any cascade level above the entry
+ *
+ * Each property uses `var(--public, var(--_internal))` so a consumer's
+ * value wins when set; otherwise the built-in default applies.
+ */
+:where(.legend) {
+  --_legend-gap: 0.5rem;
+  --_legend-padding-block: 0.75rem;
+  --_legend-padding-inline: 1rem;
+  --_legend-entry-gap: 0.375rem;
+  --_legend-entry-padding-block: 0.125rem;
+  --_legend-entry-padding-inline: 0.375rem;
+  --_legend-entry-radius: 0.25rem;
+  --_legend-label-color: light-dark(oklch(0.47 0 0), oklch(0.68 0 0));
+  --_legend-label-font: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --_legend-label-font-size: 0.625rem;
+  --_legend-label-weight: 500;
+  --_legend-label-letter-spacing: 0.08em;
+  --_legend-pulse-duration: 180ms;
+  --_legend-hover-duration: 120ms;
+  --_legend-ease: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.legend {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--legend-gap, var(--_legend-gap));
+  padding: var(--legend-padding-block, var(--_legend-padding-block))
+    var(--legend-padding-inline, var(--_legend-padding-inline));
+}
+
+.entry {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--legend-entry-gap, var(--_legend-entry-gap));
+  padding: var(--legend-entry-padding-block, var(--_legend-entry-padding-block))
+    var(--legend-entry-padding-inline, var(--_legend-entry-padding-inline));
+  border: 0;
+  border-radius: var(--legend-entry-radius, var(--_legend-entry-radius));
+  background: transparent;
+  font-family: inherit;
+  cursor: default;
+  animation: legendPulse var(--_legend-pulse-duration) var(--_legend-ease);
+}
+
+@keyframes legendPulse {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entry {
+    animation: none;
+  }
+}
+
+button.entry {
+  cursor: pointer;
+  transition: transform var(--_legend-hover-duration) var(--_legend-ease);
+}
+
+button.entry:hover {
+  transform: translateY(-1px);
+}
+
+button.entry:focus-visible {
+  outline: 2px solid var(--legend-focus-color, currentColor);
+  outline-offset: 2px;
+}
+
+.label {
+  color: var(--legend-label-color, var(--_legend-label-color));
+  font-family: var(--legend-label-font, var(--_legend-label-font));
+  font-size: var(--legend-label-font-size, var(--_legend-label-font-size));
+  font-weight: var(--legend-label-weight, var(--_legend-label-weight));
+  letter-spacing: var(
+    --legend-label-letter-spacing,
+    var(--_legend-label-letter-spacing)
+  );
+  text-transform: uppercase;
+  white-space: nowrap;
+}
