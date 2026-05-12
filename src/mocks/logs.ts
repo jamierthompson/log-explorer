@@ -7,13 +7,7 @@ const t = (min: number, sec: number): number =>
 const INSTANCES = ["kc4qn", "m7w3p", "t2x8r"] as const;
 type InstanceId = (typeof INSTANCES)[number];
 
-const REQUEST_IDS = {
-  r4d8a2: "kc4qn",
-  k9b3c7: "m7w3p",
-  p2x6n1: "t2x8r",
-} as const satisfies Record<string, InstanceId>;
-
-type RequestId = keyof typeof REQUEST_IDS;
+type RequestId = "r4d8a2" | "k9b3c7" | "p2x6n1";
 
 type PartialLogLine = Omit<LogLine, "id">;
 
