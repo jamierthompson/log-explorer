@@ -82,7 +82,14 @@
   gap: 0.25rem;
 }
 
-.plus {
+.alias {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.plus,
+.slash {
   color: inherit;
   opacity: 0.6;
   font-family: var(--legend-keycap-font, var(--_keycap-font));

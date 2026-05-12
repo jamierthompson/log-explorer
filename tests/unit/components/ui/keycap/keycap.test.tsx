@@ -32,4 +32,25 @@ describe("KeycapSequence", () => {
     const { container } = render(<KeycapSequence keys={["E"]} />);
     expect(container.firstChild).toHaveAttribute("aria-hidden", "true");
   });
+
+  it("renders alias sequences after the primary, separated by /", () => {
+    const { container } = render(
+      <KeycapSequence keys={["J"]} aliases={[["↓"]]} />,
+    );
+    const kbds = container.querySelectorAll("kbd");
+    expect(kbds).toHaveLength(2);
+    expect(kbds[0].textContent).toBe("J");
+    expect(kbds[1].textContent).toBe("↓");
+    expect(screen.getByText("/")).toBeInTheDocument();
+  });
+
+  it("supports multi-key aliases (e.g. Shift+End)", () => {
+    const { container } = render(
+      <KeycapSequence keys={["Shift", "G"]} aliases={[["End"]]} />,
+    );
+    const labels = Array.from(container.querySelectorAll("kbd")).map(
+      (k) => k.textContent,
+    );
+    expect(labels).toEqual(["Shift", "G", "End"]);
+  });
 });
