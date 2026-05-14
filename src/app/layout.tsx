@@ -12,9 +12,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "legend",
+  title: "Log Explorer",
   description:
-    "A composable React UI primitive for surfacing keyboard hints.",
+    "A log explorer for browsing structured logs, with an adaptive shortcut legend.",
 };
 
 export default function RootLayout({
