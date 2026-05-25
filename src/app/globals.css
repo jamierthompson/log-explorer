@@ -25,9 +25,16 @@ html {
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
 
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", Menlo,
-    Consolas, monospace;
+  --font-mono:
+    var(--font-jetbrains-mono), ui-monospace, "SF Mono", Menlo, Consolas,
+    monospace;
+  --font-sans:
+    var(--font-newsreader), ui-serif, Georgia, "Times New Roman", serif;
 
   --font-size-sm: 0.6875rem;
   --font-size-base: 0.8125rem;
@@ -42,12 +49,6 @@ html {
   --duration-fast: 120ms;
   --ease-standard: cubic-bezier(0.32, 0.72, 0, 1);
 
-  /*
-   * Horizontal padding applied by the main-content containers (chip
-   * bar and log list). The scroll area itself stays full-viewport so
-   * the scrollbar hugs the right edge; only the content within scrolls
-   * with this padding.
-   */
   --content-padding-x: 1rem;
 
   /*
@@ -68,10 +69,29 @@ html {
   --color-accent: light-dark(oklch(0.485 0.18 349.8), oklch(0.725 0.175 349.8));
   --color-warn: light-dark(oklch(0.5 0.13 80), oklch(0.78 0.15 80));
   --color-error: light-dark(oklch(0.5 0.2 27), oklch(0.73 0.2 27));
+
+  /*
+   * Prose layer for the long-form reading surface.
+   * The application surface reads the tokens above.
+   */
+  --text-prose-base: 1.1875rem;
+  --text-prose-lead: 1.1875rem;
+  --text-prose-h2: 1.5rem;
+  --text-prose-hero: 2.5rem;
+  --text-prose-pullquote: 2rem;
+  --text-prose-caption: var(--font-size-sm);
+
+  --line-height-prose: 1.6;
+  --line-height-prose-tight: 1.25;
+
+  --prose-measure: 70ch;
+
+  --color-page-bg: light-dark(oklch(0.97 0 0), oklch(0.19 0 0));
+  --color-prose-rule: var(--color-accent);
 }
 
 body {
-  background: var(--color-bg);
+  background: var(--color-page-bg);
   color: var(--color-fg);
   font-family: var(--font-mono);
   -webkit-font-smoothing: antialiased;
@@ -81,12 +101,16 @@ body {
 @media (--tablet) {
   :root {
     --content-padding-x: 2rem;
+    --text-prose-hero: 2.75rem;
+    --text-prose-h2: 1.75rem;
+    --text-prose-pullquote: 2.5rem;
   }
 }
 
 @media (--desktop) {
   :root {
     --content-padding-x: 3rem;
+    --text-prose-hero: 2.875rem;
   }
 }
 
