@@ -10,10 +10,8 @@ import {
   useState,
 } from "react";
 
-import {
-  ScenarioChips,
-  SCENARIOS,
-} from "@/components/features/scenario-chips/scenario-chips";
+import { ScenarioChips } from "@/components/features/scenario-chips/scenario-chips";
+import { SCENARIOS } from "@/lib/scenarios";
 import { ShortcutSheet } from "@/components/features/shortcut-sheet/shortcut-sheet";
 import { Legend, type LegendItem } from "@/components/ui/legend";
 import { isAtFileBoundary } from "@/lib/context-state";
@@ -22,6 +20,7 @@ import {
   filterReducer,
   hasAnyFilter,
   initialFilterState,
+  type FilterState,
 } from "@/lib/filter-state";
 import { SHORTCUTS } from "@/lib/keyboard-shortcuts";
 import type { LogLine } from "@/types/log";
@@ -30,8 +29,14 @@ import { LogList, lineDomId } from "./log-list";
 import { useContextWindows } from "./use-context-windows";
 import { useListboxKeyboard } from "./use-listbox-keyboard";
 
-export function LogExplorer({ lines }: { lines: readonly LogLine[] }) {
-  const [filterState, dispatch] = useReducer(filterReducer, initialFilterState);
+export function LogExplorer({
+  lines,
+  initialFilter = initialFilterState,
+}: {
+  lines: readonly LogLine[];
+  initialFilter?: FilterState;
+}) {
+  const [filterState, dispatch] = useReducer(filterReducer, initialFilter);
   const [focusedLineId, setFocusedLineId] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const viewportRef = useRef<HTMLDivElement>(null);

@@ -1,9 +1,9 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { SCENARIOS } from "@/components/features/scenario-chips/scenario-chips";
 import { useContextWindows } from "@/components/features/log-explorer/use-context-windows";
 import type { FilterState } from "@/lib/filter-state";
+import { SCENARIOS } from "@/lib/scenarios";
 import type { LogLine } from "@/types/log";
 
 // 60 lines so an anchor in the middle isn't at the file boundary and

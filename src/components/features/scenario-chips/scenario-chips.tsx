@@ -7,28 +7,10 @@ import {
   scenarioIsActive,
   type FilterAction,
   type FilterState,
-  type ScenarioPreset,
 } from "@/lib/filter-state";
+import { SCENARIOS } from "@/lib/scenarios";
 
 import styles from "./scenario-chips.module.css";
-
-export const SCENARIOS = [
-  {
-    id: "errors",
-    label: "Errors only",
-    scenario: { instances: [], requestIds: [], levels: ["ERROR"] },
-  },
-  {
-    id: "trace",
-    label: "Trace req=r4d8a2",
-    scenario: { instances: [], requestIds: ["r4d8a2"], levels: [] },
-  },
-  {
-    id: "instance",
-    label: "Instance kc4qn",
-    scenario: { instances: ["kc4qn"], requestIds: [], levels: [] },
-  },
-] as const satisfies readonly ScenarioPreset[];
 
 export function ScenarioChips({
   state,
