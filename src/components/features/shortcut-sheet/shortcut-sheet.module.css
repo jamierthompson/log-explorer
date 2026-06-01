@@ -38,6 +38,9 @@
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);
 
+  --legend-keycap-size: 1.625rem;
+  --legend-keycap-font-size: 0.8125rem;
+
   animation: content-in var(--duration-fast) var(--ease-standard) backwards;
 }
 

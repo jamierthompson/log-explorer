@@ -45,7 +45,6 @@
 }
 
 .chip:hover {
-  color: var(--color-fg);
   border-color: var(--color-fg-muted);
 }
 
@@ -60,7 +59,12 @@
 }
 
 .chip[data-active="true"]:hover {
-  filter: brightness(1.1);
+  border-color: var(--color-accent-hover);
+}
+
+.chip[data-active="true"]:hover::before,
+.chip[data-active="true"]:hover::after {
+  color: var(--color-accent-hover);
 }
 
 .chip:focus-visible {

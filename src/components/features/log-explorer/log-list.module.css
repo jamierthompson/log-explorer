@@ -117,5 +117,5 @@
 
 .scrollbarThumb:hover,
 .scrollbar:hover .scrollbarThumb {
-  background: oklch(from var(--color-accent) l calc(c + 0.05) h);
+  background: var(--color-accent-hover);
 }
