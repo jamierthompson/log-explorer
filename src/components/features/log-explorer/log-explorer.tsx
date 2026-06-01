@@ -140,12 +140,19 @@ export function LogExplorer({
     v.scrollTop = v.scrollHeight;
   }, []);
 
-  useEffect(() => {
+  /*
+   * Keep the focused line in view after either the focus changes or a
+   * context window opens. Runs synchronously before paint so we beat
+   * the browser's scroll anchoring, which can otherwise pick an
+   * arbitrary visible element to pin and let the anchor drift
+   * off-screen when context lines are inserted above it.
+   */
+  useLayoutEffect(() => {
     if (!focusedLineId) return;
     document
       .getElementById(lineDomId(focusedLineId))
       ?.scrollIntoView({ block: "nearest" });
-  }, [focusedLineId]);
+  }, [focusedLineId, openContexts]);
 
   /*
    * Document-level keyboard handler. Bails on event.defaultPrevented
