@@ -1,6 +1,6 @@
 .line {
   display: grid;
-  grid-template-columns: auto auto minmax(5ch, auto) 6ch 1fr;
+  grid-template-columns: auto auto 1fr;
   column-gap: var(--space-3);
   padding: var(--space-1) 0;
   font-size: var(--font-size-base);

@@ -12,12 +12,23 @@ export function LogLine({ line }: { line: LogLineType }) {
       >
         {formatTime(line.timestamp)}
       </time>
-      <span className={styles.instance}>{line.instance}</span>
-      <span className={styles.level} data-level={line.level}>
-        {line.level}
+      <span className={styles.instance}>@{line.instance}</span>
+      <span className={styles.message}>
+        {line.level !== "INFO" && (
+          <>
+            <span className={styles.level} data-level={line.level}>
+              {line.level}
+            </span>{" "}
+          </>
+        )}
+        <span>{line.message}</span>
+        {line.requestId && (
+          <>
+            {" "}
+            <span className={styles.requestId}>req={line.requestId}</span>
+          </>
+        )}
       </span>
-      <span className={styles.requestId}>{line.requestId ?? ""}</span>
-      <span className={styles.message}>{line.message}</span>
     </div>
   );
 }
