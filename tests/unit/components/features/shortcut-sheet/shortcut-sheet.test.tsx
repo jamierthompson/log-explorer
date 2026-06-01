@@ -7,7 +7,7 @@ import { SHORTCUTS, SHORTCUT_GROUPS } from "@/lib/keyboard-shortcuts";
 describe("ShortcutSheet", () => {
   it("renders nothing when closed", () => {
     render(<ShortcutSheet open={false} onOpenChange={() => {}} />);
-    expect(screen.queryByText("Keyboard shortcuts")).not.toBeInTheDocument();
+    expect(screen.queryByText("Keyboard Shortcuts")).not.toBeInTheDocument();
   });
 
   it("renders every group title when open", () => {
