@@ -36,13 +36,12 @@
   padding-left: var(--space-2);
 }
 
-.list > li[data-focused="true"] {
-  outline: 2px solid var(--color-fg-muted);
-  outline-offset: -2px;
-}
-
 .list > li[data-selected="true"] {
   border-left-color: var(--color-accent);
+}
+
+.list > li[data-focused="true"] {
+  background: color-mix(in oklch, var(--color-fg-muted) 8%, transparent);
 }
 
 .list > li[data-dimmed="true"] {
