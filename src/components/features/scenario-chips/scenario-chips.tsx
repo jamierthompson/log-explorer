@@ -23,7 +23,7 @@ export function ScenarioChips({
   return (
     <div className={styles.bar}>
       <p id={labelId} className={styles.label}>
-        Select a filter
+        Filter
       </p>
       <div className={styles.row} role="toolbar" aria-labelledby={labelId}>
         {SCENARIOS.map((preset) => (

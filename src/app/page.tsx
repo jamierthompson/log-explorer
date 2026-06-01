@@ -33,7 +33,7 @@ export default function Home() {
               <LogExplorer lines={mockLogs} initialFilter={INITIAL_DEMO_FILTER} />
             </div>
             <FigureCaption>
-              Live prototype — click any line. Or scroll past to keep reading.
+              Live prototype — click any line to view context. Or scroll past to keep reading.
             </FigureCaption>
           </figure>
         </header>
