@@ -70,6 +70,7 @@ html body[data-scroll-locked] {
   --color-bg: light-dark(oklch(1 0 0), oklch(0.145 0 0));
   --color-fg: light-dark(oklch(0.205 0 0), oklch(0.946 0 0));
   --color-fg-muted: light-dark(oklch(0.47 0 0), oklch(0.68 0 0));
+  --color-fg-subtle: light-dark(oklch(0.62 0 0), oklch(0.52 0 0));
   --color-border: light-dark(oklch(0.92 0 0), oklch(0.285 0 0));
   --color-accent: light-dark(oklch(0.485 0.18 349.8), oklch(0.725 0.175 349.8));
   --color-warn: light-dark(oklch(0.5 0.13 80), oklch(0.78 0.15 80));

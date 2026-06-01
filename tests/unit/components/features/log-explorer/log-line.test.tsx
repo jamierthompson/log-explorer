@@ -16,7 +16,9 @@ describe("LogLine", () => {
   it("renders time, instance, and message", () => {
     render(<LogLine line={base} />);
     expect(screen.getByText("13:04:38")).toBeInTheDocument();
-    expect(screen.getByText("@kc4qn")).toBeInTheDocument();
+    expect(
+      screen.getByText((_, el) => el?.textContent === "@kc4qn"),
+    ).toBeInTheDocument();
     expect(screen.getByText("Sample message")).toBeInTheDocument();
   });
 

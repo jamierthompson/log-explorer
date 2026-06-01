@@ -8,9 +8,13 @@
 }
 
 .time,
-.instance,
-.requestId {
+.instance {
   color: var(--color-fg-muted);
+}
+
+.atSign,
+.requestId {
+  color: var(--color-fg-subtle);
 }
 
 .level {
