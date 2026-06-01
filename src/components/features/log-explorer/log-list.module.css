@@ -26,9 +26,12 @@
   padding: var(--space-4);
 }
 
-.list:focus-visible {
-  outline: 2px solid var(--color-fg-muted);
-  outline-offset: -2px;
+/* Outline lives on the visible scroll container, not the <ul> itself,
+ * which is taller than the viewport — the top/bottom edges of an
+ * outline on the list would drift off-screen as the user scrolls. */
+.scrollRoot:has(.list:focus-visible) {
+  outline: 1px solid var(--color-accent);
+  outline-offset: -1px;
 }
 
 .list > li {

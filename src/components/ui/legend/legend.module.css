@@ -72,8 +72,8 @@ button.entry:hover {
 }
 
 button.entry:focus-visible {
-  outline: 2px solid var(--legend-focus-color, currentColor);
-  outline-offset: 2px;
+  outline: 1px solid var(--legend-focus-color, currentColor);
+  outline-offset: 1px;
 }
 
 .label {
