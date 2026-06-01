@@ -50,7 +50,7 @@ export function LogList({
   };
 
   return (
-    <ScrollArea.Root className={styles.scrollRoot} type="hover">
+    <ScrollArea.Root className={styles.scrollRoot} type="always">
       <ScrollArea.Viewport
         ref={viewportRef}
         className={styles.scrollViewport}

@@ -57,20 +57,32 @@
   display: flex;
   user-select: none;
   touch-action: none;
-  padding: 2px;
   width: 0.625rem;
+  /* Padding widens the hover hit area inward; the thumb fills the
+   * content box only and remains visually flush with the right edge. */
+  padding-left: var(--space-2);
+  box-sizing: content-box;
   background: transparent;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+/* The Root uses type="always" so the scrollbar's observers and
+ * sizing run on mount, not on first interaction; the hover-reveal
+ * UX is done here in CSS instead of via Radix's hover gating. */
+.scrollRoot:hover .scrollbar {
+  opacity: 1;
 }
 
 .scrollbarThumb {
   flex: 1;
   position: relative;
-  background: color-mix(in oklch, var(--color-fg-muted) 30%, var(--color-bg));
+  background: var(--color-accent);
   border-radius: var(--radius-1);
   transition: background var(--duration-fast) var(--ease-standard);
 }
 
 .scrollbarThumb:hover,
 .scrollbar:hover .scrollbarThumb {
-  background: var(--color-accent);
+  background: oklch(from var(--color-accent) l calc(c + 0.05) h);
 }
