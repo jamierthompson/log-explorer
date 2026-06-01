@@ -23,7 +23,7 @@
 .list {
   list-style: none;
   margin: 0;
-  padding: var(--space-4) var(--content-padding-x);
+  padding: var(--space-4);
 }
 
 .list:focus-visible {
