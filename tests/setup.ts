@@ -18,5 +18,18 @@ class ResizeObserverStub {
 (globalThis as { ResizeObserver: typeof ResizeObserver }).ResizeObserver =
   ResizeObserverStub as unknown as typeof ResizeObserver;
 
+class IntersectionObserverStub {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+  takeRecords() {
+    return [];
+  }
+}
+(
+  globalThis as { IntersectionObserver: typeof IntersectionObserver }
+).IntersectionObserver =
+  IntersectionObserverStub as unknown as typeof IntersectionObserver;
+
 window.scrollTo = () => {};
 Element.prototype.scrollIntoView = () => {};
