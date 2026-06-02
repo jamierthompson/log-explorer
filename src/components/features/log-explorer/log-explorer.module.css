@@ -1,7 +1,15 @@
 .toolbar {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-5);
   padding: var(--space-5) var(--space-5) var(--space-4);
   --legend-focus-color: var(--color-accent);
+}
+
+@media (--tablet) {
+  /* Mobile gets extra breathing room between Legend and Filter; on
+   * wider viewports the original tighter gap reads better. */
+  .toolbar {
+    gap: var(--space-4);
+  }
 }
