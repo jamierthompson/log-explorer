@@ -12,8 +12,6 @@
  */
 :where(.legend) {
   --_legend-gap: 0.5rem;
-  --_legend-padding-block: 0.75rem;
-  --_legend-padding-inline: 1rem;
   --_legend-entry-gap: 0.375rem;
   --_legend-entry-padding-block: 0.125rem;
   --_legend-entry-padding-inline: 0.375rem;
@@ -30,11 +28,10 @@
 
 .legend {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   align-items: center;
   gap: var(--legend-gap, var(--_legend-gap));
-  padding: var(--legend-padding-block, var(--_legend-padding-block))
-    var(--legend-padding-inline, var(--_legend-padding-inline));
 }
 
 .entry {
@@ -76,8 +73,8 @@ button.entry:hover {
 }
 
 button.entry:focus-visible {
-  outline: 2px solid var(--legend-focus-color, currentColor);
-  outline-offset: 2px;
+  outline: 1px solid var(--legend-focus-color, currentColor);
+  outline-offset: 1px;
 }
 
 .label {

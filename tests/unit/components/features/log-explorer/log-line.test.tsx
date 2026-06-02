@@ -13,16 +13,22 @@ const base: LogLineType = {
 };
 
 describe("LogLine", () => {
-  it("renders time, instance, level, and message", () => {
+  it("renders time, instance, and message", () => {
     render(<LogLine line={base} />);
     expect(screen.getByText("13:04:38")).toBeInTheDocument();
-    expect(screen.getByText("kc4qn")).toBeInTheDocument();
-    expect(screen.getByText("INFO")).toBeInTheDocument();
+    expect(
+      screen.getByText((_, el) => el?.textContent === "@kc4qn"),
+    ).toBeInTheDocument();
     expect(screen.getByText("Sample message")).toBeInTheDocument();
   });
 
-  it("renders the label for every severity level", () => {
-    for (const level of ["INFO", "WARN", "ERROR", "DEBUG"] as const) {
+  it("omits the INFO label since it's the default severity", () => {
+    render(<LogLine line={base} />);
+    expect(screen.queryByText("INFO")).not.toBeInTheDocument();
+  });
+
+  it("renders the label for non-default severity levels", () => {
+    for (const level of ["WARN", "ERROR", "DEBUG"] as const) {
       const { unmount } = render(<LogLine line={{ ...base, level }} />);
       expect(screen.getByText(level)).toBeInTheDocument();
       unmount();
@@ -33,9 +39,9 @@ describe("LogLine", () => {
     const { rerender } = render(
       <LogLine line={{ ...base, requestId: "r4d8a2" }} />,
     );
-    expect(screen.getByText("r4d8a2")).toBeInTheDocument();
+    expect(screen.getByText("req=r4d8a2")).toBeInTheDocument();
 
     rerender(<LogLine line={base} />);
-    expect(screen.queryByText("r4d8a2")).not.toBeInTheDocument();
+    expect(screen.queryByText("req=r4d8a2")).not.toBeInTheDocument();
   });
 });

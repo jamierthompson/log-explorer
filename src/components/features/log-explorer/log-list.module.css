@@ -1,3 +1,10 @@
+.wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .scrollRoot {
   flex: 1;
   min-height: 0;
@@ -23,12 +30,39 @@
 .list {
   list-style: none;
   margin: 0;
-  padding: var(--space-4) var(--content-padding-x);
+  padding: 0 var(--space-4) var(--space-4);
 }
 
-.list:focus-visible {
-  outline: 2px solid var(--color-fg-muted);
-  outline-offset: -2px;
+.dayMarker {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.dayMarker::before,
+.dayMarker::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid var(--color-border);
+}
+
+.dayMarkerLabel {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+  white-space: nowrap;
+}
+
+/* Outline lives on the visible scroll container, not the <ul> itself,
+ * which is taller than the viewport — the top/bottom edges of an
+ * outline on the list would drift off-screen as the user scrolls. */
+.scrollRoot:has(.list:focus-visible) {
+  outline: 1px solid var(--color-accent);
+  outline-offset: -1px;
 }
 
 .list > li {
@@ -36,13 +70,12 @@
   padding-left: var(--space-2);
 }
 
-.list > li[data-focused="true"] {
-  outline: 2px solid var(--color-fg-muted);
-  outline-offset: -2px;
-}
-
 .list > li[data-selected="true"] {
   border-left-color: var(--color-accent);
+}
+
+.list > li[data-focused="true"] {
+  background: color-mix(in oklch, var(--color-fg-muted) 8%, transparent);
 }
 
 .list > li[data-dimmed="true"] {
@@ -84,5 +117,5 @@
 
 .scrollbarThumb:hover,
 .scrollbar:hover .scrollbarThumb {
-  background: oklch(from var(--color-accent) l calc(c + 0.05) h);
+  background: var(--color-accent-hover);
 }

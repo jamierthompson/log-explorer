@@ -1,34 +1,16 @@
 "use client";
 
-import type { Dispatch } from "react";
+import { useId, type Dispatch } from "react";
 
 import { Chip } from "@/components/ui/chip/chip";
 import {
   scenarioIsActive,
   type FilterAction,
   type FilterState,
-  type ScenarioPreset,
 } from "@/lib/filter-state";
+import { SCENARIOS } from "@/lib/scenarios";
 
 import styles from "./scenario-chips.module.css";
-
-export const SCENARIOS = [
-  {
-    id: "errors",
-    label: "Errors only",
-    scenario: { instances: [], requestIds: [], levels: ["ERROR"] },
-  },
-  {
-    id: "trace",
-    label: "Trace req=r4d8a2",
-    scenario: { instances: [], requestIds: ["r4d8a2"], levels: [] },
-  },
-  {
-    id: "instance",
-    label: "Instance kc4qn",
-    scenario: { instances: ["kc4qn"], requestIds: [], levels: [] },
-  },
-] as const satisfies readonly ScenarioPreset[];
 
 export function ScenarioChips({
   state,
@@ -37,23 +19,25 @@ export function ScenarioChips({
   state: FilterState;
   dispatch: Dispatch<FilterAction>;
 }) {
+  const labelId = useId();
   return (
-    <div
-      className={styles.bar}
-      role="toolbar"
-      aria-label="Filter scenarios"
-    >
-      {SCENARIOS.map((preset) => (
-        <Chip
-          key={preset.id}
-          active={scenarioIsActive(state, preset.scenario)}
-          onClick={() =>
-            dispatch({ type: "toggleScenario", scenario: preset.scenario })
-          }
-        >
-          {preset.label}
-        </Chip>
-      ))}
+    <div className={styles.bar}>
+      <p id={labelId} className={styles.label}>
+        Filter
+      </p>
+      <div className={styles.row} role="toolbar" aria-labelledby={labelId}>
+        {SCENARIOS.map((preset) => (
+          <Chip
+            key={preset.id}
+            active={scenarioIsActive(state, preset.scenario)}
+            onClick={() =>
+              dispatch({ type: "toggleScenario", scenario: preset.scenario })
+            }
+          >
+            {preset.label}
+          </Chip>
+        ))}
+      </div>
     </div>
   );
 }

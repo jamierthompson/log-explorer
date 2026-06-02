@@ -7,6 +7,7 @@ import type {
   Ref,
 } from "react";
 
+import { formatDayLabel } from "@/lib/format-timestamp";
 import type { DerivedLogLine } from "@/types/log";
 
 import { LogLine } from "./log-line";
@@ -50,53 +51,62 @@ export function LogList({
   };
 
   return (
-    <ScrollArea.Root className={styles.scrollRoot} type="always">
-      <ScrollArea.Viewport
-        ref={viewportRef}
-        className={styles.scrollViewport}
-      >
-        <ul
-          className={styles.list}
-          role="listbox"
-          tabIndex={0}
-          aria-label="Log lines"
-          aria-activedescendant={
-            focusedLineId ? lineDomId(focusedLineId) : undefined
-          }
-          onKeyDown={onKeyDown}
+    <div className={styles.wrap}>
+      {lines.length > 0 && (
+        <div className={styles.dayMarker} aria-hidden="true">
+          <span className={styles.dayMarkerLabel}>
+            {formatDayLabel(lines[0].timestamp)}
+          </span>
+        </div>
+      )}
+      <ScrollArea.Root className={styles.scrollRoot} type="always">
+        <ScrollArea.Viewport
+          ref={viewportRef}
+          className={styles.scrollViewport}
         >
-          {lines.map((line) => {
-            const isFocused = line.id === focusedLineId;
-            const isSelected = selectedContextLineIds.has(line.id);
-            const canToggle =
-              hasAnyFilter && line.isVisible && !line.isDimmed;
-            const isClickable = isSelected || canToggle;
-            return (
-              <li
-                key={line.id}
-                id={lineDomId(line.id)}
-                role="option"
-                aria-selected={isFocused}
-                aria-disabled={!isClickable || undefined}
-                data-focused={isFocused || undefined}
-                data-selected={isSelected || undefined}
-                data-dimmed={line.isDimmed || undefined}
-                data-clickable={isClickable || undefined}
-                onClick={(e) => handleClick(line, isSelected, canToggle, e)}
-              >
-                <LogLine line={line} />
-              </li>
-            );
-          })}
-        </ul>
-      </ScrollArea.Viewport>
-      <ScrollArea.Scrollbar
-        orientation="vertical"
-        className={styles.scrollbar}
-      >
-        <ScrollArea.Thumb className={styles.scrollbarThumb} />
-      </ScrollArea.Scrollbar>
-      <ScrollArea.Corner />
-    </ScrollArea.Root>
+          <ul
+            className={styles.list}
+            role="listbox"
+            tabIndex={0}
+            aria-label="Log lines"
+            aria-activedescendant={
+              focusedLineId ? lineDomId(focusedLineId) : undefined
+            }
+            onKeyDown={onKeyDown}
+          >
+            {lines.map((line) => {
+              const isFocused = line.id === focusedLineId;
+              const isSelected = selectedContextLineIds.has(line.id);
+              const canToggle =
+                hasAnyFilter && line.isVisible && !line.isDimmed;
+              const isClickable = isSelected || canToggle;
+              return (
+                <li
+                  key={line.id}
+                  id={lineDomId(line.id)}
+                  role="option"
+                  aria-selected={isFocused}
+                  aria-disabled={!isClickable || undefined}
+                  data-focused={isFocused || undefined}
+                  data-selected={isSelected || undefined}
+                  data-dimmed={line.isDimmed || undefined}
+                  data-clickable={isClickable || undefined}
+                  onClick={(e) => handleClick(line, isSelected, canToggle, e)}
+                >
+                  <LogLine line={line} />
+                </li>
+              );
+            })}
+          </ul>
+        </ScrollArea.Viewport>
+        <ScrollArea.Scrollbar
+          orientation="vertical"
+          className={styles.scrollbar}
+        >
+          <ScrollArea.Thumb className={styles.scrollbarThumb} />
+        </ScrollArea.Scrollbar>
+        <ScrollArea.Corner />
+      </ScrollArea.Root>
+    </div>
   );
 }

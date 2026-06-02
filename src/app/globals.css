@@ -20,6 +20,17 @@ html {
   scrollbar-gutter: stable;
 }
 
+/*
+ * Radix Dialog locks scroll via react-remove-scroll-bar, which (in
+ * its default margin gapMode) adds margin-right on body[data-scroll-locked]
+ * to compensate for the missing scrollbar. Since the gutter is
+ * already reserved above, that compensation becomes a visible shift
+ * — override it back to 0.
+ */
+html body[data-scroll-locked] {
+  margin-right: 0 !important;
+}
+
 :root {
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -52,12 +63,6 @@ html {
   --content-padding-x: 1rem;
 
   /*
-   * Hand the responsive content padding to the Legend's public token
-   * so the toolbar's horizontal padding tracks the rest of the page.
-   */
-  --legend-padding-inline: var(--content-padding-x);
-
-  /*
    * Colors. light-dark() resolves against the active color-scheme;
    * the html element above declares `light dark` so the browser picks
    * the arm matching the user's OS preference.
@@ -65,8 +70,10 @@ html {
   --color-bg: light-dark(oklch(1 0 0), oklch(0.145 0 0));
   --color-fg: light-dark(oklch(0.205 0 0), oklch(0.946 0 0));
   --color-fg-muted: light-dark(oklch(0.47 0 0), oklch(0.68 0 0));
+  --color-fg-subtle: light-dark(oklch(0.62 0 0), oklch(0.52 0 0));
   --color-border: light-dark(oklch(0.92 0 0), oklch(0.285 0 0));
   --color-accent: light-dark(oklch(0.485 0.18 349.8), oklch(0.725 0.175 349.8));
+  --color-accent-hover: oklch(from var(--color-accent) l calc(c + 0.06) h);
   --color-warn: light-dark(oklch(0.5 0.13 80), oklch(0.78 0.15 80));
   --color-error: light-dark(oklch(0.5 0.2 27), oklch(0.73 0.2 27));
 

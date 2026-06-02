@@ -2,8 +2,14 @@ import { Figure, FigureCaption } from "@/components/features/case-study/figure";
 import { LogExplorer } from "@/components/features/log-explorer/log-explorer";
 import { Keycap, KeycapSequence } from "@/components/ui/keycap/keycap";
 import { mockLogs } from "@/mocks/logs";
+import { SCENARIOS } from "@/lib/scenarios";
 
 import styles from "./page.module.css";
+
+/* Pre-applies the trace scenario on first paint so the demo opens
+ * already filtered, showing the affordance immediately instead of
+ * asking the reader to discover it. */
+const INITIAL_DEMO_FILTER = SCENARIOS.find((s) => s.id === "trace")?.scenario;
 
 export default function Home() {
   return (
@@ -24,10 +30,10 @@ export default function Home() {
           </p>
           <figure className={styles.demoFigure}>
             <div className={styles.demoFrame}>
-              <LogExplorer lines={mockLogs} />
+              <LogExplorer lines={mockLogs} initialFilter={INITIAL_DEMO_FILTER} />
             </div>
             <FigureCaption>
-              Live prototype — click any line. Or scroll past to keep reading.
+              Live prototype — click any line to view context. Or scroll past to keep reading.
             </FigureCaption>
           </figure>
         </header>

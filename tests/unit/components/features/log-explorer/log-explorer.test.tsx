@@ -85,10 +85,10 @@ describe("LogExplorer", () => {
   it("pressing ? opens the shortcut sheet", async () => {
     const user = userEvent.setup();
     render(<LogExplorer lines={lines} />);
-    expect(screen.queryByText("Keyboard shortcuts")).not.toBeInTheDocument();
+    expect(screen.queryByText("Keyboard Shortcuts")).not.toBeInTheDocument();
 
     await user.keyboard("?");
-    expect(screen.getByText("Keyboard shortcuts")).toBeInTheDocument();
+    expect(screen.getByText("Keyboard Shortcuts")).toBeInTheDocument();
   });
 
   it("pressing Esc with the sheet open closes only the sheet", async () => {
@@ -99,10 +99,10 @@ describe("LogExplorer", () => {
     expect(document.querySelector('[data-selected="true"]')).not.toBeNull();
 
     await user.keyboard("?");
-    expect(screen.getByText("Keyboard shortcuts")).toBeInTheDocument();
+    expect(screen.getByText("Keyboard Shortcuts")).toBeInTheDocument();
 
     await user.keyboard("{Escape}");
-    expect(screen.queryByText("Keyboard shortcuts")).not.toBeInTheDocument();
+    expect(screen.queryByText("Keyboard Shortcuts")).not.toBeInTheDocument();
     // Context underneath stays open — Esc was consumed by the sheet.
     expect(document.querySelector('[data-selected="true"]')).not.toBeNull();
   });
@@ -143,7 +143,7 @@ describe("LogExplorer", () => {
     await user.click(input);
     await user.keyboard("?");
 
-    expect(screen.queryByText("Keyboard shortcuts")).not.toBeInTheDocument();
+    expect(screen.queryByText("Keyboard Shortcuts")).not.toBeInTheDocument();
   });
 });
 

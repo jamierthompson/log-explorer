@@ -24,7 +24,7 @@ export function ShortcutSheet({
         <Dialog.Overlay className={styles.overlay} />
         <Dialog.Content className={styles.content}>
           <Dialog.Title className={styles.title}>
-            Keyboard shortcuts
+            Keyboard Shortcuts
           </Dialog.Title>
           <Dialog.Description className={styles.subtitle}>
             Every binding the log explorer responds to.
