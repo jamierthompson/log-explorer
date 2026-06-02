@@ -72,6 +72,12 @@
   font-style: italic;
 }
 
+@media (--tablet) {
+  .heroTitle {
+    text-wrap: wrap;
+  }
+}
+
 .lead {
   margin: 0;
   font-size: var(--text-prose-lead);
