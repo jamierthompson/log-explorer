@@ -246,12 +246,12 @@ export function LogExplorer({
     const mostRecent = openContexts[openContexts.length - 1];
     if (mostRecent) {
       const anchorIdx = linesIndexById.get(mostRecent.selectedLineId);
-      if (anchorIdx === undefined) {
-        throw new Error(
-          `open context references unknown line: ${mostRecent.selectedLineId}`,
-        );
-      }
-      if (!isAtFileBoundary(anchorIdx, mostRecent.range, lines.length)) {
+      // Skip the Expand entry if the anchor is unknown or at the file
+      // boundary — a missing anchor is a no-op here, not a render crash.
+      if (
+        anchorIdx !== undefined &&
+        !isAtFileBoundary(anchorIdx, mostRecent.range, lines.length)
+      ) {
         items.push({
           keys: SHORTCUTS.expandContext.keys,
           label: "Expand context",
