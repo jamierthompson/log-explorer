@@ -69,6 +69,7 @@ export function LogList({
             role="listbox"
             tabIndex={0}
             aria-label="Log lines"
+            aria-multiselectable="true"
             aria-activedescendant={
               focusedLineId ? lineDomId(focusedLineId) : undefined
             }
@@ -85,7 +86,7 @@ export function LogList({
                   key={line.id}
                   id={lineDomId(line.id)}
                   role="option"
-                  aria-selected={isFocused}
+                  aria-selected={isSelected}
                   aria-disabled={!isClickable || undefined}
                   data-focused={isFocused || undefined}
                   data-selected={isSelected || undefined}
