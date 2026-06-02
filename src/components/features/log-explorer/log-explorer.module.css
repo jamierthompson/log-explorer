@@ -3,7 +3,9 @@
   flex-direction: column;
   gap: var(--space-5);
   padding: var(--space-5) var(--space-5) var(--space-4);
-  --legend-focus-color: var(--color-accent);
+  /* Map the app's focus-ring color into the Legend's portable hook;
+   * the Legend assumes no host tokens, so the wiring lives here. */
+  --legend-focus-color: var(--focus-ring-color);
 }
 
 @media (--tablet) {
