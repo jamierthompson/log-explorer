@@ -34,7 +34,15 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  padding-top: var(--space-5);
+  /* Extra breathing room above the eyebrow on mobile, where the hero
+   * sits tight against the top of the viewport. */
+  padding-top: var(--space-7);
+}
+
+@media (--tablet) {
+  .hero {
+    padding-top: var(--space-5);
+  }
 }
 
 .eyebrow {
@@ -81,14 +89,23 @@
   gap: var(--space-2);
 }
 
+/*
+ * Taller on mobile so more of the log stays visible. Wider viewports return to the original proportion.
+ */
 .demoFrame {
-  height: 70dvh;
+  height: 85dvh;
   background: var(--color-bg);
   border-radius: var(--radius-1);
   overflow: hidden;
   display: flex;
   flex-direction: column;
   font-family: var(--font-mono);
+}
+
+@media (--tablet) {
+  .demoFrame {
+    height: 70dvh;
+  }
 }
 
 /* === SECTION TEXT === */

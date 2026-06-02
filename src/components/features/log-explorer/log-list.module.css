@@ -88,6 +88,14 @@
   cursor: pointer;
 }
 
+/* Ensure a single-line clickable row still meets a comfortable tap
+ * target on touch; multi-line rows already exceed this. */
+@media (pointer: coarse) {
+  .list > li[data-clickable="true"] {
+    min-height: 44px;
+  }
+}
+
 .scrollbar {
   display: flex;
   user-select: none;
