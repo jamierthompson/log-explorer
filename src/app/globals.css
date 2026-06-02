@@ -139,3 +139,19 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+/*
+ * Honor a reduced-motion preference everywhere: collapse animations and
+ * transitions to effectively-instant and disable smooth scrolling.
+ * Components may still add their own finer-grained handling on top.
+ */
+@media (--reduced-motion) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
