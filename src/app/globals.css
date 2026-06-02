@@ -88,14 +88,17 @@ html body[data-scroll-locked] {
   --color-error: light-dark(oklch(0.5 0.2 27), oklch(0.73 0.2 27));
 
   /*
-   * Prose layer for the long-form reading surface.
-   * The application surface reads the tokens above.
+   * Prose layer for the long-form reading surface — a modular scale
+   * with roughly a major-third step between the display sizes.
+   * Mobile-first: these defaults are the small-screen sizes; the
+   * breakpoint block below steps them up. The application surface
+   * reads the tokens above.
    */
-  --text-prose-base: 1.1875rem;
+  --text-prose-base: 1.0625rem;
   --text-prose-lead: 1.1875rem;
   --text-prose-h2: 1.5rem;
   --text-prose-hero: 2.5rem;
-  --text-prose-pullquote: 2rem;
+  --text-prose-pullquote: 1.875rem;
   --text-prose-caption: var(--font-size-sm);
 
   --line-height-prose: 1.6;
@@ -118,16 +121,17 @@ body {
 @media (--tablet) {
   :root {
     --content-padding-x: 2rem;
-    --text-prose-hero: 2.75rem;
+    --text-prose-base: 1.1875rem;
+    --text-prose-lead: 1.3125rem;
     --text-prose-h2: 1.75rem;
-    --text-prose-pullquote: 2.5rem;
+    --text-prose-pullquote: 2.375rem;
+    --text-prose-hero: 2.9375rem;
   }
 }
 
 @media (--desktop) {
   :root {
     --content-padding-x: 3rem;
-    --text-prose-hero: 2.875rem;
   }
 }
 
