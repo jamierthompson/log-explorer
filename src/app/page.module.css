@@ -39,7 +39,7 @@
   padding-top: var(--space-7);
 }
 
-@media (--tablet) {
+@media (--desktop) {
   .hero {
     padding-top: var(--space-5);
   }
