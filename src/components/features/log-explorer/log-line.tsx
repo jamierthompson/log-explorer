@@ -13,7 +13,10 @@ export function LogLine({ line }: { line: LogLineType }) {
         {formatTime(line.timestamp)}
       </time>
       <span className={styles.instance}>
-        <span className={styles.atSign}>@</span>{line.instance}
+        <span className={styles.atSign} aria-hidden="true">
+          @
+        </span>
+        {line.instance}
       </span>
       <span className={styles.message}>
         {line.level !== "INFO" && (
