@@ -3,7 +3,7 @@
  *
  *   keys        primary cap labels rendered as adjacent keycaps
  *   aliases     additional cap sequences shown after the primary in
- *               the shortcut sheet (e.g. "J / ↓")
+ *               the shortcut sheet
  *   description short, action-style sentence for the sheet's row
  *
  * The Legend reads `keys` by id so its keycaps and the sheet's never

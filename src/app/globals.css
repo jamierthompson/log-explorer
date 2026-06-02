@@ -21,11 +21,10 @@ html {
 }
 
 /*
- * Radix Dialog locks scroll via react-remove-scroll-bar, which (in
- * its default margin gapMode) adds margin-right on body[data-scroll-locked]
- * to compensate for the missing scrollbar. Since the gutter is
- * already reserved above, that compensation becomes a visible shift
- * — override it back to 0.
+ * The modal's scroll-lock adds a compensating margin-right on the
+ * locked body to fill the space left by the hidden scrollbar. The
+ * gutter is already reserved above, so that compensation would double
+ * up as a visible shift — override it back to 0.
  */
 html body[data-scroll-locked] {
   margin-right: 0 !important;
