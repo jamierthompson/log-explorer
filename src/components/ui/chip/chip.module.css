@@ -71,3 +71,11 @@
   outline: var(--focus-ring-width) solid var(--focus-ring-color);
   outline-offset: var(--focus-ring-offset);
 }
+
+/* Comfortable tap target on touch devices without altering the
+ * compact pointer-driven sizing on desktop. */
+@media (pointer: coarse) {
+  .chip {
+    min-height: 44px;
+  }
+}

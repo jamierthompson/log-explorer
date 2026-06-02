@@ -77,6 +77,14 @@ button.entry:focus-visible {
   outline-offset: 1px;
 }
 
+/* These entries are real actions, not just hints, so give them a
+ * comfortable tap target on touch devices. */
+@media (pointer: coarse) {
+  button.entry {
+    min-height: 44px;
+  }
+}
+
 .label {
   color: var(--legend-label-color, var(--_legend-label-color));
   font-family: var(--legend-label-font, var(--_legend-label-font));
