@@ -16,7 +16,11 @@ export const initialFilterState: FilterState = {
   levels: [],
 };
 
-/** A scenario contributes a partial filter — values to add or remove. */
+/**
+ * A scenario is a full FilterState used as a toggle preset: its values
+ * are unioned into the active filter when activated and subtracted when
+ * deactivated. Structurally identical to FilterState by design.
+ */
 export type Scenario = FilterState;
 
 /** A labeled scenario, ready to render as a chip and consumed by the
@@ -78,9 +82,7 @@ function removeScenario(state: FilterState, scenario: Scenario): FilterState {
   return {
     instances: state.instances.filter((v) => !scenario.instances.includes(v)),
     requestIds: state.requestIds.filter((v) => !scenario.requestIds.includes(v)),
-    levels: state.levels.filter(
-      (v) => !(scenario.levels as readonly string[]).includes(v),
-    ),
+    levels: state.levels.filter((v) => !scenario.levels.includes(v)),
   };
 }
 
