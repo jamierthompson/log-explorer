@@ -39,7 +39,7 @@
   padding-top: var(--space-7);
 }
 
-@media (--tablet) {
+@media (--desktop) {
   .hero {
     padding-top: var(--space-5);
   }
@@ -70,6 +70,12 @@
 
 .heroTitle em {
   font-style: italic;
+}
+
+@media (--tablet) {
+  .heroTitle {
+    text-wrap: wrap;
+  }
 }
 
 .lead {

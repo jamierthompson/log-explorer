@@ -21,11 +21,10 @@ html {
 }
 
 /*
- * Radix Dialog locks scroll via react-remove-scroll-bar, which (in
- * its default margin gapMode) adds margin-right on body[data-scroll-locked]
- * to compensate for the missing scrollbar. Since the gutter is
- * already reserved above, that compensation becomes a visible shift
- * — override it back to 0.
+ * The modal's scroll-lock adds a compensating margin-right on the
+ * locked body to fill the space left by the hidden scrollbar. The
+ * gutter is already reserved above, so that compensation would double
+ * up as a visible shift — override it back to 0.
  */
 html body[data-scroll-locked] {
   margin-right: 0 !important;
@@ -138,4 +137,20 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/*
+ * Honor a reduced-motion preference everywhere: collapse animations and
+ * transitions to effectively-instant and disable smooth scrolling.
+ * Components may still add their own finer-grained handling on top.
+ */
+@media (--reduced-motion) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

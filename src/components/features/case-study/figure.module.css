@@ -29,7 +29,7 @@
   object-fit: cover;
 }
 
-/* TEMPORARY — drops off automatically once a real visual is passed in. */
+/* Placeholder treatment; superseded once a real visual fills the surface. */
 .placeholder {
   border: 2px dashed var(--color-border);
 }

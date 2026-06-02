@@ -1,25 +1,44 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ScrollToTop } from "@/components/features/scroll-to-top/scroll-to-top";
 
 /**
- * jsdom reports zeros for scroll geometry, so drive the component's
- * visibility logic by defining the values its scroll handler reads.
+ * Controllable IntersectionObserver: records each instance and the
+ * elements it observes so tests can fire the right observer's callback.
  */
-function setScroll({
-  scrollY,
-  innerHeight = 800,
-}: {
-  scrollY: number;
-  innerHeight?: number;
-}) {
-  Object.defineProperty(window, "scrollY", { value: scrollY, configurable: true });
-  Object.defineProperty(window, "innerHeight", { value: innerHeight, configurable: true });
+class MockIO {
+  static instances: MockIO[] = [];
+  callback: IntersectionObserverCallback;
+  elements: Element[] = [];
+  constructor(cb: IntersectionObserverCallback) {
+    this.callback = cb;
+    MockIO.instances.push(this);
+  }
+  observe(el: Element) {
+    this.elements.push(el);
+  }
+  unobserve() {}
+  disconnect() {}
+  takeRecords() {
+    return [];
+  }
+  fire(entries: Array<Partial<IntersectionObserverEntry>>) {
+    this.callback(
+      entries as IntersectionObserverEntry[],
+      this as unknown as IntersectionObserver,
+    );
+  }
 }
 
-/** Build a DOMRect stand-in (jsdom has no layout to produce real ones). */
+const sentinelObserver = () =>
+  MockIO.instances.find((io) => io.elements.some((e) => e.tagName === "DIV"));
+const footerObserver = () =>
+  MockIO.instances.find((io) =>
+    io.elements.some((e) => e.tagName === "FOOTER"),
+  );
+
 function rect(left: number, top: number, right: number, bottom: number): DOMRect {
   return {
     left, top, right, bottom, width: right - left, height: bottom - top, x: left, y: top,
@@ -29,64 +48,62 @@ function rect(left: number, top: number, right: number, bottom: number): DOMRect
 
 describe("ScrollToTop", () => {
   beforeEach(() => {
-    // jsdom lacks matchMedia; the click handler queries reduced-motion.
+    MockIO.instances = [];
+    window.IntersectionObserver =
+      MockIO as unknown as typeof IntersectionObserver;
     window.matchMedia = vi
       .fn()
       .mockReturnValue({ matches: false }) as unknown as typeof window.matchMedia;
-    setScroll({ scrollY: 0 });
   });
 
-  it("is hidden and out of the tab order at the top of the page", () => {
+  it("is hidden and inert at the top of the page", () => {
     render(<ScrollToTop />);
     const btn = screen.getByRole("button", { name: "Scroll to top" });
     expect(btn).not.toHaveAttribute("data-visible");
-    expect(btn).toHaveAttribute("tabindex", "-1");
+    expect(btn).toHaveAttribute("inert");
   });
 
-  it("appears and joins the tab order once scrolled well past the top", () => {
+  it("appears once the top sentinel scrolls out of view", () => {
     render(<ScrollToTop />);
     const btn = screen.getByRole("button", { name: "Scroll to top" });
-    act(() => {
-      setScroll({ scrollY: 2000 });
-      fireEvent.scroll(window);
-    });
+    act(() => sentinelObserver()!.fire([{ isIntersecting: false }]));
     expect(btn).toHaveAttribute("data-visible");
-    expect(btn).toHaveAttribute("tabindex", "0");
+    expect(btn).not.toHaveAttribute("inert");
   });
 
   it("retreats when it would overlap the footer (narrow, full-width footer)", () => {
     render(
       <>
-        <footer data-testid="footer" />
+        <footer />
         <ScrollToTop />
       </>,
     );
     const btn = screen.getByRole("button", { name: "Scroll to top" });
-    const footer = screen.getByTestId("footer");
     vi.spyOn(btn, "getBoundingClientRect").mockReturnValue(rect(300, 700, 344, 744));
-    vi.spyOn(footer, "getBoundingClientRect").mockReturnValue(rect(0, 680, 1280, 760));
-    act(() => {
-      setScroll({ scrollY: 2000 });
-      fireEvent.scroll(window);
-    });
+    act(() => sentinelObserver()!.fire([{ isIntersecting: false }]));
+    act(() =>
+      footerObserver()!.fire([
+        { isIntersecting: true, boundingClientRect: rect(0, 680, 1280, 760) },
+      ]),
+    );
     expect(btn).not.toHaveAttribute("data-visible");
   });
 
-  it("stays visible at the bottom when the footer is clear of it (wide, centered footer)", () => {
+  it("stays visible when the footer is clear of it (wide, centered footer)", () => {
     render(
       <>
-        <footer data-testid="footer" />
+        <footer />
         <ScrollToTop />
       </>,
     );
     const btn = screen.getByRole("button", { name: "Scroll to top" });
-    const footer = screen.getByTestId("footer");
     vi.spyOn(btn, "getBoundingClientRect").mockReturnValue(rect(1173, 800, 1217, 844));
-    vi.spyOn(footer, "getBoundingClientRect").mockReturnValue(rect(200, 800, 1047, 880));
-    act(() => {
-      setScroll({ scrollY: 2000 });
-      fireEvent.scroll(window);
-    });
+    act(() => sentinelObserver()!.fire([{ isIntersecting: false }]));
+    act(() =>
+      footerObserver()!.fire([
+        { isIntersecting: true, boundingClientRect: rect(200, 800, 1047, 880) },
+      ]),
+    );
     expect(btn).toHaveAttribute("data-visible");
   });
 
@@ -94,10 +111,7 @@ describe("ScrollToTop", () => {
     const scrollTo = vi.spyOn(window, "scrollTo").mockImplementation(() => {});
     const user = userEvent.setup();
     render(<ScrollToTop />);
-    act(() => {
-      setScroll({ scrollY: 2000 });
-      fireEvent.scroll(window);
-    });
+    act(() => sentinelObserver()!.fire([{ isIntersecting: false }]));
     await user.click(screen.getByRole("button", { name: "Scroll to top" }));
     expect(scrollTo).toHaveBeenCalledWith(expect.objectContaining({ top: 0 }));
   });

@@ -18,9 +18,9 @@
 }
 
 /*
- * Radix wraps the viewport content in a div with `display: table` to
- * enable horizontal scrolling. We only scroll vertically; the table
- * box throws off the row layout, so flatten back to block.
+ * The scroll primitive wraps viewport content in a `display: table`
+ * box to enable horizontal scrolling. We only scroll vertically, and
+ * the table box throws off the row layout — flatten it back to block.
  */
 .scrollViewport > div {
   display: block !important;
@@ -110,9 +110,9 @@
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
-/* The Root uses type="always" so the scrollbar's observers and
+/* The scroll root always renders its scrollbar so the observers and
  * sizing run on mount, not on first interaction; the hover-reveal
- * UX is done here in CSS instead of via Radix's hover gating. */
+ * UX is done here in CSS instead of via the primitive's hover gating. */
 .scrollRoot:hover .scrollbar {
   opacity: 1;
 }

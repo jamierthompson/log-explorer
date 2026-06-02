@@ -91,6 +91,31 @@ export function LogExplorer({
   );
 
   /*
+   * Keep keyboard focus on a navigable line. When a filter change drops
+   * the focused line from the navigable set, remap to the nearest
+   * remaining line by original position so j/k resumes in place rather
+   * than snapping to an end. Reconciled during render so it lands in the
+   * same commit as the change that removed the line.
+   */
+  if (focusedLineId && !navigableLines.some((l) => l.id === focusedLineId)) {
+    if (navigableLines.length === 0) {
+      setFocusedLineId(null);
+    } else {
+      const target = linesIndexById.get(focusedLineId) ?? 0;
+      let nearestId = navigableLines[0].id;
+      let nearestDist = Infinity;
+      for (const l of navigableLines) {
+        const dist = Math.abs((linesIndexById.get(l.id) ?? 0) - target);
+        if (dist < nearestDist) {
+          nearestDist = dist;
+          nearestId = l.id;
+        }
+      }
+      setFocusedLineId(nearestId);
+    }
+  }
+
+  /*
    * Anchor-cycling: from the focused anchor, move to the next or
    * previous anchor in openContexts order, wrapping at the ends. When
    * the focus isn't on any anchor, the next-anchor binding lands on
@@ -221,12 +246,12 @@ export function LogExplorer({
     const mostRecent = openContexts[openContexts.length - 1];
     if (mostRecent) {
       const anchorIdx = linesIndexById.get(mostRecent.selectedLineId);
-      if (anchorIdx === undefined) {
-        throw new Error(
-          `open context references unknown line: ${mostRecent.selectedLineId}`,
-        );
-      }
-      if (!isAtFileBoundary(anchorIdx, mostRecent.range, lines.length)) {
+      // Skip the Expand entry if the anchor is unknown or at the file
+      // boundary — a missing anchor is a no-op here, not a render crash.
+      if (
+        anchorIdx !== undefined &&
+        !isAtFileBoundary(anchorIdx, mostRecent.range, lines.length)
+      ) {
         items.push({
           keys: SHORTCUTS.expandContext.keys,
           label: "Expand context",

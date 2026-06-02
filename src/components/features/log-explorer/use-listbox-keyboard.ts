@@ -24,7 +24,8 @@ function matchAction(event: KeyboardEvent<HTMLUListElement>): Action | null {
   }
   if (k === "j" || k === "ArrowDown") return "navigate-next";
   if (k === "k" || k === "ArrowUp") return "navigate-prev";
-  if (k === "g") return "navigate-first";
+  if (k === "g" || k === "Home") return "navigate-first";
+  if (k === "End") return "navigate-last";
   if (k === "e" || k === "Enter") return "toggle-context";
   if (k === "]") return "navigate-next-anchor";
   if (k === "[") return "navigate-prev-anchor";

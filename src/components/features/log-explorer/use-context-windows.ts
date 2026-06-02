@@ -107,11 +107,9 @@ export function useContextWindows({
     if (openContexts.length === 0) return;
     const last = openContexts[openContexts.length - 1];
     const idx = linesIndexById.get(last.selectedLineId);
-    if (idx === undefined) {
-      throw new Error(
-        `open context references unknown line: ${last.selectedLineId}`,
-      );
-    }
+    // A missing anchor is treated as a no-op, consistent with the other
+    // anchor lookups, which skip rather than fail when an open context outlives its line.
+    if (idx === undefined) return;
     if (isAtFileBoundary(idx, last.range, lines.length)) return;
 
     setOpenContexts((current) =>

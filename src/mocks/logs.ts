@@ -237,7 +237,7 @@ const ENDPOINTS = [
 ] as const;
 
 const METHODS = ["GET", "GET", "GET", "POST", "PATCH", "DELETE"] as const;
-const STATUS_FOR: Record<string, string> = {
+const STATUS_FOR: Record<(typeof METHODS)[number], string> = {
   GET: "200",
   POST: "201",
   PATCH: "200",
