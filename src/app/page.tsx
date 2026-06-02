@@ -22,10 +22,9 @@ export default function Home() {
             <em>without losing your place</em>.
           </h1>
           <p className={styles.lead}>
-            Here’s the kind of thing I want to build. Not in the sense of
-            building more log explorers, but in the sense of taking the parts of
-            an interface that get deprioritized — the keyboard surface, the
-            acknowledgement, the few pixels of motion that make a press feel
+            Sweating this kind of detail is how I build. It means taking the
+            parts of an interface that get deprioritized — the keyboard surface,
+            the acknowledgement, the few pixels of motion that make a press feel
             real — and treating them as the work, not the decoration.
           </p>
           <figure className={styles.demoFigure}>
