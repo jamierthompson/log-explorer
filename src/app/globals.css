@@ -57,6 +57,16 @@ html body[data-scroll-locked] {
 
   --radius-1: 0.25rem;
 
+  /*
+   * Shared keyboard-focus ring. Outline (not box-shadow) so the ring
+   * survives forced-colors mode and tracks border-radius. Elements that
+   * need a different gap override only --focus-ring-offset, keeping the
+   * offset on one documented scale rather than scattered magic numbers.
+   */
+  --focus-ring-width: 1px;
+  --focus-ring-color: var(--color-accent);
+  --focus-ring-offset: 1px;
+
   --duration-fast: 120ms;
   --ease-standard: cubic-bezier(0.32, 0.72, 0, 1);
 

@@ -40,6 +40,8 @@
   right: var(--space-1);
 }
 
+/* Intentionally no focus ring: sliding into view from off-screen,
+ * plus the permanent accent border, is itself the focus signal. */
 .skipLink:focus {
   transform: translateY(0);
   outline: 0;
