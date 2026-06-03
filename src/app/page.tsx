@@ -16,16 +16,19 @@ export default function Home() {
     <main id="main-content" tabIndex={-1} className={styles.main}>
       <article className={styles.article}>
         <header className={styles.hero}>
-          <p className={styles.eyebrow}>Case study · 2026</p>
+          <p className={styles.eyebrow}>Personal project · 2026</p>
           <h1 className={styles.heroTitle}>
             A log explorer prototype for investigating an incident{" "}
             <em>without losing your place</em>.
           </h1>
           <p className={styles.lead}>
-            Sweating this kind of detail is how I build. It means taking the
-            parts of an interface that get deprioritized — the keyboard surface,
-            the acknowledgement, the few pixels of motion that make a press feel
-            real — and treating them as the work, not the decoration.
+            A working prototype, and the story of building it. I went looking
+            for a paper cut worth fixing: a small, real, unglamorous problem. I
+            found a developer describing this one — losing your place in a
+            live-log investigation every time you stop to look closer. The
+            subject stays narrow on purpose, because the work that matters is
+            small: the keyboard surface, the acknowledgement that a press
+            landed, the few pixels of motion that make an action feel real.
           </p>
           <figure className={styles.demoFigure}>
             <div className={styles.demoFrame}>
@@ -41,7 +44,7 @@ export default function Home() {
           <h2 className={styles.heading}>Chasing an ID across tabs</h2>
           <p className={styles.body}>
             You’re troubleshooting a service incident. Logs are tailing live.
-            You’ve filtered to a single request ID — the failing one — and the
+            You’ve filtered to a single request ID, the failing one, and the
             picture is finally narrowing. You click a line to see the context
             around it: the requests that came before, the calls that came after.
           </p>
@@ -95,16 +98,17 @@ export default function Home() {
         <section className={styles.section}>
           <h2 className={styles.heading}>What I built</h2>
           <p className={styles.body}>
-            A working prototype — small, focused, intentionally narrow. The
+            A working prototype: small, focused, intentionally narrow. The
             investigation moment is the whole subject. Everything else was set
             aside to keep the focus tight.
           </p>
           <p className={styles.body}>
             The logs are mocked, not live. Filtering is three preset chips, not
             a full search system. There are no error or empty or loading states,
-            no real connection to anything. That’s deliberate. The interesting
-            problem is what happens in the <em>moment</em> of an investigation;
-            the rest can be built around it later.
+            no real connection to anything — and the list renders every line
+            rather than virtualizing. That’s deliberate. The interesting problem
+            is what happens in the <em>moment</em> of an investigation; the
+            scaling problem isn’t it, and the rest can be built around it later.
           </p>
           <p className={styles.body}>
             The mock data, though, got its own work. It tells a small story — a
@@ -128,12 +132,11 @@ export default function Home() {
             mount and unmount as you scroll, the animation breaks.
           </p>
           <p className={styles.body}>
-            That wouldn’t have been reason enough to cut it. Plenty of demos
-            look great at small scale and get reworked before they ship. The
-            bigger realization was that the animation wasn’t doing work the
-            prototype actually needed. The fan of tabs collapses the moment
-            context can open in place. Smooth row reveals don’t close that gap
-            any further.
+            That alone wouldn’t have been reason enough to cut it; plenty of
+            things get reworked before they ship. The real reason was that the
+            animation wasn’t doing work the prototype needed. The fan of tabs
+            collapses the moment context opens in place. Smooth row reveals
+            don’t close that gap any further.
           </p>
           <p className={styles.body}>
             What in-place context <em>does</em> open up is a different problem,
@@ -153,7 +156,7 @@ export default function Home() {
           <p className={styles.body}>
             The Legend started as a single static hint labeled{" "}
             <em>for all shortcuts</em>. It’s now the prototype’s primary
-            interaction surface — adaptive, clickable, and alive to its own
+            interaction surface: adaptive, clickable, and alive to its own
             firings.
           </p>
           <p className={styles.body}>
@@ -194,7 +197,7 @@ export default function Home() {
           <p className={styles.body}>
             A <Keycap>?</Keycap> keycap already sat in the top corner with the label{" "}
             <em>for all shortcuts</em> — itself a replacement for an earlier
-            floating <Keycap>?</Keycap> button that read too heavy. The keycap had
+            floating help button that read too heavy. The keycap had
             turned out well in the modal: dimensional and shaded, more like a
             real keyboard key than a flat glyph in a box. But the corner
             placement was still just a static hint.
