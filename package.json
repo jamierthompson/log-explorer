@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest"
   },
@@ -28,9 +30,11 @@
     "@vitejs/plugin-react": "^6.0.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "eslint-config-prettier": "^10.1.8",
     "jsdom": "^29.1.1",
     "postcss": "^8.5.14",
     "postcss-custom-media": "^12.0.1",
+    "prettier": "^3.8.3",
     "typescript": "^5",
     "vitest": "^4.1.6"
   }
