@@ -1,9 +1,8 @@
 # Log Explorer
 
-A prototype log explorer for working through an incident **without losing
+A log explorer prototype for investigating an incident **without losing
 your place** — where the keyboard and the mouse are equally first-class,
-and the interface quietly surfaces the shortcuts that matter as the
-situation changes.
+and the interface quietly surfaces the shortcuts that matter as you work.
 
 It's built around a small idea: the parts of an interface that usually
 get deprioritized — the keyboard surface, the acknowledgement that a
@@ -13,14 +12,13 @@ are the work, not the decoration.
 **Live case study:** _Coming soon._
 
 The deployed page is a case study — a live, interactive prototype
-embedded in a short write-up of the problem and the decisions behind it.
+embedded in a short write-up of the problem and the reasoning behind each decision.
 Start there; it carries the full story. This README is just how to run
 it locally.
 
 ## What it does
 
-- Opening a line **anchors** it and reveals a window of surrounding
-  context. Multiple windows stay open at once and expand outward as you
+- Opening a line **anchors** it and reveals the surrounding context. Multiple contexts stay open at once and expand outward as you
   read.
 - An **adaptive shortcut legend** shows only the bindings whose action is
   meaningful right now — and each entry is itself a button, so the
