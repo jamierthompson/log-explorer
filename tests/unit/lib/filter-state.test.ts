@@ -95,7 +95,9 @@ describe("hasAnyFilter", () => {
   });
 
   it("is true when any facet has values", () => {
-    expect(hasAnyFilter({ ...initialFilterState, levels: ["ERROR"] })).toBe(true);
+    expect(hasAnyFilter({ ...initialFilterState, levels: ["ERROR"] })).toBe(
+      true,
+    );
   });
 });
 
@@ -119,7 +121,10 @@ describe("lineMatchesFilter", () => {
   it("rejects a line with no requestId when requestIds are filtered", () => {
     const noReq: LogLine = { ...line, requestId: undefined };
     expect(
-      lineMatchesFilter(noReq, { ...initialFilterState, requestIds: ["r4d8a2"] }),
+      lineMatchesFilter(noReq, {
+        ...initialFilterState,
+        requestIds: ["r4d8a2"],
+      }),
     ).toBe(false);
   });
 

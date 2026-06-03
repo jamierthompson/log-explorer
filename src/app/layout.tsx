@@ -49,7 +49,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${jetbrainsMono.variable} ${newsreader.variable}`}>
+    <html
+      lang="en"
+      className={`${jetbrainsMono.variable} ${newsreader.variable}`}
+    >
       <body>
         <a href="#main-content" className={styles.skipLink}>
           Skip to main content

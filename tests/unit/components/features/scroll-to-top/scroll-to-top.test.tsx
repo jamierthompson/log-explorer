@@ -39,9 +39,21 @@ const footerObserver = () =>
     io.elements.some((e) => e.tagName === "FOOTER"),
   );
 
-function rect(left: number, top: number, right: number, bottom: number): DOMRect {
+function rect(
+  left: number,
+  top: number,
+  right: number,
+  bottom: number,
+): DOMRect {
   return {
-    left, top, right, bottom, width: right - left, height: bottom - top, x: left, y: top,
+    left,
+    top,
+    right,
+    bottom,
+    width: right - left,
+    height: bottom - top,
+    x: left,
+    y: top,
     toJSON() {},
   } as DOMRect;
 }
@@ -51,9 +63,9 @@ describe("ScrollToTop", () => {
     MockIO.instances = [];
     window.IntersectionObserver =
       MockIO as unknown as typeof IntersectionObserver;
-    window.matchMedia = vi
-      .fn()
-      .mockReturnValue({ matches: false }) as unknown as typeof window.matchMedia;
+    window.matchMedia = vi.fn().mockReturnValue({
+      matches: false,
+    }) as unknown as typeof window.matchMedia;
   });
 
   it("is hidden and inert at the top of the page", () => {
@@ -79,7 +91,9 @@ describe("ScrollToTop", () => {
       </>,
     );
     const btn = screen.getByRole("button", { name: "Scroll to top" });
-    vi.spyOn(btn, "getBoundingClientRect").mockReturnValue(rect(300, 700, 344, 744));
+    vi.spyOn(btn, "getBoundingClientRect").mockReturnValue(
+      rect(300, 700, 344, 744),
+    );
     act(() => sentinelObserver()!.fire([{ isIntersecting: false }]));
     act(() =>
       footerObserver()!.fire([
@@ -97,7 +111,9 @@ describe("ScrollToTop", () => {
       </>,
     );
     const btn = screen.getByRole("button", { name: "Scroll to top" });
-    vi.spyOn(btn, "getBoundingClientRect").mockReturnValue(rect(1173, 800, 1217, 844));
+    vi.spyOn(btn, "getBoundingClientRect").mockReturnValue(
+      rect(1173, 800, 1217, 844),
+    );
     act(() => sentinelObserver()!.fire([{ isIntersecting: false }]));
     act(() =>
       footerObserver()!.fire([

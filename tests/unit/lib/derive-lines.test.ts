@@ -8,9 +8,23 @@ import type { LogLine } from "@/types/log";
 const lines: readonly LogLine[] = [
   { id: "1", timestamp: 0, instance: "kc4qn", level: "INFO", message: "a" },
   { id: "2", timestamp: 1, instance: "m7w3p", level: "INFO", message: "b" },
-  { id: "3", timestamp: 2, instance: "kc4qn", level: "INFO", message: "c", requestId: "r4d8a2" },
+  {
+    id: "3",
+    timestamp: 2,
+    instance: "kc4qn",
+    level: "INFO",
+    message: "c",
+    requestId: "r4d8a2",
+  },
   { id: "4", timestamp: 3, instance: "m7w3p", level: "ERROR", message: "d" },
-  { id: "5", timestamp: 4, instance: "kc4qn", level: "INFO", message: "e", requestId: "r4d8a2" },
+  {
+    id: "5",
+    timestamp: 4,
+    instance: "kc4qn",
+    level: "INFO",
+    message: "e",
+    requestId: "r4d8a2",
+  },
 ];
 
 const traceFilter: FilterState = {

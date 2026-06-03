@@ -6,9 +6,28 @@ import { LogExplorer } from "@/components/features/log-explorer/log-explorer";
 import type { LogLine } from "@/types/log";
 
 const lines: readonly LogLine[] = [
-  { id: "1", timestamp: 0, instance: "kc4qn", level: "INFO", message: "Healthcheck OK" },
-  { id: "2", timestamp: 1, instance: "m7w3p", level: "ERROR", message: "request timeout" },
-  { id: "3", timestamp: 2, instance: "kc4qn", level: "INFO", message: "GET /api/users", requestId: "r4d8a2" },
+  {
+    id: "1",
+    timestamp: 0,
+    instance: "kc4qn",
+    level: "INFO",
+    message: "Healthcheck OK",
+  },
+  {
+    id: "2",
+    timestamp: 1,
+    instance: "m7w3p",
+    level: "ERROR",
+    message: "request timeout",
+  },
+  {
+    id: "3",
+    timestamp: 2,
+    instance: "kc4qn",
+    level: "INFO",
+    message: "GET /api/users",
+    requestId: "r4d8a2",
+  },
 ];
 
 describe("LogExplorer", () => {
@@ -111,7 +130,9 @@ describe("LogExplorer", () => {
     const user = userEvent.setup();
     render(<LogExplorer lines={lines} />);
     const errorsChip = screen.getByRole("button", { name: /errors only/i });
-    const instanceChip = screen.getByRole("button", { name: /instance kc4qn/i });
+    const instanceChip = screen.getByRole("button", {
+      name: /instance kc4qn/i,
+    });
 
     // Only errors: just the ERROR line is visible.
     await user.click(errorsChip);
@@ -154,13 +175,58 @@ describe("LogExplorer anchor cycling", () => {
    * file boundary.
    */
   const cyclingLines: readonly LogLine[] = [
-    { id: "pad-a", timestamp: 0, instance: "kc4qn", level: "INFO", message: "before" },
-    { id: "alpha", timestamp: 1, instance: "kc4qn", level: "INFO", message: "alpha trace", requestId: "r4d8a2" },
-    { id: "pad-b", timestamp: 2, instance: "kc4qn", level: "INFO", message: "middle" },
-    { id: "beta", timestamp: 3, instance: "kc4qn", level: "INFO", message: "beta trace", requestId: "r4d8a2" },
-    { id: "pad-c", timestamp: 4, instance: "kc4qn", level: "INFO", message: "between" },
-    { id: "gamma", timestamp: 5, instance: "kc4qn", level: "INFO", message: "gamma trace", requestId: "r4d8a2" },
-    { id: "pad-d", timestamp: 6, instance: "kc4qn", level: "INFO", message: "after" },
+    {
+      id: "pad-a",
+      timestamp: 0,
+      instance: "kc4qn",
+      level: "INFO",
+      message: "before",
+    },
+    {
+      id: "alpha",
+      timestamp: 1,
+      instance: "kc4qn",
+      level: "INFO",
+      message: "alpha trace",
+      requestId: "r4d8a2",
+    },
+    {
+      id: "pad-b",
+      timestamp: 2,
+      instance: "kc4qn",
+      level: "INFO",
+      message: "middle",
+    },
+    {
+      id: "beta",
+      timestamp: 3,
+      instance: "kc4qn",
+      level: "INFO",
+      message: "beta trace",
+      requestId: "r4d8a2",
+    },
+    {
+      id: "pad-c",
+      timestamp: 4,
+      instance: "kc4qn",
+      level: "INFO",
+      message: "between",
+    },
+    {
+      id: "gamma",
+      timestamp: 5,
+      instance: "kc4qn",
+      level: "INFO",
+      message: "gamma trace",
+      requestId: "r4d8a2",
+    },
+    {
+      id: "pad-d",
+      timestamp: 6,
+      instance: "kc4qn",
+      level: "INFO",
+      message: "after",
+    },
   ];
 
   async function openThreeContexts() {
@@ -175,7 +241,9 @@ describe("LogExplorer anchor cycling", () => {
 
   function focusedLineId(): string | null {
     const list = document.querySelector('[role="listbox"]');
-    return list?.getAttribute("aria-activedescendant")?.replace("line_", "") ?? null;
+    return (
+      list?.getAttribute("aria-activedescendant")?.replace("line_", "") ?? null
+    );
   }
 
   it("] cycles to the next anchor in open order and wraps at the end", async () => {

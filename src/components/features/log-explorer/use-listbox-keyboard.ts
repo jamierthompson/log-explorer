@@ -84,10 +84,7 @@ export function useListboxKeyboard({
           next = current === -1 ? 0 : Math.min(current + 1, lines.length - 1);
           break;
         case "navigate-prev":
-          next =
-            current === -1
-              ? lines.length - 1
-              : Math.max(current - 1, 0);
+          next = current === -1 ? lines.length - 1 : Math.max(current - 1, 0);
           break;
         case "navigate-first":
           next = 0;

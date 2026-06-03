@@ -51,7 +51,12 @@ describe("Legend", () => {
     const user = userEvent.setup();
     const onClick = vi.fn();
     const items: LegendItem[] = [
-      { keys: ["E"], label: "View context", onClick, ariaLabel: "View context" },
+      {
+        keys: ["E"],
+        label: "View context",
+        onClick,
+        ariaLabel: "View context",
+      },
     ];
     render(<Legend items={items} />);
     await user.click(screen.getByRole("button", { name: "View context" }));
@@ -66,7 +71,12 @@ describe("Legend", () => {
 
   it("renders a question-mark entry like any other (no special label-only path)", () => {
     const items: LegendItem[] = [
-      { keys: ["?"], label: "for all shortcuts", onClick: () => {}, ariaLabel: "Open shortcuts" },
+      {
+        keys: ["?"],
+        label: "for all shortcuts",
+        onClick: () => {},
+        ariaLabel: "Open shortcuts",
+      },
     ];
     const { container } = render(<Legend items={items} />);
     expect(container.querySelectorAll("kbd")).toHaveLength(1);
