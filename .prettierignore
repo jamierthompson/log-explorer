@@ -1,0 +1,14 @@
+# Build output, coverage, and dependencies
+.next/
+out/
+build/
+coverage/
+node_modules/
+
+# Generated files and lockfiles
+pnpm-lock.yaml
+next-env.d.ts
+*.tsbuildinfo
+
+# Local working notes
+case-study.md

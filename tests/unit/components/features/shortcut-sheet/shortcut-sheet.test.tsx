@@ -19,9 +19,7 @@ describe("ShortcutSheet", () => {
 
   it("renders every shortcut description when open", () => {
     render(<ShortcutSheet open={true} onOpenChange={() => {}} />);
-    for (const id of Object.keys(SHORTCUTS) as Array<
-      keyof typeof SHORTCUTS
-    >) {
+    for (const id of Object.keys(SHORTCUTS) as Array<keyof typeof SHORTCUTS>) {
       expect(screen.getByText(SHORTCUTS[id].description)).toBeInTheDocument();
     }
   });

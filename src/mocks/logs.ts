@@ -61,13 +61,31 @@ const STORY: readonly PartialLogLine[] = [
   info(9, 34, "kc4qn", "GET /api/users → 200 in 35ms", "r4d8a2"),
 
   // -- Incident 1: db connection pool cascade --
-  warn(11, 18, "kc4qn", "Slow query: SELECT users WHERE id = $1 took 412ms", "r4d8a2"),
+  warn(
+    11,
+    18,
+    "kc4qn",
+    "Slow query: SELECT users WHERE id = $1 took 412ms",
+    "r4d8a2",
+  ),
   warn(12, 47, "kc4qn", "DB pool wait time: 24ms (typical <5ms)", "r4d8a2"),
-  err(14, 32, "kc4qn", "db query failed: pq: too many connections for role 'app'", "r4d8a2"),
+  err(
+    14,
+    32,
+    "kc4qn",
+    "db query failed: pq: too many connections for role 'app'",
+    "r4d8a2",
+  ),
   warn(14, 48, "kc4qn", "Retry attempt 1/3 (op=fetch_user_events)", "r4d8a2"),
   err(15, 21, "kc4qn", "db query failed: context deadline exceeded", "r4d8a2"),
   warn(15, 39, "kc4qn", "Retry attempt 2/3 (op=fetch_user_events)", "r4d8a2"),
-  err(16, 4, "kc4qn", "db query failed: pq: too many connections for role 'app'", "r4d8a2"),
+  err(
+    16,
+    4,
+    "kc4qn",
+    "db query failed: pq: too many connections for role 'app'",
+    "r4d8a2",
+  ),
   info(16, 22, "kc4qn", "Retry succeeded after 3 attempts", "r4d8a2"),
   info(16, 48, "kc4qn", "GET /api/users → 200 in 41ms", "r4d8a2"),
 
@@ -79,9 +97,21 @@ const STORY: readonly PartialLogLine[] = [
   info(28, 4, "kc4qn", "POST /api/uploads → 202 in 56ms", "r4d8a2"),
 
   // -- Incident 2: upstream timeout cluster --
-  warn(30, 22, "kc4qn", "Slow upstream: api.stripe.com responded in 894ms", "r4d8a2"),
+  warn(
+    30,
+    22,
+    "kc4qn",
+    "Slow upstream: api.stripe.com responded in 894ms",
+    "r4d8a2",
+  ),
   err(31, 55, "kc4qn", "request timeout after 30000ms", "r4d8a2"),
-  warn(32, 18, "kc4qn", "Circuit breaker tripped for db.events (failure rate 100%)", "r4d8a2"),
+  warn(
+    32,
+    18,
+    "kc4qn",
+    "Circuit breaker tripped for db.events (failure rate 100%)",
+    "r4d8a2",
+  ),
   err(33, 42, "kc4qn", "upstream pool exhausted, dropping request", "r4d8a2"),
 
   info(34, 15, "kc4qn", "GET /api/products → 200 in 29ms", "r4d8a2"),
@@ -95,12 +125,36 @@ const STORY: readonly PartialLogLine[] = [
   info(47, 44, "kc4qn", "POST /api/uploads → 202 in 51ms", "r4d8a2"),
 
   // -- Incident 3: cache backend cascade --
-  warn(49, 8, "kc4qn", "Cache miss rate elevated: 0.38 (expected <0.30)", "r4d8a2"),
+  warn(
+    49,
+    8,
+    "kc4qn",
+    "Cache miss rate elevated: 0.38 (expected <0.30)",
+    "r4d8a2",
+  ),
   warn(50, 22, "kc4qn", "Slow cache lookup: GET users:42 took 287ms", "r4d8a2"),
-  warn(51, 4, "kc4qn", "Cache miss rate elevated: 0.52 (expected <0.30)", "r4d8a2"),
-  err(51, 38, "kc4qn", "Cache backend unreachable: connection refused", "r4d8a2"),
+  warn(
+    51,
+    4,
+    "kc4qn",
+    "Cache miss rate elevated: 0.52 (expected <0.30)",
+    "r4d8a2",
+  ),
+  err(
+    51,
+    38,
+    "kc4qn",
+    "Cache backend unreachable: connection refused",
+    "r4d8a2",
+  ),
   warn(52, 5, "kc4qn", "Cache fallback engaged (read-through only)", "r4d8a2"),
-  err(52, 41, "kc4qn", "Cache backend unreachable: connection refused", "r4d8a2"),
+  err(
+    52,
+    41,
+    "kc4qn",
+    "Cache backend unreachable: connection refused",
+    "r4d8a2",
+  ),
   info(53, 14, "kc4qn", "Cache reconnected, full-cache mode resumed", "r4d8a2"),
 
   info(54, 18, "kc4qn", "GET /api/users → 200 in 37ms", "r4d8a2"),
@@ -115,11 +169,41 @@ const STORY: readonly PartialLogLine[] = [
   info(7, 51, "m7w3p", "GET /api/notifications → 200 in 47ms", "k9b3c7"),
 
   // -- Incident 1: upstream latency cascade --
-  warn(11, 28, "m7w3p", "Slow upstream: api.stripe.com responded in 743ms", "k9b3c7"),
-  warn(12, 15, "m7w3p", "Slow upstream: api.stripe.com responded in 891ms", "k9b3c7"),
-  warn(13, 32, "m7w3p", "Cache miss rate elevated: 0.36 (expected <0.30)", "k9b3c7"),
-  err(13, 55, "m7w3p", "Webhook delivery failed: api.stripe.com returned 504", "k9b3c7"),
-  warn(14, 18, "m7w3p", "Retry scheduled for webhook (op=charge.succeeded)", "k9b3c7"),
+  warn(
+    11,
+    28,
+    "m7w3p",
+    "Slow upstream: api.stripe.com responded in 743ms",
+    "k9b3c7",
+  ),
+  warn(
+    12,
+    15,
+    "m7w3p",
+    "Slow upstream: api.stripe.com responded in 891ms",
+    "k9b3c7",
+  ),
+  warn(
+    13,
+    32,
+    "m7w3p",
+    "Cache miss rate elevated: 0.36 (expected <0.30)",
+    "k9b3c7",
+  ),
+  err(
+    13,
+    55,
+    "m7w3p",
+    "Webhook delivery failed: api.stripe.com returned 504",
+    "k9b3c7",
+  ),
+  warn(
+    14,
+    18,
+    "m7w3p",
+    "Retry scheduled for webhook (op=charge.succeeded)",
+    "k9b3c7",
+  ),
   info(14, 42, "m7w3p", "Webhook delivered successfully on retry", "k9b3c7"),
   info(15, 7, "m7w3p", "POST /api/sessions → 201 in 67ms", "k9b3c7"),
 
@@ -137,11 +221,29 @@ const STORY: readonly PartialLogLine[] = [
   info(27, 47, "m7w3p", "GET /api/notifications → 200 in 50ms", "k9b3c7"),
 
   // -- Incident 3: db unreachable cluster --
-  err(29, 18, "m7w3p", "db connection refused: dial tcp 10.0.0.4:5432: i/o timeout", "k9b3c7"),
+  err(
+    29,
+    18,
+    "m7w3p",
+    "db connection refused: dial tcp 10.0.0.4:5432: i/o timeout",
+    "k9b3c7",
+  ),
   warn(29, 48, "m7w3p", "Connection retry scheduled (attempt 1)", "k9b3c7"),
-  err(30, 22, "m7w3p", "db connection refused: dial tcp 10.0.0.4:5432: i/o timeout", "k9b3c7"),
+  err(
+    30,
+    22,
+    "m7w3p",
+    "db connection refused: dial tcp 10.0.0.4:5432: i/o timeout",
+    "k9b3c7",
+  ),
   warn(30, 48, "m7w3p", "Connection retry scheduled (attempt 2)", "k9b3c7"),
-  info(31, 15, "m7w3p", "Connection retry succeeded after 2 attempts", "k9b3c7"),
+  info(
+    31,
+    15,
+    "m7w3p",
+    "Connection retry succeeded after 2 attempts",
+    "k9b3c7",
+  ),
 
   info(33, 44, "m7w3p", "POST /api/sessions → 201 in 62ms", "k9b3c7"),
   info(36, 21, "m7w3p", "GET /api/notifications → 200 in 49ms", "k9b3c7"),
@@ -151,7 +253,13 @@ const STORY: readonly PartialLogLine[] = [
   info(47, 18, "m7w3p", "POST /api/sessions → 201 in 61ms", "k9b3c7"),
   info(49, 38, "m7w3p", "GET /api/notifications → 200 in 48ms", "k9b3c7"),
   info(52, 16, "m7w3p", "POST /api/sessions → 201 in 62ms", "k9b3c7"),
-  warn(56, 24, "m7w3p", "Rate limit approaching for tenant 'acme' (84/100)", "k9b3c7"),
+  warn(
+    56,
+    24,
+    "m7w3p",
+    "Rate limit approaching for tenant 'acme' (84/100)",
+    "k9b3c7",
+  ),
   info(59, 12, "m7w3p", "POST /api/sessions → 201 in 60ms", "k9b3c7"),
 
   // Third request flow: db pool exhaustion and recovery
@@ -163,17 +271,59 @@ const STORY: readonly PartialLogLine[] = [
   info(14, 48, "t2x8r", "GET /api/orders → 200 in 48ms", "p2x6n1"),
 
   // -- Incident 1: slow query buildup --
-  warn(17, 23, "t2x8r", "Slow query: SELECT orders WHERE org_id = $1 took 487ms", "p2x6n1"),
-  warn(18, 45, "t2x8r", "Slow query: SELECT orders WHERE org_id = $1 took 612ms", "p2x6n1"),
-  warn(20, 48, "t2x8r", "Cache miss rate elevated: 0.34 (expected <0.30)", "p2x6n1"),
-  warn(22, 18, "t2x8r", "DB connection pool nearing capacity (18/20 active)", "p2x6n1"),
-  warn(23, 55, "t2x8r", "Background job 'orders-aggregate' took 4.2s (typical <500ms)", "p2x6n1"),
+  warn(
+    17,
+    23,
+    "t2x8r",
+    "Slow query: SELECT orders WHERE org_id = $1 took 487ms",
+    "p2x6n1",
+  ),
+  warn(
+    18,
+    45,
+    "t2x8r",
+    "Slow query: SELECT orders WHERE org_id = $1 took 612ms",
+    "p2x6n1",
+  ),
+  warn(
+    20,
+    48,
+    "t2x8r",
+    "Cache miss rate elevated: 0.34 (expected <0.30)",
+    "p2x6n1",
+  ),
+  warn(
+    22,
+    18,
+    "t2x8r",
+    "DB connection pool nearing capacity (18/20 active)",
+    "p2x6n1",
+  ),
+  warn(
+    23,
+    55,
+    "t2x8r",
+    "Background job 'orders-aggregate' took 4.2s (typical <500ms)",
+    "p2x6n1",
+  ),
 
   // -- Incident 2: pool exhausted cluster --
   err(24, 11, "t2x8r", "DB pool acquire timed out after 5000ms", "p2x6n1"),
   err(24, 45, "t2x8r", "DB pool acquire timed out after 5000ms", "p2x6n1"),
-  warn(25, 32, "t2x8r", "Backpressure engaged: rejecting non-critical requests", "p2x6n1"),
-  info(26, 18, "t2x8r", "Background load shed: 17 queued requests cancelled", "p2x6n1"),
+  warn(
+    25,
+    32,
+    "t2x8r",
+    "Backpressure engaged: rejecting non-critical requests",
+    "p2x6n1",
+  ),
+  info(
+    26,
+    18,
+    "t2x8r",
+    "Background load shed: 17 queued requests cancelled",
+    "p2x6n1",
+  ),
   err(27, 32, "t2x8r", "DB pool acquire timed out after 5000ms", "p2x6n1"),
   info(28, 55, "t2x8r", "DB pool drained: pressure relieved", "p2x6n1"),
 
@@ -190,7 +340,13 @@ const STORY: readonly PartialLogLine[] = [
   info(41, 52, "t2x8r", "GET /api/orders/45 → 200 in 46ms", "p2x6n1"),
   info(44, 8, "t2x8r", "GET /api/orders → 200 in 52ms", "p2x6n1"),
   info(45, 22, "t2x8r", "PATCH /api/orders/43 → 200 in 68ms", "p2x6n1"),
-  warn(47, 9, "t2x8r", "Cache miss rate elevated: 0.33 (expected <0.30)", "p2x6n1"),
+  warn(
+    47,
+    9,
+    "t2x8r",
+    "Cache miss rate elevated: 0.33 (expected <0.30)",
+    "p2x6n1",
+  ),
   info(50, 18, "t2x8r", "GET /api/orders → 200 in 51ms", "p2x6n1"),
   info(53, 36, "t2x8r", "PATCH /api/orders/43 → 200 in 69ms", "p2x6n1"),
   info(56, 1, "t2x8r", "GET /api/orders/46 → 200 in 47ms", "p2x6n1"),
@@ -200,7 +356,12 @@ const STORY: readonly PartialLogLine[] = [
   warn(8, 1, "kc4qn", "Retry attempt 1/3 (op=fetch_user_events)"),
   err(17, 52, "kc4qn", "upstream pool exhausted, dropping request"),
   warn(24, 17, "kc4qn", "DB pool wait time: 24ms (typical <5ms)"),
-  err(30, 12, "t2x8r", "db connection refused: dial tcp 10.0.0.4:5432: i/o timeout"),
+  err(
+    30,
+    12,
+    "t2x8r",
+    "db connection refused: dial tcp 10.0.0.4:5432: i/o timeout",
+  ),
   warn(36, 44, "m7w3p", "Slow upstream: api.stripe.com responded in 924ms"),
   err(41, 28, "kc4qn", "request timeout after 30000ms"),
   warn(50, 18, "t2x8r", "DB pool wait time: 18ms (typical <5ms)"),
@@ -259,7 +420,13 @@ const QUERY_TARGETS = [
   "SELECT products WHERE category = $1",
 ] as const;
 
-const CACHE_KEYS = ["users", "orders", "products", "sessions", "notifications"] as const;
+const CACHE_KEYS = [
+  "users",
+  "orders",
+  "products",
+  "sessions",
+  "notifications",
+] as const;
 
 const JOB_NAMES = [
   "session-cleanup",
@@ -301,7 +468,9 @@ function generateNoise(): PartialLogLine[] {
     const path = pick(ENDPOINTS, s + 1);
     const status = STATUS_FOR[method];
     const ms = 12 + (s % 80);
-    noise.push(info(min(s), ss(s), r(), `${method} ${path} → ${status} in ${ms}ms`));
+    noise.push(
+      info(min(s), ss(s), r(), `${method} ${path} → ${status} in ${ms}ms`),
+    );
   }
 
   // DB queries
@@ -331,14 +500,18 @@ function generateNoise(): PartialLogLine[] {
   for (let s = 71; s < HOUR_SEC; s += 125 + (s % 19)) {
     const job = pick(JOB_NAMES, s);
     const ms = 30 + (s % 60);
-    noise.push(info(min(s), ss(s), r(), `Background job '${job}' completed in ${ms}ms`));
+    noise.push(
+      info(min(s), ss(s), r(), `Background job '${job}' completed in ${ms}ms`),
+    );
   }
 
   // Cache hit ratios
   r = rotator(1);
   for (let s = 93; s < HOUR_SEC; s += 150 + (s % 21)) {
     const ratio = (88 + (s % 8)) / 100;
-    noise.push(info(min(s), ss(s), r(), `Cache hit ratio: ${ratio.toFixed(2)}`));
+    noise.push(
+      info(min(s), ss(s), r(), `Cache hit ratio: ${ratio.toFixed(2)}`),
+    );
   }
 
   // Connection retry succeeded
@@ -346,7 +519,12 @@ function generateNoise(): PartialLogLine[] {
   for (let s = 220; s < HOUR_SEC; s += 270 + (s % 31)) {
     const attempts = 2 + (s % 2);
     noise.push(
-      info(min(s), ss(s), r(), `Connection retry succeeded after ${attempts} attempts`),
+      info(
+        min(s),
+        ss(s),
+        r(),
+        `Connection retry succeeded after ${attempts} attempts`,
+      ),
     );
   }
 
@@ -374,7 +552,12 @@ function generateNoise(): PartialLogLine[] {
     const upstream = pick(UPSTREAMS, s);
     const ms = 600 + (s % 500);
     noise.push(
-      warn(min(s), ss(s), r(), `Slow upstream: ${upstream} responded in ${ms}ms`),
+      warn(
+        min(s),
+        ss(s),
+        r(),
+        `Slow upstream: ${upstream} responded in ${ms}ms`,
+      ),
     );
   }
 
@@ -428,7 +611,9 @@ function generateNoise(): PartialLogLine[] {
   r = rotator(1);
   for (let s = 380; s < HOUR_SEC; s += 410 + (s % 29)) {
     const ms = 180 + (s % 220);
-    noise.push(warn(min(s), ss(s), r(), `Healthcheck slow: returned in ${ms}ms`));
+    noise.push(
+      warn(min(s), ss(s), r(), `Healthcheck slow: returned in ${ms}ms`),
+    );
   }
 
   // ── ERROR patterns ─────────────────────────────────────────────
@@ -449,13 +634,17 @@ function generateNoise(): PartialLogLine[] {
   // Query failed
   r = rotator(0);
   for (let s = 380; s < HOUR_SEC; s += 520 + (s % 41)) {
-    noise.push(err(min(s), ss(s), r(), "db query failed: context deadline exceeded"));
+    noise.push(
+      err(min(s), ss(s), r(), "db query failed: context deadline exceeded"),
+    );
   }
 
   // Upstream exhausted
   r = rotator(1);
   for (let s = 450; s < HOUR_SEC; s += 590 + (s % 47)) {
-    noise.push(err(min(s), ss(s), r(), "upstream pool exhausted, dropping request"));
+    noise.push(
+      err(min(s), ss(s), r(), "upstream pool exhausted, dropping request"),
+    );
   }
 
   // Validation failed

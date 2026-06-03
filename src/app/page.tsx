@@ -32,10 +32,14 @@ export default function Home() {
           </p>
           <figure className={styles.demoFigure}>
             <div className={styles.demoFrame}>
-              <LogExplorer lines={mockLogs} initialFilter={INITIAL_DEMO_FILTER} />
+              <LogExplorer
+                lines={mockLogs}
+                initialFilter={INITIAL_DEMO_FILTER}
+              />
             </div>
             <FigureCaption>
-              Live prototype — click any line to view context. Or scroll past to keep reading.
+              Live prototype — click any line to view context. Or scroll past to
+              keep reading.
             </FigureCaption>
           </figure>
         </header>
@@ -181,11 +185,11 @@ export default function Home() {
             The keyboard bindings —{" "}
             <KeycapSequence keys={["Shift", "E"]} decorative={false} /> to
             expand the most-recent context, <Keycap>Esc</Keycap> to close it —
-            didn’t have that problem. They worked from the
-            start, and they kept working when the anchor was out of view. With
-            both paths available and one strictly worse, the buttons had to go.
-            That left a gap for mouse users, but the rest of the design wasn’t
-            settled yet, so I kept building.
+            didn’t have that problem. They worked from the start, and they kept
+            working when the anchor was out of view. With both paths available
+            and one strictly worse, the buttons had to go. That left a gap for
+            mouse users, but the rest of the design wasn’t settled yet, so I
+            kept building.
           </p>
           <p className={styles.body}>
             The prototype also has a shortcut modal — a help dialog opened by{" "}
@@ -195,9 +199,9 @@ export default function Home() {
             if you pressed a key.
           </p>
           <p className={styles.body}>
-            A <Keycap>?</Keycap> keycap already sat in the top corner with the label{" "}
-            <em>for all shortcuts</em> — itself a replacement for an earlier
-            floating help button that read too heavy. The keycap had
+            A <Keycap>?</Keycap> keycap already sat in the top corner with the
+            label <em>for all shortcuts</em> — itself a replacement for an
+            earlier floating help button that read too heavy. The keycap had
             turned out well in the modal: dimensional and shaded, more like a
             real keyboard key than a flat glyph in a box. But the corner
             placement was still just a static hint.
@@ -250,19 +254,18 @@ export default function Home() {
           <p className={styles.body}>
             That’s the rule. The natural question was how many entries could fit
             before the bar started to feel busy. At three it felt right; when I
-            tried adding <Keycap>[</Keycap> and <Keycap>]</Keycap> for cycling between
-            anchors, four felt overwhelming. Three became the cap — the{" "}
-            <Keycap>[</Keycap> and <Keycap>]</Keycap> bindings stayed, listed in the
-            shortcut modal rather than the Legend.
+            tried adding <Keycap>[</Keycap> and <Keycap>]</Keycap> for cycling
+            between anchors, four felt overwhelming. Three became the cap — the{" "}
+            <Keycap>[</Keycap> and <Keycap>]</Keycap> bindings stayed, listed in
+            the shortcut modal rather than the Legend.
           </p>
           <p className={styles.body}>
             The bindings now had a home, the press did things, and a mouse could
             click them. But a quieter problem surfaced: if you’d scrolled away
             from the context{" "}
             <KeycapSequence keys={["Shift", "E"]} decorative={false} /> was
-            expanding, the press did nothing you
-            could see. The action fired, the effect happened off-screen, no
-            acknowledgement.
+            expanding, the press did nothing you could see. The action fired,
+            the effect happened off-screen, no acknowledgement.
           </p>
           <p className={styles.body}>
             The obvious move was to auto-scroll to where the expansion landed.
@@ -283,9 +286,8 @@ export default function Home() {
                 fires, the{" "}
                 <KeycapSequence keys={["Shift", "E"]} decorative={false} />{" "}
                 entry pulses — a 180ms fade, gated behind{" "}
-                <code>prefers-reduced-motion</code>. The
-                motion catches the eye in peripheral vision:{" "}
-                <em>something happened</em>.
+                <code>prefers-reduced-motion</code>. The motion catches the eye
+                in peripheral vision: <em>something happened</em>.
               </p>
             </div>
             <Figure caption="Acknowledgement at the press." />
@@ -316,9 +318,9 @@ export default function Home() {
             marks, open contexts as highlighted regions, the visible viewport as
             a sliding indicator. When{" "}
             <KeycapSequence keys={["Shift", "E"]} decorative={false} /> expands
-            a context fifty lines
-            below your view, the mini-map pulses at that position. You don’t
-            just know an action fired — you know where it landed.
+            a context fifty lines below your view, the mini-map pulses at that
+            position. You don’t just know an action fired — you know where it
+            landed.
           </p>
 
           <Figure caption="An idea on paper." />

@@ -81,7 +81,9 @@ function addScenario(state: FilterState, scenario: Scenario): FilterState {
 function removeScenario(state: FilterState, scenario: Scenario): FilterState {
   return {
     instances: state.instances.filter((v) => !scenario.instances.includes(v)),
-    requestIds: state.requestIds.filter((v) => !scenario.requestIds.includes(v)),
+    requestIds: state.requestIds.filter(
+      (v) => !scenario.requestIds.includes(v),
+    ),
     levels: state.levels.filter((v) => !scenario.levels.includes(v)),
   };
 }
@@ -96,10 +98,7 @@ function union<T>(a: readonly T[], b: readonly T[]): readonly T[] {
  * Whether a line passes the active filter. With no facets active,
  * every line matches.
  */
-export function lineMatchesFilter(
-  line: LogLine,
-  filter: FilterState,
-): boolean {
+export function lineMatchesFilter(line: LogLine, filter: FilterState): boolean {
   if (!hasAnyFilter(filter)) return true;
   if (
     filter.instances.length > 0 &&
