@@ -12,29 +12,41 @@ export function Hero({
 }) {
   return (
     <div className={styles.hero}>
-      <Eyebrow>Personal project · 2026</Eyebrow>
+      <Eyebrow>A log explorer prototype · 2026</Eyebrow>
       <h1 className={styles.heroTitle}>
-        A log explorer prototype for investigating an incident{" "}
-        <em>without losing your place</em>.
+        Chasing an ID <em>without losing your place</em>.
       </h1>
       <p className={styles.lead}>
-        A working prototype, and the story of building it. I went looking for a
-        paper cut worth fixing: a small, real, unglamorous problem. I found a
-        developer describing this one — losing your place in a live-log
-        investigation every time you stop to look closer. The subject stays
-        narrow on purpose, because the work that matters is small: the keyboard
-        surface, the acknowledgement that a press landed, the few pixels of
-        motion that make an action feel real.
+        13:31 UTC. Checkout starts returning 503s on api-gateway while the logs
+        tail live. You filter to the failing request, click a span for context —
+        and a new tab opens, your filter gone, the tail gone. A few clicks in,
+        you’ve got a fan of tabs and the incident scattered across them.
       </p>
+      <div className={styles.coverMeta}>
+        <span>
+          <em>Service</em> api-gateway
+        </span>
+        <span>
+          <em>Symptom</em> checkout 503s
+        </span>
+        <span>
+          <em>Instances</em> kc4qn · m7w3p · t2x8r
+        </span>
+      </div>
       <div className={styles.heroActions}>
         <Button variant="primary" onClick={onOpenDemo}>
           Open the logs
         </Button>
       </div>
       <p className={styles.heroFoot}>
-        <Button variant="link" onClick={onStory}>
-          Read the build story →
-        </Button>
+        A two-minute interactive demo.{" "}
+        <span className={styles.nowrap}>
+          Or{" "}
+          <Button variant="link" onClick={onStory}>
+            read the build story
+          </Button>
+          .
+        </span>
       </p>
     </div>
   );

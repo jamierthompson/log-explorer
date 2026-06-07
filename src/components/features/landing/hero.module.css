@@ -46,10 +46,37 @@
   font-variation-settings: "opsz" 17;
 }
 
+.coverMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-6);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  color: var(--color-fg-muted);
+}
+
+.coverMeta span {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.coverMeta em {
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: var(--font-size-sm);
+  color: var(--color-fg-subtle);
+}
+
 .heroActions {
   display: flex;
   gap: var(--space-3);
   margin-top: var(--space-2);
+}
+
+.nowrap {
+  white-space: nowrap;
 }
 
 .heroFoot {
