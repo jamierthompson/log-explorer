@@ -1,5 +1,6 @@
 import { Figure } from "@/components/features/case-study/figure";
 import { Button } from "@/components/ui/button/button";
+import { Eyebrow } from "@/components/ui/eyebrow/eyebrow";
 import { Keycap, KeycapSequence } from "@/components/ui/keycap/keycap";
 
 import styles from "./story.module.css";
@@ -7,6 +8,23 @@ import styles from "./story.module.css";
 export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
   return (
     <article className={styles.article}>
+      <header className={styles.proseHead}>
+        <Eyebrow>The build story</Eyebrow>
+        <h1 className={styles.proseTitle}>
+          A log explorer prototype for investigating an incident{" "}
+          <em>without losing your place</em>.
+        </h1>
+        <p className={styles.proseLead}>
+          A working prototype, and the story of building it. I went looking for
+          a paper cut worth fixing: a small, real, unglamorous problem. I found
+          a developer describing this one — losing your place in a live-log
+          investigation every time you stop to look closer. The subject stays
+          narrow on purpose, because the work that matters is small: the
+          keyboard surface, the acknowledgement that a press landed, the few
+          pixels of motion that make an action feel real.
+        </p>
+      </header>
+
       <section id="chasing-an-id" className={styles.section}>
         <h2 className={styles.heading}>Chasing an ID across tabs</h2>
         <p className={styles.body}>
