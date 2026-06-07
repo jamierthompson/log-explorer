@@ -1,0 +1,24 @@
+/*
+ * Mirrors the button's `link` variant so a real anchor and an
+ * action-as-text-button read identically.
+ */
+.link {
+  color: var(--color-fg-muted);
+  text-decoration: underline;
+  text-decoration-color: var(--color-border);
+  text-underline-offset: 0.2em;
+  border-radius: var(--radius-1);
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    text-decoration-color var(--duration-fast) var(--ease-standard);
+}
+
+.link:hover {
+  color: var(--color-fg);
+  text-decoration-color: currentColor;
+}
+
+.link:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
