@@ -1,0 +1,27 @@
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.link {
+  width: 100%;
+  font-size: var(--font-size-base);
+}
+
+/*
+ * On desktop the list becomes a fixed-width sidebar that stays in view
+ * while the prose scrolls past it. --toc-width is inherited from the
+ * story layout that sizes the row around it.
+ */
+@media (--desktop) {
+  .toc {
+    position: sticky;
+    top: calc(var(--topnav-height) + var(--space-5));
+    width: var(--toc-width, 14rem);
+    flex-shrink: 0;
+  }
+}

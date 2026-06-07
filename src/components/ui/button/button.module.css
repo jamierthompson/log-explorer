@@ -62,6 +62,22 @@
 }
 
 /*
+ * Quiet text button for navigation lists (no underline, no border).
+ * Left-aligned so multi-line labels stack against the leading edge.
+ */
+.button[data-variant="quiet"] {
+  padding: var(--space-1) 0;
+  background: transparent;
+  color: var(--color-fg-muted);
+  text-align: left;
+  justify-content: flex-start;
+}
+
+.button[data-variant="quiet"]:hover {
+  color: var(--color-fg);
+}
+
+/*
  * Comfortable tap targets on touch devices for the substantial
  * variants, matching the chip primitive. The inline link variant lives
  * in the text flow and is exempt.

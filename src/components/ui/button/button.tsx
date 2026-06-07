@@ -1,6 +1,6 @@
 import styles from "./button.module.css";
 
-export type ButtonVariant = "primary" | "ghost" | "link";
+export type ButtonVariant = "primary" | "ghost" | "link" | "quiet";
 
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;

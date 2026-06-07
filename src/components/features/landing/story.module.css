@@ -1,25 +1,47 @@
 /*
- * Single centered column for all prose. Setting font-size on the
- * column anchors ch to one font context so the column has a
- * predictable pixel width and every child shares the same left and
- * right edges. Children inherit the size and only override where
- * they have their own.
+ * Table of contents above the prose on mobile, a sidebar to its left on
+ * desktop. Setting font-size here anchors ch to one font context so the
+ * prose column has a predictable width; the desktop max-width widens to
+ * hold the sidebar, its gap, and that same prose measure.
  */
+.layout {
+  --toc-width: 14rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: var(--prose-measure);
+  margin: 0 auto;
+  font-family: var(--font-sans);
+  font-size: var(--text-prose-base);
+  color: var(--color-fg);
+}
+
+@media (--desktop) {
+  .layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--space-7);
+    max-width: calc(var(--toc-width) + var(--space-7) + var(--prose-measure));
+  }
+}
+
 .article {
   display: flex;
   flex-direction: column;
   gap: var(--space-7);
   padding-bottom: var(--space-8);
-  font-family: var(--font-sans);
-  font-size: var(--text-prose-base);
-  color: var(--color-fg);
-  max-width: var(--prose-measure);
-  margin: 0 auto;
 }
 
 @media (--tablet) {
   .article {
     gap: var(--space-8);
+  }
+}
+
+@media (--desktop) {
+  .article {
+    flex: 1;
+    min-width: 0;
   }
 }
 

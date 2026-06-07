@@ -33,32 +33,3 @@
   gap: var(--space-4);
   min-width: 0;
 }
-
-/*
- * The table of contents is dense, so it appears only where there's room
- * and scrolls horizontally rather than wrapping — the nav stays one row
- * tall no matter how many sections or how long their labels.
- */
-.toc {
-  display: none;
-}
-
-@media (--desktop) {
-  .toc {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    min-width: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-}
-
-.tocLink {
-  white-space: nowrap;
-}
-
-/* The repo link never shrinks or scrolls away. */
-.links > a {
-  flex-shrink: 0;
-}
