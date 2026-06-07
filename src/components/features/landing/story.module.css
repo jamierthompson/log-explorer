@@ -1,8 +1,3 @@
-.main {
-  outline: none;
-  padding: var(--content-padding-x);
-}
-
 /*
  * Single centered column for all prose. Setting font-size on the
  * column anchors ch to one font context so the column has a
@@ -27,94 +22,6 @@
     gap: var(--space-8);
   }
 }
-
-/* === HERO === */
-
-.hero {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  /* Extra breathing room above the eyebrow on mobile, where the hero
-   * sits tight against the top of the viewport. */
-  padding-top: var(--space-7);
-}
-
-@media (--desktop) {
-  .hero {
-    padding-top: var(--space-5);
-  }
-}
-
-.eyebrow {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-fg-muted);
-}
-
-.heroTitle {
-  margin: 0;
-  max-width: 20ch;
-  font-size: var(--text-prose-hero);
-  font-weight: 500;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-  text-wrap: balance;
-  font-variation-settings: "opsz" 44;
-  font-feature-settings: "ss01";
-}
-
-.heroTitle em {
-  font-style: italic;
-}
-
-@media (--tablet) {
-  .heroTitle {
-    text-wrap: wrap;
-  }
-}
-
-.lead {
-  margin: 0;
-  font-size: var(--text-prose-lead);
-  line-height: var(--line-height-prose);
-  color: var(--color-fg-muted);
-  font-variation-settings: "opsz" 17;
-}
-
-/* === DEMO === */
-
-.demoFigure {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-/*
- * Taller on mobile so more of the log stays visible. Wider viewports return to the original proportion.
- */
-.demoFrame {
-  height: 85dvh;
-  background: var(--color-bg);
-  border-radius: var(--radius-1);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  font-family: var(--font-mono);
-}
-
-@media (--tablet) {
-  .demoFrame {
-    height: 70dvh;
-  }
-}
-
-/* === SECTION TEXT === */
 
 .section {
   display: flex;
@@ -265,4 +172,10 @@
     flex: 1;
     min-width: 0;
   }
+}
+
+.storyFoot {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
 }

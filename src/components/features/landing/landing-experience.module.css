@@ -1,0 +1,4 @@
+.main {
+  outline: none;
+  padding: var(--content-padding-x);
+}
