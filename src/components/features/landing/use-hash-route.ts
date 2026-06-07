@@ -1,56 +1,94 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useRef, useSyncExternalStore } from "react";
 
-/**
- * The two base pages of the landing experience. The live demo is an
- * overlay layered on top of these rather than a base view of its own.
- */
+/** The two base pages of the landing experience. */
 export type View = "hero" | "story";
 
-/** Map a URL hash to a base view, defaulting to the hero. */
-export function viewFromHash(hash: string): View {
-  return hash === "#story" ? "story" : "hero";
+/** Every routable location: the base views plus the demo overlay. */
+export type Route = View | "demo";
+
+/** Map a URL hash to a route, defaulting to the hero. */
+export function routeFromHash(hash: string): Route {
+  if (hash === "#demo") return "demo";
+  if (hash === "#story") return "story";
+  return "hero";
+}
+
+/*
+ * pushState fires neither popstate nor hashchange, so navigations made
+ * here announce themselves with this event to keep the store in sync.
+ */
+const LOCATION_EVENT = "landing:locationchange";
+
+function subscribe(onStoreChange: () => void): () => void {
+  window.addEventListener("popstate", onStoreChange);
+  window.addEventListener("hashchange", onStoreChange);
+  window.addEventListener(LOCATION_EVENT, onStoreChange);
+  return () => {
+    window.removeEventListener("popstate", onStoreChange);
+    window.removeEventListener("hashchange", onStoreChange);
+    window.removeEventListener(LOCATION_EVENT, onStoreChange);
+  };
 }
 
 /**
- * Hash-driven routing for the landing experience. The view is reflected
- * in the URL (`#story`, or a bare path for the hero) so links, reloads,
- * and back/forward all land on the right page.
+ * Hash-driven routing for the landing experience. The route is derived
+ * from the URL via useSyncExternalStore, so links, reloads, and
+ * back/forward all resolve to the same place; the server snapshot is the
+ * hero, avoiding a hydration mismatch.
  *
- * Starts at the hero on the server and first client render, then
- * reconciles to the URL hash after mount — the only safe way to read a
- * client-only value without a hydration mismatch.
+ * The demo is a full-screen overlay rather than a view of its own, so the
+ * base view underneath it is never seen — `view` collapses to the hero
+ * while the demo is open. Exiting steps back through history to return to
+ * whichever base the demo was opened from.
  */
 export function useHashRoute(): {
   view: View;
+  demoOpen: boolean;
   navigate: (view: View) => void;
+  openDemo: () => void;
+  exitDemo: () => void;
 } {
-  const [view, setView] = useState<View>("hero");
+  const hash = useSyncExternalStore(
+    subscribe,
+    () => window.location.hash,
+    () => "",
+  );
+  const route = routeFromHash(hash);
+  const view: View = route === "story" ? "story" : "hero";
+  const demoOpen = route === "demo";
 
-  useEffect(() => {
-    const sync = () => setView(viewFromHash(window.location.hash));
-    sync();
-    // popstate covers back/forward; hashchange covers a hash edited or
-    // linked to directly. pushState (below) fires neither, so the two
-    // never double up.
-    window.addEventListener("popstate", sync);
-    window.addEventListener("hashchange", sync);
-    return () => {
-      window.removeEventListener("popstate", sync);
-      window.removeEventListener("hashchange", sync);
-    };
-  }, []);
+  // Whether the demo was opened from within the app (so a history step
+  // back lands on its base) versus deep-linked (so there's nowhere to
+  // step back to). Touched only in handlers, never during render.
+  const openedInApp = useRef(false);
 
-  const navigate = useCallback((next: View) => {
+  const navTo = useCallback((next: Route) => {
     const url =
       next === "hero"
         ? window.location.pathname + window.location.search
         : `#${next}`;
-    window.history.pushState({ view: next }, "", url);
-    setView(next);
-    window.scrollTo(0, 0);
+    window.history.pushState({ route: next }, "", url);
+    window.dispatchEvent(new Event(LOCATION_EVENT));
+    if (next !== "demo") window.scrollTo(0, 0);
   }, []);
 
-  return { view, navigate };
+  const navigate = useCallback((next: View) => navTo(next), [navTo]);
+
+  const openDemo = useCallback(() => {
+    openedInApp.current = true;
+    navTo("demo");
+  }, [navTo]);
+
+  const exitDemo = useCallback(() => {
+    if (openedInApp.current) {
+      openedInApp.current = false;
+      window.history.back();
+    } else {
+      navTo("hero");
+    }
+  }, [navTo]);
+
+  return { view, demoOpen, navigate, openDemo, exitDemo };
 }

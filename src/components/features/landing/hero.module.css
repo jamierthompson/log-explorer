@@ -5,6 +5,8 @@
   max-width: var(--prose-measure);
   margin: 0 auto;
   padding-top: var(--space-7);
+  font-family: var(--font-sans);
+  color: var(--color-fg);
 }
 
 @media (--desktop) {
@@ -44,27 +46,10 @@
   font-variation-settings: "opsz" 17;
 }
 
-.demoFigure {
-  margin: 0;
+.heroActions {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.demoFrame {
-  height: 85dvh;
-  background: var(--color-bg);
-  border-radius: var(--radius-1);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  font-family: var(--font-mono);
-}
-
-@media (--tablet) {
-  .demoFrame {
-    height: 70dvh;
-  }
+  gap: var(--space-3);
+  margin-top: var(--space-2);
 }
 
 .heroFoot {

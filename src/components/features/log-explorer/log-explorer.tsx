@@ -180,13 +180,16 @@ export function LogExplorer({
   }, [focusedLineId, openContexts]);
 
   /*
-   * Document-level keyboard handler. Bails on event.defaultPrevented
-   * so an open modal can consume the event first, and on editable
-   * targets so inputs keep their own key semantics.
+   * Document-level keyboard handler, registered in the capture phase so
+   * it runs before an enclosing dialog's Esc-to-dismiss — pressing Esc
+   * closes an open context or clears a filter before it can close a
+   * surrounding overlay. Defers to the shortcut sheet, which owns Esc
+   * while it's open, and ignores editable targets so inputs keep their
+   * own key semantics.
    */
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.defaultPrevented) return;
+      if (sheetOpen) return;
       if (event.metaKey || event.ctrlKey || event.altKey) return;
 
       const target = event.target as HTMLElement | null;
@@ -225,9 +228,11 @@ export function LogExplorer({
       }
     };
 
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
+    document.addEventListener("keydown", onKeyDown, { capture: true });
+    return () =>
+      document.removeEventListener("keydown", onKeyDown, { capture: true });
   }, [
+    sheetOpen,
     openContexts.length,
     closeAllContexts,
     closeMostRecentContext,

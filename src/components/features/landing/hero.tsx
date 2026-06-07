@@ -1,19 +1,13 @@
-import { FigureCaption } from "@/components/features/case-study/figure";
-import { LogExplorer } from "@/components/features/log-explorer/log-explorer";
 import { Button } from "@/components/ui/button/button";
 import { Eyebrow } from "@/components/ui/eyebrow/eyebrow";
-import type { FilterState } from "@/lib/filter-state";
-import type { LogLine } from "@/types/log";
 
 import styles from "./hero.module.css";
 
 export function Hero({
-  lines,
-  initialFilter,
+  onOpenDemo,
   onStory,
 }: {
-  lines: readonly LogLine[];
-  initialFilter?: FilterState;
+  onOpenDemo: () => void;
   onStory: () => void;
 }) {
   return (
@@ -32,15 +26,11 @@ export function Hero({
         surface, the acknowledgement that a press landed, the few pixels of
         motion that make an action feel real.
       </p>
-      <figure className={styles.demoFigure}>
-        <div className={styles.demoFrame}>
-          <LogExplorer lines={lines} initialFilter={initialFilter} />
-        </div>
-        <FigureCaption>
-          Live prototype — click any line to view context. Or scroll past to
-          keep reading.
-        </FigureCaption>
-      </figure>
+      <div className={styles.heroActions}>
+        <Button variant="primary" onClick={onOpenDemo}>
+          Open the logs
+        </Button>
+      </div>
       <p className={styles.heroFoot}>
         <Button variant="link" onClick={onStory}>
           Read the build story →
