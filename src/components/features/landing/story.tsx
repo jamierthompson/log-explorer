@@ -7,7 +7,7 @@ import styles from "./story.module.css";
 export function Story({ onHome }: { onHome: () => void }) {
   return (
     <article className={styles.article}>
-      <section className={styles.section}>
+      <section id="chasing-an-id" className={styles.section}>
         <h2 className={styles.heading}>Chasing an ID across tabs</h2>
         <p className={styles.body}>
           You’re troubleshooting a service incident. Logs are tailing live.
@@ -42,7 +42,7 @@ export function Story({ onHome }: { onHome: () => void }) {
         </p>
       </section>
 
-      <section className={styles.section}>
+      <section id="the-idea" className={styles.section}>
         <h2 className={styles.heading}>The idea</h2>
         <p className={styles.body}>
           Open the context where the line lives. Click a line — call it the
@@ -61,7 +61,7 @@ export function Story({ onHome }: { onHome: () => void }) {
         </p>
       </section>
 
-      <section className={styles.section}>
+      <section id="what-i-built" className={styles.section}>
         <h2 className={styles.heading}>What I built</h2>
         <p className={styles.body}>
           A working prototype: small, focused, intentionally narrow. The
@@ -84,7 +84,7 @@ export function Story({ onHome }: { onHome: () => void }) {
         </p>
       </section>
 
-      <section className={styles.section}>
+      <section id="finding-the-real-problem" className={styles.section}>
         <h2 className={styles.heading}>Finding the real problem</h2>
         <p className={styles.body}>
           My first instinct was to make the context appear with motion. Click an
@@ -115,7 +115,7 @@ export function Story({ onHome }: { onHome: () => void }) {
         </p>
       </section>
 
-      <section className={styles.section}>
+      <section id="the-legend" className={styles.section}>
         <h2 className={styles.heading}>The Legend</h2>
         <p className={styles.body}>
           The Legend started as a single static hint labeled{" "}
@@ -263,7 +263,7 @@ export function Story({ onHome }: { onHome: () => void }) {
         </p>
       </section>
 
-      <section className={styles.section}>
+      <section id="what-id-do-next" className={styles.section}>
         <h2 className={styles.heading}>What I’d do next</h2>
         <p className={styles.body}>
           The pulse tells you the press landed. It doesn’t tell you where the
@@ -294,7 +294,7 @@ export function Story({ onHome }: { onHome: () => void }) {
         </p>
       </section>
 
-      <section className={styles.section}>
+      <section id="what-ill-carry-forward" className={styles.section}>
         <h2 className={styles.heading}>What I’ll carry forward</h2>
         <p className={styles.body}>
           <strong>Build to discover.</strong> The Legend wasn’t designed up
@@ -323,7 +323,7 @@ export function Story({ onHome }: { onHome: () => void }) {
         </p>
       </section>
 
-      <section className={styles.section}>
+      <section id="closing" className={styles.section}>
         <h2 className={styles.heading}>Closing</h2>
         <p className={styles.body}>
           The fan of tabs collapses. The filter persists, multiple

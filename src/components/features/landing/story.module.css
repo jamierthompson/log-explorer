@@ -27,6 +27,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
+  /* Clear the sticky nav when the table of contents jumps here. */
+  scroll-margin-top: calc(var(--topnav-height) + var(--space-4));
 }
 
 .heading {

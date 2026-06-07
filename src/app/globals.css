@@ -71,6 +71,10 @@ html body[data-scroll-locked] {
 
   --content-padding-x: 1rem;
 
+  /* Height of the sticky top nav. Sections offset their scroll target
+   * by this so a jumped-to heading clears the nav. */
+  --topnav-height: 3.5rem;
+
   /*
    * Colors. light-dark() resolves against the active color-scheme;
    * the html element above declares `light dark` so the browser picks
