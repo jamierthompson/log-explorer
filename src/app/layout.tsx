@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Newsreader } from "next/font/google";
 
-import { Footer } from "@/components/features/footer/footer";
-import { ScrollToTop } from "@/components/features/scroll-to-top/scroll-to-top";
-
 import "./globals.css";
 import styles from "./layout.module.css";
 
@@ -58,8 +55,6 @@ export default function RootLayout({
           Skip to main content
         </a>
         {children}
-        <Footer />
-        <ScrollToTop />
       </body>
     </html>
   );

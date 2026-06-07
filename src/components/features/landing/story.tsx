@@ -4,13 +4,7 @@ import { Keycap, KeycapSequence } from "@/components/ui/keycap/keycap";
 
 import styles from "./story.module.css";
 
-export function Story({
-  onHome,
-  onOpenDemo,
-}: {
-  onHome: () => void;
-  onOpenDemo: () => void;
-}) {
+export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
   return (
     <article className={styles.article}>
       <section id="chasing-an-id" className={styles.section}>
@@ -340,14 +334,11 @@ export function Story({
         </p>
       </section>
 
-      <footer className={styles.storyFoot}>
+      <div className={styles.storyCta}>
         <Button variant="primary" onClick={onOpenDemo}>
           Open the logs
         </Button>
-        <Button variant="link" onClick={onHome}>
-          ← Back to the top
-        </Button>
-      </footer>
+      </div>
     </article>
   );
 }

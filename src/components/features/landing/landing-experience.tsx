@@ -5,6 +5,9 @@ import { useCallback } from "react";
 import type { FilterState } from "@/lib/filter-state";
 import type { LogLine } from "@/types/log";
 
+import { Footer } from "@/components/features/footer/footer";
+import { ScrollToTop } from "@/components/features/scroll-to-top/scroll-to-top";
+
 import { DemoOverlay } from "./demo-overlay";
 import { Hero } from "./hero";
 import styles from "./landing-experience.module.css";
@@ -49,11 +52,19 @@ export function LandingExperience({
       />
       <main id="main-content" tabIndex={-1} className={styles.main}>
         {view === "story" ? (
-          <Story onHome={() => navigate("hero")} onOpenDemo={openDemo} />
+          <Story onOpenDemo={openDemo} />
         ) : (
           <Hero onOpenDemo={openDemo} onStory={() => navigate("story")} />
         )}
       </main>
+      {/* Footer and scroll-to-top belong to the long-form reading view
+       * only. */}
+      {view === "story" && (
+        <>
+          <Footer />
+          <ScrollToTop />
+        </>
+      )}
       <DemoOverlay
         open={demoOpen}
         onOpenChange={(open) => {
