@@ -44,20 +44,6 @@ pnpm dev
 
 Then open http://localhost:3000.
 
-## Project structure
-
-```
-src/
-├── app/                  # App Router routes
-├── components/
-│   ├── features/         # Composed feature components (log-explorer, …)
-│   └── ui/               # Generic primitives (chip, keycap, legend)
-├── lib/                  # Pure utilities (filter, derive, context, shortcuts)
-├── mocks/                # Mock log fixtures
-└── types/                # Shared type definitions
-tests/                    # Vitest unit tests mirroring src/
-```
-
 ## Testing
 
 ```bash
