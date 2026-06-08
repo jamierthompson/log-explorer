@@ -4,3 +4,40 @@
   min-height: 0;
   flex-direction: column;
 }
+
+.layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--logx-surface);
+  border-radius: var(--radius-1);
+}
+
+.skip {
+  margin-top: var(--space-4);
+}
+
+@media (--desktop) {
+  .layout {
+    flex-direction: row;
+  }
+
+  .aside {
+    flex: 0 0 20rem;
+  }
+
+  .main {
+    min-width: 0;
+    max-width: 48rem;
+  }
+}

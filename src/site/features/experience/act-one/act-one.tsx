@@ -3,8 +3,7 @@
 import * as Tabs from "@radix-ui/react-tabs";
 import { useCallback, useState } from "react";
 
-import { LogExplorer, LogRow, type LogLine } from "@/demo";
-import { Button } from "@/site/ui/button/button";
+import { formatLogTime, LogExplorer, LogRow, type LogLine } from "@/demo";
 
 import styles from "./act-one.module.css";
 
@@ -17,6 +16,21 @@ const LIVE = "live";
 
 type ContextTab = { readonly id: string; readonly line: LogLine };
 
+const tabLabel = (line: LogLine) =>
+  `${formatLogTime(line.timestamp)} · @${line.instance}`;
+
+/* The pane's note escalates with the open-tab count, so the scatter is
+ * felt rather than just stated, and points back to the live tail. */
+function paneNote(tabCount: number): string {
+  if (tabCount >= 3) {
+    return `${tabCount} tabs open — the investigation’s scattered across them. Live tail still holds your filter.`;
+  }
+  if (tabCount === 2) {
+    return "Two tabs now — flip back to Live tail to pick up where you were.";
+  }
+  return "New tab — your filter didn’t come with you.";
+}
+
 /**
  * Act 1 — the old way. The explorer runs with context delegated out
  * (onViewContext), so opening a line's context spawns a browser-style tab
@@ -24,13 +38,7 @@ type ContextTab = { readonly id: string; readonly line: LogLine };
  * mounted, so it stays filtered behind the tabs and returning to it keeps
  * the visitor's place.
  */
-export function ActOne({
-  lines,
-  onAdvance,
-}: {
-  lines: readonly LogLine[];
-  onAdvance: () => void;
-}) {
+export function ActOne({ lines }: { lines: readonly LogLine[] }) {
   const [tabs, setTabs] = useState<readonly ContextTab[]>([]);
   const [active, setActive] = useState<string>(LIVE);
 
@@ -61,12 +69,12 @@ export function ActOne({
         {tabs.map((tab) => (
           <span key={tab.id} className={styles.tabWrap}>
             <Tabs.Trigger value={tab.id} className={styles.tab}>
-              {tab.line.message}
+              {tabLabel(tab.line)}
             </Tabs.Trigger>
             <button
               type="button"
               className={styles.tabClose}
-              aria-label={`Close “${tab.line.message}”`}
+              aria-label={`Close ${tabLabel(tab.line)}`}
               onClick={() => closeTab(tab.id)}
             >
               ✕
@@ -74,16 +82,11 @@ export function ActOne({
           </span>
         ))}
 
-        <div className={styles.tabstripEnd}>
-          {tabs.length > 0 && (
-            <span className={styles.tabCount}>
-              {tabs.length} tab{tabs.length === 1 ? "" : "s"} open
-            </span>
-          )}
-          <Button variant="primary" onClick={onAdvance}>
-            Continue →
-          </Button>
-        </div>
+        {tabs.length > 0 && (
+          <span className={styles.tabCount}>
+            {tabs.length} tab{tabs.length === 1 ? "" : "s"} open
+          </span>
+        )}
       </Tabs.List>
 
       <Tabs.Content value={LIVE} className={styles.panel} forceMount>
@@ -96,7 +99,7 @@ export function ActOne({
 
       {tabs.map((tab) => (
         <Tabs.Content key={tab.id} value={tab.id} className={styles.panel}>
-          <ContextPane lines={lines} anchorId={tab.id} />
+          <ContextPane lines={lines} anchorId={tab.id} tabCount={tabs.length} />
         </Tabs.Content>
       ))}
     </Tabs.Root>
@@ -106,9 +109,11 @@ export function ActOne({
 function ContextPane({
   lines,
   anchorId,
+  tabCount,
 }: {
   lines: readonly LogLine[];
   anchorId: string;
+  tabCount: number;
 }) {
   const index = lines.findIndex((l) => l.id === anchorId);
   const slice =
@@ -118,9 +123,7 @@ function ContextPane({
 
   return (
     <div className={styles.pane}>
-      <p className={styles.paneNote}>
-        New tab — your filter didn’t come with you.
-      </p>
+      <p className={styles.paneNote}>{paneNote(tabCount)}</p>
       <ul className={styles.paneList}>
         {slice.map((line) => (
           <li

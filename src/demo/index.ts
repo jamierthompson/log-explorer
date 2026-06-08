@@ -6,6 +6,8 @@ export { LogExplorer } from "./features/log-explorer/log-explorer";
 export type { LogExplorerSnapshot } from "./features/log-explorer/log-explorer-state";
 /** The bare, read-only log row — for composing slices outside the explorer. */
 export { LogLine as LogRow } from "./features/log-explorer/log-line";
+/** Format a line's timestamp the same way the explorer's rows do. */
+export { formatTime as formatLogTime } from "./lib/format-timestamp";
 export { Legend, type LegendItem } from "./ui/legend/legend";
 export { Keycap, KeycapSequence } from "./ui/keycap/keycap";
 export type { LogLine } from "./types/log";

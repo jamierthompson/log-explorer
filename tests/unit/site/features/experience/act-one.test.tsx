@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { LogLine } from "@/demo";
 import { ActOne } from "@/site/features/experience/act-one/act-one";
@@ -33,7 +33,7 @@ const lines: readonly LogLine[] = [
 describe("ActOne", () => {
   it("opens a context view in a new tab instead of expanding in place", async () => {
     const user = userEvent.setup();
-    render(<ActOne lines={lines} onAdvance={vi.fn()} />);
+    render(<ActOne lines={lines} />);
 
     // Act 1 opens unfiltered; narrow first so a line is clickable.
     await user.click(screen.getByRole("button", { name: /errors only/i }));
@@ -48,7 +48,7 @@ describe("ActOne", () => {
 
   it("keeps the live tail filtered when the visitor returns to it", async () => {
     const user = userEvent.setup();
-    render(<ActOne lines={lines} onAdvance={vi.fn()} />);
+    render(<ActOne lines={lines} />);
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     await user.click(screen.getByText("request timeout"));
 

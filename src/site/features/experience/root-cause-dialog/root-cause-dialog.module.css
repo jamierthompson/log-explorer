@@ -1,0 +1,94 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: light-dark(oklch(0.4 0 0 / 0.4), oklch(0 0 0 / 0.66));
+  backdrop-filter: blur(3px);
+}
+
+.content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 60;
+  width: min(34rem, calc(100vw - 2 * var(--content-padding-x)));
+  padding: var(--space-6);
+  background: var(--surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-1);
+  outline: none;
+  transform: translate(-50%, -50%);
+}
+
+.title {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-prose-h2);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.description {
+  margin: 0 0 var(--space-5);
+  font-family: var(--font-sans);
+  font-size: var(--text-prose-base);
+  line-height: var(--line-height-prose);
+  color: var(--color-text-muted);
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.choice {
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-1);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.choice:hover {
+  border-color: var(--brand-accent);
+}
+
+.eyebrow {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-accent);
+}
+
+.result:not([data-correct]) .eyebrow {
+  color: var(--color-text-subtle);
+}
+
+.resultName {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-sans);
+  font-size: var(--text-prose-lead);
+  color: var(--color-text);
+}
+
+.lesson {
+  margin: 0 0 var(--space-5);
+  font-family: var(--font-sans);
+  font-size: var(--text-prose-base);
+  line-height: var(--line-height-prose);
+  color: var(--color-text-muted);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}

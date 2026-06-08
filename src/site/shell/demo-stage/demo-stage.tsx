@@ -27,25 +27,27 @@ export function DemoStage({
         <Dialog.Overlay className={styles.overlay} />
         <Dialog.Content className={styles.content} aria-describedby={undefined}>
           <Dialog.Title className={styles.srOnly}>Live demo</Dialog.Title>
-          <div className={styles.bar}>
-            <div className={styles.crumb}>
+          <div className={styles.inner}>
+            <div className={styles.bar}>
+              <div className={styles.crumb}>
+                <Dialog.Close asChild>
+                  <Button variant="link" className={styles.crumbHome}>
+                    Log Explorer
+                  </Button>
+                </Dialog.Close>
+                <span className={styles.crumbSep} aria-hidden="true">
+                  /
+                </span>
+                <span className={styles.crumbHere}>Live demo</span>
+              </div>
               <Dialog.Close asChild>
-                <Button variant="link" className={styles.crumbHome}>
-                  Log Explorer
+                <Button variant="ghost" aria-label="Exit the demo">
+                  Exit ✕
                 </Button>
               </Dialog.Close>
-              <span className={styles.crumbSep} aria-hidden="true">
-                /
-              </span>
-              <span className={styles.crumbHere}>Live demo</span>
             </div>
-            <Dialog.Close asChild>
-              <Button variant="ghost" aria-label="Exit the demo">
-                Exit ✕
-              </Button>
-            </Dialog.Close>
+            <div className={styles.frame}>{children}</div>
           </div>
-          <div className={styles.frame}>{children}</div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
