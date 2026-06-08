@@ -1,7 +1,7 @@
 import { Keycap, KeycapSequence } from "@/demo";
-import { Figure } from "@/site/features/figure/figure";
 import { Button } from "@/site/ui/button/button";
 import { Eyebrow } from "@/site/ui/eyebrow/eyebrow";
+import { Figure } from "@/site/ui/figure/figure";
 
 import styles from "./story.module.css";
 import { TableOfContents } from "./table-of-contents";
