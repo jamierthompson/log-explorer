@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { LogExplorer } from "@/demo/features/log-explorer/log-explorer";
 import type { LogLine } from "@/demo/types/log";
@@ -295,5 +295,31 @@ describe("LogExplorer anchor cycling", () => {
 
     await user.keyboard("]");
     expect(focusedLineId()).toBe(before);
+  });
+});
+
+describe("LogExplorer context delegation and Legend visibility", () => {
+  it("delegates to onViewContext instead of opening context in place", async () => {
+    const user = userEvent.setup();
+    const onViewContext = vi.fn();
+    render(<LogExplorer lines={lines} onViewContext={onViewContext} />);
+
+    await user.click(screen.getByRole("button", { name: /trace req=r4d8a2/i }));
+    await user.click(screen.getByText("GET /api/users"));
+
+    expect(onViewContext).toHaveBeenCalledWith("3");
+    // Nothing opened in place.
+    expect(document.querySelector('[data-selected="true"]')).toBeNull();
+  });
+
+  it("hides the Legend when showLegend is false but keeps the filter chips", () => {
+    render(<LogExplorer lines={lines} showLegend={false} />);
+
+    expect(
+      screen.queryByRole("toolbar", { name: /keyboard hints/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /errors only/i }),
+    ).toBeInTheDocument();
   });
 });

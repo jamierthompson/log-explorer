@@ -36,10 +36,14 @@ export function LogExplorer({
   lines,
   initialFilter = initialFilterState,
   onStateChange,
+  onViewContext,
+  showLegend = true,
 }: {
   lines: readonly LogLine[];
   initialFilter?: FilterState;
   onStateChange?: (snapshot: LogExplorerSnapshot) => void;
+  onViewContext?: (lineId: string) => void;
+  showLegend?: boolean;
 }) {
   const [filterState, dispatch] = useReducer(filterReducer, initialFilter);
   const [focusedLineId, setFocusedLineId] = useState<string | null>(null);
@@ -74,6 +78,20 @@ export function LogExplorer({
     filterState,
     scenarios: SCENARIOS,
   });
+
+  /*
+   * When onViewContext is provided, the explorer delegates the context
+   * action to the host instead of opening context in place — letting the
+   * host present it its own way. Without it, the action toggles context
+   * in place as usual.
+   */
+  const handleViewContext = useCallback(
+    (lineId: string) => {
+      if (onViewContext) onViewContext(lineId);
+      else toggleContext(lineId);
+    },
+    [onViewContext, toggleContext],
+  );
 
   const derivedLines = useMemo(
     () => deriveLines(lines, filterState, openContexts),
@@ -153,7 +171,7 @@ export function LogExplorer({
     lines: navigableLines,
     focusedLineId,
     setFocusedLineId,
-    onToggleContext: toggleContext,
+    onToggleContext: handleViewContext,
     onExpandContext: expandMostRecentContext,
     onNextAnchor: navigateNextAnchor,
     onPrevAnchor: navigatePrevAnchor,
@@ -288,7 +306,7 @@ export function LogExplorer({
           ariaLabel: focusedIsAnchor
             ? "Hide context on focused line"
             : "View context on focused line",
-          onClick: () => toggleContext(focusedLineId),
+          onClick: () => handleViewContext(focusedLineId),
         });
       }
     }
@@ -334,7 +352,7 @@ export function LogExplorer({
     selectedContextLineIds,
     visibleLines,
     filterState,
-    toggleContext,
+    handleViewContext,
   ]);
 
   /*
@@ -353,7 +371,7 @@ export function LogExplorer({
   return (
     <div className={styles.root} data-logx-surface>
       <div className={styles.toolbar}>
-        <Legend items={legendItems} />
+        {showLegend && <Legend items={legendItems} />}
         <ScenarioChips state={filterState} dispatch={dispatch} />
       </div>
       <LogList
@@ -363,7 +381,7 @@ export function LogExplorer({
         hasAnyFilter={hasAnyFilter(filterState)}
         onKeyDown={handleKeyDown}
         onLineFocus={setFocusedLineId}
-        onToggleContext={toggleContext}
+        onToggleContext={handleViewContext}
         viewportRef={viewportRef}
       />
       <ShortcutSheet open={sheetOpen} onOpenChange={setSheetOpen} />
