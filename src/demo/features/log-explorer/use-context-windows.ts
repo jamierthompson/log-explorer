@@ -40,6 +40,13 @@ export function useContextWindows({
    * a visible acknowledgement that the press took effect.
    */
   const [expandPulseKey, setExpandPulseKey] = useState(0);
+  /*
+   * Mirror of expandPulseKey for the Close entry. A closed context is
+   * often off-screen (the anchor has scrolled out of view), so replaying
+   * the entry's animation is the acknowledgement that the press landed —
+   * the same role the pulse plays on expand.
+   */
+  const [closePulseKey, setClosePulseKey] = useState(0);
 
   /*
    * Drop a context only once every scenario whose individual filter
@@ -94,10 +101,10 @@ export function useContextWindows({
   );
 
   const closeMostRecentContext = useCallback(() => {
-    setOpenContexts((current) =>
-      current.length === 0 ? current : current.slice(0, -1),
-    );
-  }, []);
+    if (openContexts.length === 0) return;
+    setOpenContexts((current) => current.slice(0, -1));
+    setClosePulseKey((k) => k + 1);
+  }, [openContexts.length]);
 
   const closeAllContexts = useCallback(() => {
     setOpenContexts((current) => (current.length === 0 ? current : []));
@@ -149,5 +156,6 @@ export function useContextWindows({
     closeAllContexts,
     selectedContextLineIds,
     expandPulseKey,
+    closePulseKey,
   };
 }
