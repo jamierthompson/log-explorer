@@ -1,5 +1,6 @@
 "use client";
 
+import * as Tabs from "@radix-ui/react-tabs";
 import { useCallback, useState } from "react";
 
 import { LogExplorer, LogRow, type LogLine } from "@/demo";
@@ -19,8 +20,9 @@ type ContextTab = { readonly id: string; readonly line: LogLine };
 /**
  * Act 1 — the old way. The explorer runs with context delegated out
  * (onViewContext), so opening a line's context spawns a browser-style tab
- * here instead of expanding in place. The live tail stays mounted and
- * filtered behind the tabs, so returning to it keeps the visitor's place.
+ * here instead of expanding in place. The live tail's panel is force-
+ * mounted, so it stays filtered behind the tabs and returning to it keeps
+ * the visitor's place.
  */
 export function ActOne({
   lines,
@@ -50,32 +52,17 @@ export function ActOne({
   }, []);
 
   return (
-    <div className={styles.act}>
-      <div className={styles.tabstrip}>
-        <button
-          type="button"
-          className={styles.tab}
-          aria-pressed={active === LIVE}
-          data-active={active === LIVE || undefined}
-          onClick={() => setActive(LIVE)}
-        >
+    <Tabs.Root className={styles.act} value={active} onValueChange={setActive}>
+      <Tabs.List className={styles.tabstrip} aria-label="Open views">
+        <Tabs.Trigger value={LIVE} className={styles.tab}>
           Live tail
-        </button>
+        </Tabs.Trigger>
 
         {tabs.map((tab) => (
-          <span
-            key={tab.id}
-            className={styles.tab}
-            data-active={active === tab.id || undefined}
-          >
-            <button
-              type="button"
-              className={styles.tabLabel}
-              aria-pressed={active === tab.id}
-              onClick={() => setActive(tab.id)}
-            >
+          <span key={tab.id} className={styles.tabWrap}>
+            <Tabs.Trigger value={tab.id} className={styles.tab}>
               {tab.line.message}
-            </button>
+            </Tabs.Trigger>
             <button
               type="button"
               className={styles.tabClose}
@@ -97,22 +84,22 @@ export function ActOne({
             Continue →
           </Button>
         </div>
-      </div>
+      </Tabs.List>
 
-      <div className={styles.content}>
-        <div
-          className={styles.explorer}
-          data-hidden={active !== LIVE || undefined}
-        >
-          <LogExplorer
-            lines={lines}
-            showLegend={false}
-            onViewContext={openContext}
-          />
-        </div>
-        {active !== LIVE && <ContextPane lines={lines} anchorId={active} />}
-      </div>
-    </div>
+      <Tabs.Content value={LIVE} className={styles.panel} forceMount>
+        <LogExplorer
+          lines={lines}
+          showLegend={false}
+          onViewContext={openContext}
+        />
+      </Tabs.Content>
+
+      {tabs.map((tab) => (
+        <Tabs.Content key={tab.id} value={tab.id} className={styles.panel}>
+          <ContextPane lines={lines} anchorId={tab.id} />
+        </Tabs.Content>
+      ))}
+    </Tabs.Root>
   );
 }
 

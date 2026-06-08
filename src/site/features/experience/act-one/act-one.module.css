@@ -16,15 +16,15 @@
 }
 
 .tab {
-  display: inline-flex;
   flex: 0 0 auto;
-  align-items: center;
-  gap: var(--space-2);
-  max-width: 220px;
+  max-width: 12.5rem;
   padding: var(--space-2) var(--space-3);
+  overflow: hidden;
   font-family: var(--font-mono);
   font-size: var(--font-size-sm);
   color: var(--color-text-subtle);
+  white-space: nowrap;
+  text-overflow: ellipsis;
   background: transparent;
   border: 1px solid transparent;
   border-bottom: none;
@@ -32,23 +32,20 @@
   cursor: pointer;
 }
 
-.tab[data-active] {
+.tab[data-state="active"] {
   color: var(--color-text);
   background: var(--surface);
   border-color: var(--color-border);
 }
 
-.tabLabel {
-  max-width: 150px;
-  padding: 0;
-  overflow: hidden;
-  font: inherit;
-  color: inherit;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  background: none;
-  border: none;
-  cursor: pointer;
+.tabWrap {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+}
+
+.tabWrap .tab {
+  padding-right: var(--space-1);
 }
 
 .tabClose {
@@ -86,21 +83,16 @@
   white-space: nowrap;
 }
 
-.content {
+.panel {
   display: flex;
   flex: 1;
   min-height: 0;
   flex-direction: column;
 }
 
-.explorer {
-  display: flex;
-  flex: 1;
-  min-height: 0;
-  flex-direction: column;
-}
-
-.explorer[data-hidden] {
+/* The live-tail panel is force-mounted to preserve its filter, so Radix
+ * leaves it visible and only marks it inactive — hide it ourselves. */
+.panel[data-state="inactive"] {
   display: none;
 }
 

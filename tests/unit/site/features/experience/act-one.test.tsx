@@ -52,7 +52,7 @@ describe("ActOne", () => {
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     await user.click(screen.getByText("request timeout"));
 
-    await user.click(screen.getByRole("button", { name: "Live tail" }));
+    await user.click(screen.getByRole("tab", { name: "Live tail" }));
     // The filter survived the round trip: the non-matching line stays hidden.
     expect(screen.queryByText("Healthcheck OK")).not.toBeInTheDocument();
   });
