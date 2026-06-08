@@ -11,7 +11,10 @@
 const config = {
   plugins: {
     "@csstools/postcss-global-data": {
-      files: ["src/demo/styles/custom-media.css", "src/app/custom-media.css"],
+      files: [
+        "src/demo/styles/custom-media.css",
+        "src/site/styles/custom-media.css",
+      ],
     },
     "postcss-custom-media": {},
   },
