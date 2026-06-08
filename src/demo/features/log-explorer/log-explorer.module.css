@@ -3,14 +3,10 @@
   flex-direction: column;
   gap: var(--logx-space-5);
   padding: var(--logx-space-5) var(--logx-space-5) var(--logx-space-4);
-  /* Map the app's focus-ring color into the Legend's portable hook;
-   * the Legend assumes no host tokens, so the wiring lives here. */
   --legend-focus-color: var(--logx-focus-ring-color);
 }
 
-@media (--tablet) {
-  /* Mobile gets extra breathing room between Legend and Filter; on
-   * wider viewports the original tighter gap reads better. */
+@media (--logx-tablet) {
   .toolbar {
     gap: var(--logx-space-4);
   }

@@ -1,0 +1,11 @@
+/*
+ * LogExplorer breakpoints. Prefixed and self-contained so the component
+ * carries its own responsive scale when extracted, independent of any
+ * host's breakpoints. Compiled and inlined by postcss-custom-media via
+ * the global-data plugin (see postcss.config.mjs).
+ *
+ * Authoring convention: mobile-first. Default styles target the smallest
+ * viewport; @media (--logx-tablet) layers wider-viewport enhancements.
+ */
+
+@custom-media --logx-tablet (min-width: 45rem);

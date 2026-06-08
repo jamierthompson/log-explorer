@@ -1,9 +1,3 @@
-/*
- * Mobile-first: the timestamp and instance share a compact header row
- * while the message takes the full width below, so narrow viewports
- * don't squeeze the message into a thin, heavily-wrapping column. The
- * inline three-column layout returns at --tablet where width allows.
- */
 .line {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -18,7 +12,7 @@
   grid-column: 1 / -1;
 }
 
-@media (--tablet) {
+@media (--logx-tablet) {
   .line {
     grid-template-columns: auto auto 1fr;
     column-gap: var(--logx-space-4);
