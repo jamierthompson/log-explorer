@@ -14,7 +14,7 @@
   max-width: calc(var(--prose-measure) + var(--content-padding-x) * 2);
   margin: 0 auto;
   padding: var(--space-5) var(--content-padding-x) var(--space-6);
-  color: var(--color-fg-muted);
+  color: var(--color-text-muted);
 }
 
 .copyright {
@@ -31,7 +31,7 @@
 }
 
 .link:hover {
-  color: var(--color-fg);
+  color: var(--color-text);
 }
 
 .link:focus-visible {

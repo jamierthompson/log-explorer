@@ -10,7 +10,7 @@
   padding-block: 4vh 10vh;
   padding-inline: var(--content-padding-x);
   font-family: var(--font-sans);
-  color: var(--color-fg);
+  color: var(--color-text);
 }
 
 .hero .heroEyebrow {
@@ -18,7 +18,7 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-regular);
   letter-spacing: 0.22em;
-  color: var(--color-accent);
+  color: var(--color-text-accent);
 }
 
 .heroTitle {
@@ -33,7 +33,7 @@
 
 .heroTitle em {
   font-style: italic;
-  color: var(--color-accent);
+  color: var(--color-text-accent);
 }
 
 .lead {
@@ -41,7 +41,7 @@
   max-width: 60ch;
   font-size: var(--text-prose-lead);
   line-height: var(--line-height-prose);
-  color: var(--color-fg-muted);
+  color: var(--color-text-muted);
   text-wrap: pretty;
   font-variation-settings: "opsz" 17;
 }
@@ -53,7 +53,7 @@
   margin: 0 0 var(--space-7);
   font-family: var(--font-mono);
   font-size: var(--font-size-base);
-  color: var(--color-fg);
+  color: var(--color-text);
 }
 
 .coverMeta span {
@@ -67,7 +67,7 @@
   text-transform: uppercase;
   letter-spacing: 0.16em;
   font-size: var(--font-size-sm);
-  color: var(--color-fg-subtle);
+  color: var(--color-text-subtle);
 }
 
 .heroActions {
@@ -79,7 +79,7 @@
   margin: var(--space-6) 0 0;
   font-family: var(--font-mono);
   font-size: var(--font-size-base);
-  color: var(--color-fg-subtle);
+  color: var(--color-text-subtle);
 }
 
 .nowrap {

@@ -2,7 +2,7 @@
   position: fixed;
   inset: 0;
   z-index: 50;
-  background: var(--color-page-bg);
+  background: var(--surface-page);
 }
 
 .content {
@@ -11,7 +11,7 @@
   z-index: 50;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg);
+  background: var(--surface);
   outline: none;
 }
 
@@ -36,15 +36,15 @@
 }
 
 .crumbHome {
-  color: var(--color-fg);
+  color: var(--color-text);
 }
 
 .crumbSep {
-  color: var(--color-fg-subtle);
+  color: var(--color-text-subtle);
 }
 
 .crumbHere {
-  color: var(--color-fg-muted);
+  color: var(--color-text-muted);
 }
 
 .frame {

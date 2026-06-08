@@ -63,7 +63,7 @@ html body[data-scroll-locked] {
    * offset on one documented scale rather than scattered magic numbers.
    */
   --focus-ring-width: 1px;
-  --focus-ring-color: var(--color-accent);
+  --focus-ring-color: var(--brand-accent);
   --focus-ring-offset: 1px;
 
   --duration-fast: 120ms;
@@ -85,9 +85,9 @@ html body[data-scroll-locked] {
   --color-fg-muted: light-dark(oklch(0.47 0 0), oklch(0.68 0 0));
   --color-fg-subtle: light-dark(oklch(0.53 0 0), oklch(0.6 0 0));
   --color-border: light-dark(oklch(0.92 0 0), oklch(0.285 0 0));
-  --color-accent: light-dark(oklch(0.485 0.18 349.8), oklch(0.725 0.175 349.8));
-  --color-accent-hover: oklch(from var(--color-accent) l calc(c + 0.06) h);
   --color-on-accent: light-dark(oklch(0.985 0 0), oklch(0.205 0 0));
+  /* Default brand, used when no demo supplies one (see --brand-accent). */
+  --color-accent: light-dark(oklch(0.485 0.18 349.8), oklch(0.725 0.175 349.8));
 
   /*
    * Prose layer for the long-form reading surface — a modular scale
@@ -109,12 +109,29 @@ html body[data-scroll-locked] {
   --prose-measure: 70ch;
 
   --color-page-bg: light-dark(oklch(0.975 0 0), oklch(0.185 0 0));
-  --color-prose-rule: var(--color-accent);
+
+  /*
+   * Brand. Adopts the embedded demo's primary so the route is skinned in
+   * the demo's color; falls back to the default brand when none is set.
+   */
+  --brand-accent: var(--logx-accent, var(--color-accent));
+  --brand-accent-hover: oklch(from var(--brand-accent) l calc(c + 0.06) h);
+
+  /* Semantic roles — site components reference these, never the palette. */
+  --color-text: var(--color-fg);
+  --color-text-muted: var(--color-fg-muted);
+  --color-text-subtle: var(--color-fg-subtle);
+  --color-text-accent: var(--brand-accent);
+  --color-link: var(--brand-accent);
+  --color-link-hover: var(--brand-accent-hover);
+  --surface-page: var(--color-page-bg);
+  --surface: var(--color-bg);
+  --color-prose-rule: var(--brand-accent);
 }
 
 body {
-  background: var(--color-page-bg);
-  color: var(--color-fg);
+  background: var(--surface-page);
+  color: var(--color-text);
   font-family: var(--font-mono);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

@@ -5,5 +5,5 @@
   font-weight: var(--font-weight-medium);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--color-fg-muted);
+  color: var(--color-text-muted);
 }

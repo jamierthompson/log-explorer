@@ -42,6 +42,6 @@
 .caption {
   font-family: var(--font-mono);
   font-size: calc(var(--text-prose-base) * 0.75);
-  color: var(--color-fg-muted);
+  color: var(--color-text-muted);
   text-align: left;
 }

@@ -7,12 +7,12 @@
   gap: var(--space-4);
   height: var(--topnav-height);
   padding: 0 var(--content-padding-x);
-  background: var(--color-page-bg);
+  background: var(--surface-page);
 }
 
 .brand {
   flex-shrink: 0;
-  color: var(--color-fg);
+  color: var(--color-text);
   font-weight: var(--font-weight-medium);
 }
 
@@ -20,7 +20,7 @@
   width: 0.625rem;
   height: 0.625rem;
   border-radius: var(--radius-1);
-  background: var(--color-accent);
+  background: var(--brand-accent);
 }
 
 .links {

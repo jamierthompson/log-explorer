@@ -3,7 +3,7 @@
  * action-as-text-button read identically.
  */
 .link {
-  color: var(--color-fg-muted);
+  color: var(--color-text-muted);
   text-decoration: underline;
   text-decoration-color: var(--color-border);
   text-underline-offset: 0.2em;
@@ -14,7 +14,7 @@
 }
 
 .link:hover {
-  color: var(--color-fg);
+  color: var(--color-text);
   text-decoration-color: currentColor;
 }
 

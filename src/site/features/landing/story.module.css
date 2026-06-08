@@ -16,7 +16,7 @@
   padding: var(--space-7) var(--content-padding-x) 0;
   font-family: var(--font-sans);
   font-size: var(--text-prose-base);
-  color: var(--color-fg);
+  color: var(--color-text);
 }
 
 @media (--desktop) {
@@ -78,7 +78,7 @@
   margin: 0;
   font-size: var(--text-prose-lead);
   line-height: var(--line-height-prose);
-  color: var(--color-fg-muted);
+  color: var(--color-text-muted);
   font-variation-settings: "opsz" 17;
 }
 

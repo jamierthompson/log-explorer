@@ -24,7 +24,7 @@
 
   border: 0;
   background: transparent;
-  color: var(--color-fg-muted);
+  color: var(--color-text-muted);
   font-family: var(--font-mono);
   font-size: 1.25rem;
   line-height: 1;
@@ -59,7 +59,7 @@
 }
 
 .button:hover {
-  color: var(--color-fg);
+  color: var(--color-text);
 }
 
 .button:focus-visible {
