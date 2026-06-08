@@ -24,6 +24,7 @@ import {
 } from "@/demo/lib/filter-state";
 import { SHORTCUTS } from "@/demo/lib/keyboard-shortcuts";
 import type { LogLine } from "@/demo/types/log";
+import "@/demo/styles/base.css";
 
 import styles from "./log-explorer.module.css";
 import { LogList, lineDomId } from "./log-list";
@@ -331,7 +332,7 @@ export function LogExplorer({
   ]);
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} data-logx-surface>
       <div className={styles.toolbar}>
         <Legend items={legendItems} />
         <ScenarioChips state={filterState} dispatch={dispatch} />

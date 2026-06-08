@@ -22,7 +22,7 @@ export function ShortcutSheet({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className={styles.overlay} />
-        <Dialog.Content className={styles.content}>
+        <Dialog.Content className={styles.content} data-logx-surface>
           <Dialog.Title className={styles.title}>
             Keyboard Shortcuts
           </Dialog.Title>
