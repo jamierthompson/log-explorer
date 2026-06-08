@@ -1,5 +1,5 @@
 import { mockLogs, SCENARIOS } from "@/demo";
-import { LandingExperience } from "@/site/features/landing/landing-experience";
+import { Landing } from "@/site/features/landing/landing";
 
 /* Pre-applies the trace scenario on first paint so the demo opens
  * already filtered, showing the affordance immediately instead of
@@ -7,7 +7,5 @@ import { LandingExperience } from "@/site/features/landing/landing-experience";
 const INITIAL_DEMO_FILTER = SCENARIOS.find((s) => s.id === "trace")?.scenario;
 
 export default function Home() {
-  return (
-    <LandingExperience lines={mockLogs} initialFilter={INITIAL_DEMO_FILTER} />
-  );
+  return <Landing lines={mockLogs} initialFilter={INITIAL_DEMO_FILTER} />;
 }

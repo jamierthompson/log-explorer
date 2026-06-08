@@ -2,14 +2,14 @@
 
 import type { FilterState, LogLine } from "@/demo";
 
+import { DemoOverlay } from "@/site/features/demo-overlay/demo-overlay";
 import { Footer } from "@/site/features/footer/footer";
+import { Hero } from "@/site/features/hero/hero";
 import { ScrollToTop } from "@/site/features/scroll-to-top/scroll-to-top";
+import { Story } from "@/site/features/story/story";
+import { TopNav } from "@/site/features/top-nav/top-nav";
 
-import { DemoOverlay } from "./demo-overlay";
-import { Hero } from "./hero";
-import styles from "./landing-experience.module.css";
-import { Story } from "./story";
-import { TopNav } from "./top-nav";
+import styles from "./landing.module.css";
 import { useHashRoute } from "./use-hash-route";
 
 /**
@@ -18,7 +18,7 @@ import { useHashRoute } from "./use-hash-route";
  * top. The nav sits above the skip-link target so "skip to main content"
  * bypasses it.
  */
-export function LandingExperience({
+export function Landing({
   lines,
   initialFilter,
 }: {

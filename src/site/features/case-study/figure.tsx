@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import styles from "./figure.module.css";
 
 /*
- * Captioned figure for the case-study prose. The figcaption is the
+ * Captioned figure for long-form prose. The figcaption is the
  * figure's accessible name, so no aria-label is needed; when a real
  * visual lands, it brings its own alt/aria text.
  *

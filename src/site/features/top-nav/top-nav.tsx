@@ -1,8 +1,8 @@
+import type { View } from "@/site/features/landing/use-hash-route";
 import { Button } from "@/site/ui/button/button";
 import { Link } from "@/site/ui/link/link";
 
 import styles from "./top-nav.module.css";
-import type { View } from "./use-hash-route";
 
 const REPO_URL = "https://github.com/jamierthompson/log-explorer";
 
