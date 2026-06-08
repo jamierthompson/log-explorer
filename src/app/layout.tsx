@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Newsreader } from "next/font/google";
 
+import "@/demo/styles/tokens.css";
 import "./globals.css";
 import styles from "./layout.module.css";
 

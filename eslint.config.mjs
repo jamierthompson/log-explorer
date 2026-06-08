@@ -59,8 +59,15 @@ const eslintConfig = defineConfig([
         {
           patterns: [
             {
-              group: ["@/demo/**"],
-              message: "Import the demo through its public barrel: @/demo.",
+              group: [
+                "@/demo/ui/**",
+                "@/demo/features/**",
+                "@/demo/lib/**",
+                "@/demo/types/**",
+                "@/demo/mocks/**",
+              ],
+              message:
+                "Import demo code through its public barrel (@/demo); only its published stylesheet may be imported by path.",
             },
           ],
         },

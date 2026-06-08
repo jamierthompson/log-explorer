@@ -1,17 +1,17 @@
 .toolbar {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
-  padding: var(--space-5) var(--space-5) var(--space-4);
+  gap: var(--logx-space-5);
+  padding: var(--logx-space-5) var(--logx-space-5) var(--logx-space-4);
   /* Map the app's focus-ring color into the Legend's portable hook;
    * the Legend assumes no host tokens, so the wiring lives here. */
-  --legend-focus-color: var(--focus-ring-color);
+  --legend-focus-color: var(--logx-focus-ring-color);
 }
 
 @media (--tablet) {
   /* Mobile gets extra breathing room between Legend and Filter; on
    * wider viewports the original tighter gap reads better. */
   .toolbar {
-    gap: var(--space-4);
+    gap: var(--logx-space-4);
   }
 }

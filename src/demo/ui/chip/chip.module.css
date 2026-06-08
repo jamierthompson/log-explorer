@@ -2,19 +2,19 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  padding: var(--space-1) var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-1);
+  padding: var(--logx-space-1) var(--logx-space-4);
+  border: 1px solid var(--logx-border);
+  border-radius: var(--logx-radius);
   background: transparent;
-  color: var(--color-fg-muted);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
+  color: var(--logx-color-text-muted);
+  font-family: var(--logx-font);
+  font-size: var(--logx-font-size-base);
+  font-weight: var(--logx-font-weight-medium);
   white-space: nowrap;
   cursor: pointer;
   transition:
-    color var(--duration-fast) var(--ease-standard),
-    border-color var(--duration-fast) var(--ease-standard);
+    color var(--logx-duration) var(--logx-ease),
+    border-color var(--logx-duration) var(--logx-ease);
 }
 
 /*
@@ -26,31 +26,31 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--color-accent);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
+  color: var(--logx-accent);
+  font-family: var(--logx-font);
+  font-size: var(--logx-font-size-base);
+  font-weight: var(--logx-font-weight-medium);
   opacity: 0;
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--logx-duration) var(--logx-ease);
 }
 
 .chip::before {
   content: "[";
-  left: var(--space-1);
+  left: var(--logx-space-1);
 }
 
 .chip::after {
   content: "]";
-  right: var(--space-1);
+  right: var(--logx-space-1);
 }
 
 .chip:hover {
-  border-color: var(--color-fg-muted);
+  border-color: var(--logx-color-text-muted);
 }
 
 .chip[data-active="true"] {
-  color: var(--color-fg);
-  border-color: var(--color-accent);
+  color: var(--logx-color-text);
+  border-color: var(--logx-accent);
 }
 
 .chip[data-active="true"]::before,
@@ -59,17 +59,17 @@
 }
 
 .chip[data-active="true"]:hover {
-  border-color: var(--color-accent-hover);
+  border-color: var(--logx-accent-hover);
 }
 
 .chip[data-active="true"]:hover::before,
 .chip[data-active="true"]:hover::after {
-  color: var(--color-accent-hover);
+  color: var(--logx-accent-hover);
 }
 
 .chip:focus-visible {
-  outline: var(--focus-ring-width) solid var(--focus-ring-color);
-  outline-offset: var(--focus-ring-offset);
+  outline: var(--logx-focus-ring-width) solid var(--logx-focus-ring-color);
+  outline-offset: var(--logx-focus-ring-offset);
 }
 
 /* Comfortable tap target on touch devices without altering the

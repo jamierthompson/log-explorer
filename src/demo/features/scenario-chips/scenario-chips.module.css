@@ -1,21 +1,21 @@
 .bar {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--logx-space-2);
 }
 
 .label {
   margin: 0;
-  font-family: var(--font-mono);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-family: var(--logx-font);
+  font-size: var(--logx-font-size-sm);
+  font-weight: var(--logx-font-weight-medium);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-fg-muted);
+  color: var(--logx-color-text-muted);
 }
 
 .row {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--logx-space-2);
 }

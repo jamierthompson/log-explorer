@@ -30,30 +30,30 @@
 .list {
   list-style: none;
   margin: 0;
-  padding: 0 var(--space-4) var(--space-4);
+  padding: 0 var(--logx-space-4) var(--logx-space-4);
 }
 
 .dayMarker {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4) var(--space-4);
+  gap: var(--logx-space-3);
+  padding: var(--logx-space-3) var(--logx-space-4) var(--logx-space-4);
 }
 
 .dayMarker::before,
 .dayMarker::after {
   content: "";
   flex: 1;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--logx-border);
 }
 
 .dayMarkerLabel {
-  font-family: var(--font-mono);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-family: var(--logx-font);
+  font-size: var(--logx-font-size-sm);
+  font-weight: var(--logx-font-weight-medium);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-fg-muted);
+  color: var(--logx-color-text-muted);
   white-space: nowrap;
 }
 
@@ -61,23 +61,23 @@
  * which is taller than the viewport — the top/bottom edges of an
  * outline on the list would drift off-screen as the user scrolls. */
 .scrollRoot:has(.list:focus-visible) {
-  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline: var(--logx-focus-ring-width) solid var(--logx-focus-ring-color);
   /* Inset rather than the default outward gap: an outward ring on the
    * scroll container would clip against the viewport edges. */
   outline-offset: -1px;
 }
 
 .list > li {
-  border-left: var(--space-1) solid transparent;
-  padding-left: var(--space-2);
+  border-left: var(--logx-space-1) solid transparent;
+  padding-left: var(--logx-space-2);
 }
 
 .list > li[data-selected="true"] {
-  border-left-color: var(--color-accent);
+  border-left-color: var(--logx-accent);
 }
 
 .list > li[data-focused="true"] {
-  background: color-mix(in oklch, var(--color-fg-muted) 8%, transparent);
+  background: color-mix(in oklch, var(--logx-color-text-muted) 8%, transparent);
 }
 
 .list > li[data-dimmed="true"] {
@@ -103,11 +103,11 @@
   width: 0.625rem;
   /* Padding widens the hover hit area inward; the thumb fills the
    * content box only and remains visually flush with the right edge. */
-  padding-left: var(--space-2);
+  padding-left: var(--logx-space-2);
   box-sizing: content-box;
   background: transparent;
   opacity: 0;
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--logx-duration) var(--logx-ease);
 }
 
 /* The scroll root always renders its scrollbar so the observers and
@@ -120,12 +120,12 @@
 .scrollbarThumb {
   flex: 1;
   position: relative;
-  background: var(--color-accent);
-  border-radius: var(--radius-1);
-  transition: background var(--duration-fast) var(--ease-standard);
+  background: var(--logx-accent);
+  border-radius: var(--logx-radius);
+  transition: background var(--logx-duration) var(--logx-ease);
 }
 
 .scrollbarThumb:hover,
 .scrollbar:hover .scrollbarThumb {
-  background: var(--color-accent-hover);
+  background: var(--logx-accent-hover);
 }

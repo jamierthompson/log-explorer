@@ -7,11 +7,11 @@
 .line {
   display: grid;
   grid-template-columns: auto 1fr;
-  column-gap: var(--space-3);
-  row-gap: var(--space-1);
-  padding: var(--space-2) 0;
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-base);
+  column-gap: var(--logx-space-3);
+  row-gap: var(--logx-space-1);
+  padding: var(--logx-space-2) 0;
+  font-size: var(--logx-font-size-base);
+  line-height: var(--logx-line-height);
 }
 
 .message {
@@ -21,9 +21,9 @@
 @media (--tablet) {
   .line {
     grid-template-columns: auto auto 1fr;
-    column-gap: var(--space-4);
+    column-gap: var(--logx-space-4);
     row-gap: 0;
-    padding: var(--space-1) 0;
+    padding: var(--logx-space-1) 0;
   }
 
   .message {
@@ -33,26 +33,26 @@
 
 .time,
 .instance {
-  color: var(--color-fg-muted);
+  color: var(--logx-color-text-muted);
 }
 
 .atSign,
 .requestId {
-  color: var(--color-fg-subtle);
+  color: var(--logx-color-text-subtle);
 }
 
 .level {
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--logx-font-weight-medium);
 }
 
 .level[data-level="DEBUG"] {
-  color: var(--color-fg-muted);
+  color: var(--logx-color-text-muted);
 }
 
 .level[data-level="WARN"] {
-  color: var(--color-warn);
+  color: var(--logx-color-warn);
 }
 
 .level[data-level="ERROR"] {
-  color: var(--color-error);
+  color: var(--logx-color-error);
 }

@@ -1,4 +1,4 @@
-import type { ScenarioPreset } from "@/lib/filter-state";
+import type { ScenarioPreset } from "@/demo/lib/filter-state";
 
 /* Lives outside the chips component (which is `"use client"`) so that
  * Server Components can import the data directly. Importing data

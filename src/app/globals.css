@@ -88,8 +88,6 @@ html body[data-scroll-locked] {
   --color-accent: light-dark(oklch(0.485 0.18 349.8), oklch(0.725 0.175 349.8));
   --color-accent-hover: oklch(from var(--color-accent) l calc(c + 0.06) h);
   --color-on-accent: light-dark(oklch(0.985 0 0), oklch(0.205 0 0));
-  --color-warn: light-dark(oklch(0.5 0.13 80), oklch(0.78 0.15 80));
-  --color-error: light-dark(oklch(0.5 0.2 27), oklch(0.73 0.2 27));
 
   /*
    * Prose layer for the long-form reading surface — a modular scale
