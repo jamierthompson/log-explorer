@@ -1,27 +1,25 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
+import { type ReactNode } from "react";
 
-import { LogExplorer, type FilterState, type LogLine } from "@/demo";
 import { Button } from "@/site/ui/button/button";
 
-import styles from "./demo-overlay.module.css";
+import styles from "./demo-stage.module.css";
 
 /**
- * Full-screen overlay hosting the live demo. Esc-to-dismiss is left to
- * Radix's default, which only fires once the explorer's own Esc handling
- * has nothing left to do (see the capture-phase handler in LogExplorer).
+ * Full-screen overlay that hosts the demo experience as its children.
+ * Esc-to-dismiss is left to the dialog's default, which only fires once
+ * the hosted content's own Esc handling has nothing left to do.
  */
-export function DemoOverlay({
+export function DemoStage({
   open,
   onOpenChange,
-  lines,
-  initialFilter,
+  children,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  lines: readonly LogLine[];
-  initialFilter?: FilterState;
+  children: ReactNode;
 }) {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -47,9 +45,7 @@ export function DemoOverlay({
               </Button>
             </Dialog.Close>
           </div>
-          <div className={styles.frame}>
-            <LogExplorer lines={lines} initialFilter={initialFilter} />
-          </div>
+          <div className={styles.frame}>{children}</div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
