@@ -331,7 +331,7 @@ export function LogExplorer({
   ]);
 
   return (
-    <>
+    <div className={styles.root}>
       <div className={styles.toolbar}>
         <Legend items={legendItems} />
         <ScenarioChips state={filterState} dispatch={dispatch} />
@@ -347,6 +347,6 @@ export function LogExplorer({
         viewportRef={viewportRef}
       />
       <ShortcutSheet open={sheetOpen} onOpenChange={setSheetOpen} />
-    </>
+    </div>
   );
 }

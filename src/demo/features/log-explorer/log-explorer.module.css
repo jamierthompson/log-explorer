@@ -1,9 +1,27 @@
+/*
+ * The demo's own root: sets its base font for the whole subtree so
+ * inherited text uses the demo's typeface rather than the host's body
+ * font, and gives the list the fill-height flex column it relies on.
+ */
+.root {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  font-family: var(--logx-font);
+}
+
 .toolbar {
   display: flex;
   flex-direction: column;
   gap: var(--logx-space-5);
   padding: var(--logx-space-5) var(--logx-space-5) var(--logx-space-4);
+  /* The Legend and Keycap assume no host tokens, so map the demo's into
+   * their portable hooks here — without this their text falls back to a
+   * system font instead of the demo's. */
   --legend-focus-color: var(--logx-focus-ring-color);
+  --legend-label-font: var(--logx-font);
+  --legend-keycap-font: var(--logx-font);
 }
 
 @media (--logx-tablet) {
