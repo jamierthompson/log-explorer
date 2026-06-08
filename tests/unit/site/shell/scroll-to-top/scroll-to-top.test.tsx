@@ -2,7 +2,7 @@ import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ScrollToTop } from "@/site/features/scroll-to-top/scroll-to-top";
+import { ScrollToTop } from "@/site/shell/scroll-to-top/scroll-to-top";
 
 /**
  * Controllable IntersectionObserver: records each instance and the

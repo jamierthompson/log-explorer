@@ -1,4 +1,3 @@
-import type { View } from "@/site/features/landing/use-hash-route";
 import { Button } from "@/site/ui/button/button";
 import { Link } from "@/site/ui/link/link";
 
@@ -12,11 +11,11 @@ const REPO_URL = "https://github.com/jamierthompson/log-explorer";
  * of contents). The repo link is always present.
  */
 export function TopNav({
-  view,
+  showStoryLink,
   onHome,
   onStory,
 }: {
-  view: View;
+  showStoryLink: boolean;
   onHome: () => void;
   onStory: () => void;
 }) {
@@ -28,7 +27,7 @@ export function TopNav({
       </Button>
 
       <nav className={styles.links} aria-label="Primary">
-        {view !== "story" && (
+        {showStoryLink && (
           <Button variant="ghost" onClick={onStory}>
             Story
           </Button>

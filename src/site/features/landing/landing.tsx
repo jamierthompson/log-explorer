@@ -1,13 +1,13 @@
 "use client";
 
-import type { FilterState, LogLine } from "@/demo";
+import { LogExplorer, type FilterState, type LogLine } from "@/demo";
 
-import { DemoOverlay } from "@/site/features/demo-overlay/demo-overlay";
-import { Footer } from "@/site/features/footer/footer";
 import { Hero } from "@/site/features/hero/hero";
-import { ScrollToTop } from "@/site/features/scroll-to-top/scroll-to-top";
 import { Story } from "@/site/features/story/story";
-import { TopNav } from "@/site/features/top-nav/top-nav";
+import { DemoStage } from "@/site/shell/demo-stage/demo-stage";
+import { Footer } from "@/site/shell/footer/footer";
+import { ScrollToTop } from "@/site/shell/scroll-to-top/scroll-to-top";
+import { TopNav } from "@/site/shell/top-nav/top-nav";
 
 import styles from "./landing.module.css";
 import { useHashRoute } from "./use-hash-route";
@@ -30,7 +30,7 @@ export function Landing({
   return (
     <>
       <TopNav
-        view={view}
+        showStoryLink={view !== "story"}
         onHome={() => navigate("hero")}
         onStory={() => navigate("story")}
       />
@@ -49,14 +49,14 @@ export function Landing({
           <ScrollToTop />
         </>
       )}
-      <DemoOverlay
+      <DemoStage
         open={demoOpen}
         onOpenChange={(open) => {
           if (!open) exitDemo();
         }}
-        lines={lines}
-        initialFilter={initialFilter}
-      />
+      >
+        <LogExplorer lines={lines} initialFilter={initialFilter} />
+      </DemoStage>
     </>
   );
 }
