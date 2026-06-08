@@ -30,6 +30,50 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  // The demo is independently extractable: it must never reach back into
+  // the site or app.
+  {
+    files: ["src/demo/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/site", "@/site/**", "@/app", "@/app/**"],
+              message:
+                "demo/ must stay independent of the site — it's extracted to its own package.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // The site consumes the demo only through its public barrel (@/demo),
+  // never its internals.
+  {
+    files: ["src/site/**/*.{ts,tsx}", "src/app/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [
+                "@/demo/ui/**",
+                "@/demo/features/**",
+                "@/demo/lib/**",
+                "@/demo/types/**",
+                "@/demo/mocks/**",
+              ],
+              message:
+                "Import demo code through its public barrel (@/demo); only its published stylesheet may be imported by path.",
+            },
+          ],
+        },
+      ],
+    },
+  },
   // Disable ESLint rules that would conflict with Prettier. Must come
   // last so it overrides any formatting-related rules above.
   prettier,

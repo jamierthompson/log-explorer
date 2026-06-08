@@ -1,0 +1,14 @@
+/*
+ * The site's breakpoints. The demo ships its own
+ * (src/demo/styles/custom-media.css); postcss-global-data feeds both into
+ * every CSS file so postcss-custom-media can rewrite @media (--name)
+ * references cross-file (each CSS Module is its own file).
+ *
+ * Authoring convention: mobile-first. Default styles target the smallest
+ * viewport; @media (--tablet) and (--desktop) layer enhancements on top.
+ */
+
+@custom-media --tablet (min-width: 45rem);
+@custom-media --desktop (min-width: 75rem);
+
+@custom-media --reduced-motion (prefers-reduced-motion: reduce);

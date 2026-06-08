@@ -1,0 +1,77 @@
+/* Invisible marker the observer watches: once it scrolls out of view
+ * the reader is far enough down to offer the control. */
+.sentinel {
+  position: absolute;
+  top: 75vh;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.button {
+  position: fixed;
+  right: max(var(--content-padding-x), env(safe-area-inset-right));
+  bottom: max(var(--content-padding-x), env(safe-area-inset-bottom));
+  z-index: 40;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.05em;
+  width: 2.75rem;
+  height: 2.75rem;
+
+  border: 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+
+  opacity: 0;
+  transform: translateY(var(--space-2));
+  pointer-events: none;
+  transition:
+    opacity var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+.button::before {
+  content: "[";
+}
+
+.button::after {
+  content: "]";
+}
+
+/* The arrow reads a touch smaller than the brackets that frame it. */
+.arrow {
+  font-size: 1.0625rem;
+}
+
+.button[data-visible] {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.button:hover {
+  color: var(--color-text);
+}
+
+.button:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--radius-1);
+}
+
+@media (--reduced-motion) {
+  .button,
+  .button[data-visible] {
+    transform: none;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+}

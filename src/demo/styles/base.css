@@ -1,0 +1,31 @@
+/*
+ * Demo base reset, scoped to its surfaces so the component renders
+ * correctly in any host instead of assuming a global box reset and
+ * color-scheme. A surface is the demo root or a portaled dialog that
+ * escapes it; each carries data-logx-surface. :where() keeps the reset at
+ * zero specificity so component styles (e.g. a content-box override) win.
+ */
+:where([data-logx-surface]) {
+  color-scheme: light dark;
+}
+
+:where(
+  [data-logx-surface],
+  [data-logx-surface] *,
+  [data-logx-surface] *::before,
+  [data-logx-surface] *::after
+) {
+  box-sizing: border-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where([data-logx-surface]),
+  :where([data-logx-surface]) *,
+  :where([data-logx-surface]) *::before,
+  :where([data-logx-surface]) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

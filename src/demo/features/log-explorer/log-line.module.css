@@ -1,0 +1,52 @@
+.line {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--logx-space-3);
+  row-gap: var(--logx-space-1);
+  padding: var(--logx-space-2) 0;
+  font-size: var(--logx-font-size-base);
+  line-height: var(--logx-line-height);
+}
+
+.message {
+  grid-column: 1 / -1;
+}
+
+@media (--logx-tablet) {
+  .line {
+    grid-template-columns: auto auto 1fr;
+    column-gap: var(--logx-space-4);
+    row-gap: 0;
+    padding: var(--logx-space-1) 0;
+  }
+
+  .message {
+    grid-column: auto;
+  }
+}
+
+.time,
+.instance {
+  color: var(--logx-color-text-muted);
+}
+
+.atSign,
+.requestId {
+  color: var(--logx-color-text-subtle);
+}
+
+.level {
+  font-weight: var(--logx-font-weight-medium);
+}
+
+.level[data-level="DEBUG"] {
+  color: var(--logx-color-text-muted);
+}
+
+.level[data-level="WARN"] {
+  color: var(--logx-color-warn);
+}
+
+.level[data-level="ERROR"] {
+  color: var(--logx-color-error);
+}

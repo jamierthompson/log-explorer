@@ -1,0 +1,81 @@
+.chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: var(--logx-space-1) var(--logx-space-4);
+  border: 1px solid var(--logx-border);
+  border-radius: var(--logx-radius);
+  background: transparent;
+  color: var(--logx-color-text-muted);
+  font-family: var(--logx-font);
+  font-size: var(--logx-font-size-base);
+  font-weight: var(--logx-font-weight-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color var(--logx-duration) var(--logx-ease),
+    border-color var(--logx-duration) var(--logx-ease);
+}
+
+/*
+ * Brackets sit in the padding always, so chip width stays constant across states.
+ */
+.chip::before,
+.chip::after {
+  display: inline-block;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--logx-accent);
+  font-family: var(--logx-font);
+  font-size: var(--logx-font-size-base);
+  font-weight: var(--logx-font-weight-medium);
+  opacity: 0;
+  transition: opacity var(--logx-duration) var(--logx-ease);
+}
+
+.chip::before {
+  content: "[";
+  left: var(--logx-space-1);
+}
+
+.chip::after {
+  content: "]";
+  right: var(--logx-space-1);
+}
+
+.chip:hover {
+  border-color: var(--logx-color-text-muted);
+}
+
+.chip[data-active="true"] {
+  color: var(--logx-color-text);
+  border-color: var(--logx-accent);
+}
+
+.chip[data-active="true"]::before,
+.chip[data-active="true"]::after {
+  opacity: 1;
+}
+
+.chip[data-active="true"]:hover {
+  border-color: var(--logx-accent-hover);
+}
+
+.chip[data-active="true"]:hover::before,
+.chip[data-active="true"]:hover::after {
+  color: var(--logx-accent-hover);
+}
+
+.chip:focus-visible {
+  outline: var(--logx-focus-ring-width) solid var(--logx-focus-ring-color);
+  outline-offset: var(--logx-focus-ring-offset);
+}
+
+/* Comfortable tap target on touch devices without altering the
+ * compact pointer-driven sizing on desktop. */
+@media (pointer: coarse) {
+  .chip {
+    min-height: 44px;
+  }
+}

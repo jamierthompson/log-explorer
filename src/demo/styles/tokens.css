@@ -1,0 +1,36 @@
+/*
+ * LogExplorer design tokens. Ships with the component so it renders
+ * fully styled on its own; a consumer reskins it by overriding the
+ * public group below.
+ */
+:root {
+  /* ── Public theme API — override these to skin LogExplorer ── */
+  --logx-accent: light-dark(oklch(0.485 0.18 349.8), oklch(0.725 0.175 349.8));
+  --logx-color-text: light-dark(oklch(0.205 0 0), oklch(0.946 0 0));
+  --logx-color-text-muted: light-dark(oklch(0.47 0 0), oklch(0.68 0 0));
+  --logx-color-text-subtle: light-dark(oklch(0.53 0 0), oklch(0.6 0 0));
+  --logx-surface: light-dark(oklch(1 0 0), oklch(0.145 0 0));
+  --logx-border: light-dark(oklch(0.92 0 0), oklch(0.285 0 0));
+  --logx-color-warn: light-dark(oklch(0.5 0.13 80), oklch(0.78 0.15 80));
+  --logx-color-error: light-dark(oklch(0.5 0.2 27), oklch(0.73 0.2 27));
+  --logx-font:
+    var(--logx-font-family, ui-monospace), "SF Mono", Menlo, Consolas, monospace;
+  --logx-radius: 0.25rem;
+
+  /* ── Internals — derived or fixed; not part of the stable API ── */
+  --logx-accent-hover: oklch(from var(--logx-accent) l calc(c + 0.06) h);
+  --logx-font-size-sm: 0.6875rem;
+  --logx-font-size-base: 0.8125rem;
+  --logx-font-weight-medium: 500;
+  --logx-line-height: 1.4;
+  --logx-space-1: 0.25rem;
+  --logx-space-2: 0.5rem;
+  --logx-space-3: 0.75rem;
+  --logx-space-4: 1rem;
+  --logx-space-5: 1.5rem;
+  --logx-duration: 120ms;
+  --logx-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --logx-focus-ring-width: 1px;
+  --logx-focus-ring-color: var(--logx-accent);
+  --logx-focus-ring-offset: 1px;
+}

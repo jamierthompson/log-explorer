@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Newsreader } from "next/font/google";
 
-import { Footer } from "@/components/features/footer/footer";
-import { ScrollToTop } from "@/components/features/scroll-to-top/scroll-to-top";
-
+import { demoFont } from "@/demo/styles/fonts";
+import "@/demo/styles/tokens.css";
+import "@/site/styles/tokens.css";
 import "./globals.css";
 import styles from "./layout.module.css";
 
@@ -51,15 +51,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${jetbrainsMono.variable} ${newsreader.variable}`}
+      className={`${jetbrainsMono.variable} ${newsreader.variable} ${demoFont.variable}`}
     >
       <body>
         <a href="#main-content" className={styles.skipLink}>
           Skip to main content
         </a>
         {children}
-        <Footer />
-        <ScrollToTop />
       </body>
     </html>
   );
