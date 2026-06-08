@@ -1,7 +1,8 @@
 "use client";
 
-import { LogExplorer, type FilterState, type LogLine } from "@/demo";
+import type { LogLine } from "@/demo";
 
+import { Experience } from "@/site/features/experience/experience";
 import { Hero } from "@/site/features/hero/hero";
 import { Story } from "@/site/features/story/story";
 import { DemoStage } from "@/site/shell/demo-stage/demo-stage";
@@ -18,13 +19,7 @@ import { useHashRoute } from "./use-hash-route";
  * top. The nav sits above the skip-link target so "skip to main content"
  * bypasses it.
  */
-export function Landing({
-  lines,
-  initialFilter,
-}: {
-  lines: readonly LogLine[];
-  initialFilter?: FilterState;
-}) {
+export function Landing({ lines }: { lines: readonly LogLine[] }) {
   const { view, demoOpen, navigate, openDemo, exitDemo } = useHashRoute();
 
   return (
@@ -55,7 +50,7 @@ export function Landing({
           if (!open) exitDemo();
         }}
       >
-        <LogExplorer lines={lines} initialFilter={initialFilter} />
+        <Experience lines={lines} />
       </DemoStage>
     </>
   );
