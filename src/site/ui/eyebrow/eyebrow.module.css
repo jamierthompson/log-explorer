@@ -7,3 +7,10 @@
   letter-spacing: 0.08em;
   color: var(--color-text-muted);
 }
+
+.eyebrow[data-variant="accent"] {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+  letter-spacing: 0.22em;
+  color: var(--color-text-accent);
+}

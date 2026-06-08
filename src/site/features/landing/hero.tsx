@@ -12,7 +12,7 @@ export function Hero({
 }) {
   return (
     <div className={styles.hero}>
-      <Eyebrow className={styles.heroEyebrow}>
+      <Eyebrow variant="accent" className={styles.heroEyebrow}>
         A log explorer prototype · 2026
       </Eyebrow>
       <h1 className={styles.heroTitle}>

@@ -7,18 +7,14 @@
   width: 100%;
   max-width: 55rem;
   margin: 0 auto;
-  padding-block: 4vh 10vh;
+  padding-block: var(--space-8);
   padding-inline: var(--content-padding-x);
   font-family: var(--font-sans);
   color: var(--color-text);
 }
 
-.hero .heroEyebrow {
+.heroEyebrow {
   margin-bottom: var(--space-5);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-regular);
-  letter-spacing: 0.22em;
-  color: var(--color-text-accent);
 }
 
 .heroTitle {
