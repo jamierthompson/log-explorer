@@ -1,0 +1,144 @@
+.act {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.tabstrip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3) 0;
+  background: var(--surface-page);
+  border-bottom: 1px solid var(--color-border);
+  overflow-x: auto;
+}
+
+.tab {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: 220px;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-subtle);
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: var(--radius-1) var(--radius-1) 0 0;
+  cursor: pointer;
+}
+
+.tab[data-active] {
+  color: var(--color-text);
+  background: var(--surface);
+  border-color: var(--color-border);
+}
+
+.tabLabel {
+  max-width: 150px;
+  padding: 0;
+  overflow: hidden;
+  font: inherit;
+  color: inherit;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.tabClose {
+  display: inline-grid;
+  place-items: center;
+  width: 1.4em;
+  height: 1.4em;
+  font-size: 0.9em;
+  line-height: 1;
+  color: var(--color-text-subtle);
+  background: none;
+  border: none;
+  border-radius: var(--radius-1);
+  cursor: pointer;
+}
+
+.tabClose:hover {
+  color: var(--color-text);
+  background: var(--color-border);
+}
+
+.tabstripEnd {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: auto;
+  padding-bottom: var(--space-2);
+  padding-left: var(--space-3);
+}
+
+.tabCount {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-subtle);
+  white-space: nowrap;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.explorer {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.explorer[data-hidden] {
+  display: none;
+}
+
+.pane {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  background: var(--surface);
+  /* The row component inherits the demo typeface from the explorer root,
+   * which isn't an ancestor here, so set it on the pane directly. */
+  font-family: var(--logx-font, ui-monospace, monospace);
+}
+
+.paneNote {
+  flex: 0 0 auto;
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-subtle);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.paneList {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: var(--space-2) 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.paneRow {
+  padding: var(--space-1) var(--space-4);
+  border-left: 2px solid transparent;
+}
+
+.paneRow[data-anchor] {
+  background: color-mix(in oklch, var(--brand-accent) 8%, transparent);
+  border-left-color: var(--brand-accent);
+}
