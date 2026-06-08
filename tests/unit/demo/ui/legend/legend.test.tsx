@@ -73,13 +73,13 @@ describe("Legend", () => {
     const items: LegendItem[] = [
       {
         keys: ["?"],
-        label: "for all shortcuts",
+        label: "shortcuts",
         onClick: () => {},
         ariaLabel: "Open shortcuts",
       },
     ];
     const { container } = render(<Legend items={items} />);
     expect(container.querySelectorAll("kbd")).toHaveLength(1);
-    expect(screen.getByText("for all shortcuts")).toBeInTheDocument();
+    expect(screen.getByText("shortcuts")).toBeInTheDocument();
   });
 });

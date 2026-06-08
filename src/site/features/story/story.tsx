@@ -38,12 +38,11 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
           </p>
           <p className={styles.body}>A new tab opens.</p>
           <p className={styles.body}>
-            Your filter is gone. The live tail is gone. To get back to where you
-            were, you’d have to re-filter, re-position, re-start the tail. To
-            see <em>more</em> context, you click again — another tab, another
-            cycle. By the time you’ve worked through the incident, you have a
-            fan of tabs, each holding a slice of the story, and you’re piecing
-            the picture back together by switching between them.
+            Your filter is gone. The live tail is gone. To see <em>more</em>,
+            you click again — another tab, another cycle. By the time you’ve
+            worked through the incident, you have a fan of tabs, each holding a
+            slice of the story, and you’re piecing the picture back together by
+            switching between them.
           </p>
 
           <blockquote className={styles.pullQuote}>
@@ -53,34 +52,21 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
             </p>
           </blockquote>
 
-          <Figure caption="A tab for every click." />
-
-          <p className={styles.body}>
-            The cost isn’t really the tabs. It’s the cognitive overhead of
-            carrying state across tabs that the application could have carried
-            for you. Every new view loses the investigation’s accumulated
-            context — the filter, the rate of new lines arriving, the position
-            you’d reached. The rest of the session goes to reconstructing it.
-          </p>
+          <Figure caption="A tab for every click — the investigation scatters across windows." />
         </section>
 
         <section id="the-idea" className={styles.section}>
           <h2 className={styles.heading}>The idea</h2>
           <p className={styles.body}>
-            Open the context where the line lives. Click a line — call it the
-            anchor — and the rows around it expand inline, dimmed for contrast
-            so the matching lines stay bright. Open a second context further
-            down without losing the first. Open a third.
+            Open context where the line lives. Click a line — call it the anchor
+            — and the rows around it expand inline, dimmed for contrast so the
+            matching lines stay bright. Open a second context without losing the
+            first. The filter doesn’t reset. The position doesn’t reset. The
+            view stays in place; the application carries the state it should
+            have been carrying all along.
           </p>
 
-          <Figure caption="The filter persists. Contexts stack." />
-
-          <p className={styles.body}>
-            The filter doesn’t reset. The position doesn’t reset. In a fuller
-            version, the live tail wouldn’t either. The view stays in one place;
-            the application carries the state it should have been carrying all
-            along.
-          </p>
+          <Figure caption="The filter persists, contexts stack — each opens in place, not in a new tab." />
         </section>
 
         <section id="what-i-built" className={styles.section}>
@@ -93,17 +79,13 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
           <p className={styles.body}>
             The logs are mocked, not live. Filtering is three preset chips, not
             a full search system. There are no error or empty or loading states,
-            no real connection to anything — and the list renders every line
-            rather than virtualizing. That’s deliberate. The interesting problem
-            is what happens in the <em>moment</em> of an investigation; the
-            scaling problem isn’t it, and the rest can be built around it later.
+            and the list renders every line rather than virtualizing.
           </p>
           <p className={styles.body}>
             The mock data, though, got its own work. It tells a small story — a
             request triggers a chain of internal calls, an error surfaces, a
             recovery happens — and the filter chips correspond to specific
-            moments in that story. The investigation needs something to
-            investigate.
+            moments in that story.
           </p>
         </section>
 
@@ -115,9 +97,9 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
             satisfying reveal, easy to picture, easy to demo.
           </p>
           <p className={styles.body}>
-            I built it. At ten mock lines, it looked great. At real log volumes,
-            it wouldn’t have: real volumes need virtualization, and once rows
-            mount and unmount as you scroll, the animation breaks.
+            I built it. At a few dozen mock lines, it looked great. At real log
+            volumes, it wouldn’t have: real volumes need virtualization, and
+            once rows mount and unmount as you scroll, the animation breaks.
           </p>
           <p className={styles.body}>
             That alone wouldn’t have been reason enough to cut it; plenty of
@@ -142,28 +124,22 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
         <section id="the-legend" className={styles.section}>
           <h2 className={styles.heading}>The Legend</h2>
           <p className={styles.body}>
-            The Legend started as a single static hint labeled{" "}
-            <em>for all shortcuts</em>. It’s now the prototype’s primary
-            interaction surface: adaptive, clickable, and alive to its own
-            firings.
-          </p>
-          <p className={styles.body}>
-            None of that was planned. Each piece arrived as the answer to a
-            small problem the last piece had left behind.
+            The Legend wasn’t designed up front. It started as a single static
+            hint and became the prototype’s primary interaction surface:
+            adaptive, clickable, and alive to its own firings. Each piece
+            arrived as the answer to a problem the last one left behind.
           </p>
 
           <div className={styles.figurePair}>
-            <Figure caption="Day 1" />
-            <Figure caption="Today" />
+            <Figure caption="Day 1 — the Legend was a single static hint." />
+            <Figure caption="Today — the Legend surfaces the actions that apply right now." />
           </div>
 
           <p className={styles.body}>
             The first design had <strong>More</strong> and <strong>Less</strong>{" "}
             buttons on each anchor — direct, discoverable, exactly what you’d
-            sketch on a whiteboard. They worked until you scrolled. Once you
-            moved inside an expanded context, the anchor went off-screen and the
-            buttons went with it. To expand further you scrolled back, hit More,
-            then scrolled back again to where you were reading.
+            sketch on a whiteboard. They worked until you scrolled. The anchor
+            went off-screen and the buttons went with it.
           </p>
           <p className={styles.body}>
             The keyboard bindings —{" "}
@@ -184,11 +160,11 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
           </p>
           <p className={styles.body}>
             A <Keycap>?</Keycap> keycap already sat in the top corner with the
-            label <em>for all shortcuts</em> — itself a replacement for an
-            earlier floating help button that read too heavy. The keycap had
-            turned out well in the modal: dimensional and shaded, more like a
-            real keyboard key than a flat glyph in a box. But the corner
-            placement was still just a static hint.
+            label <em>shortcuts</em> — itself a replacement for an earlier
+            floating help button that read too heavy. The keycap had turned out
+            well in the modal: dimensional and shaded, more like a real keyboard
+            key than a flat glyph in a box. But the corner placement was still
+            just a static hint.
           </p>
           <p className={styles.body}>
             The thought was small at first: turn that hint into a component that
@@ -209,13 +185,13 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
             <div className={styles.twoColumnText}>
               <p>
                 And the Legend’s shape — small entries arranged in a bar, each
-                one labeled with a binding — turned out to also close the gap{" "}
-                <strong>More</strong> and <strong>Less</strong> had left. Each
-                entry could be a button. A click or a key press would trigger
-                the same action.
+                one labeled with a binding — turned out to also close the gap
+                the cut <strong>More</strong> and <strong>Less</strong> buttons
+                had left. Each entry could be a button. A click or a key press
+                would trigger the same action.
               </p>
             </div>
-            <Figure caption="Each entry is also a button." />
+            <Figure caption="Each entry is also a button — actions run by click, not just by key." />
           </div>
 
           <p className={styles.body}>
@@ -227,8 +203,8 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
 
           <p className={styles.body}>
             When nothing applies, it falls back to the original{" "}
-            <Keycap>?</Keycap> + <em>for all shortcuts</em> — the surface is
-            never empty.
+            <Keycap>?</Keycap> + <em>shortcuts</em> — the surface is never
+            empty.
           </p>
 
           <blockquote className={styles.pullQuote}>
@@ -267,21 +243,14 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
               <p>
                 Each time{" "}
                 <KeycapSequence keys={["Shift", "E"]} decorative={false} />{" "}
-                fires, the{" "}
-                <KeycapSequence keys={["Shift", "E"]} decorative={false} />{" "}
-                entry pulses — a 180ms fade, gated behind{" "}
+                fires, its entry pulses — a 180ms fade, gated behind{" "}
                 <code>prefers-reduced-motion</code>. The motion catches the eye
                 in peripheral vision: <em>something happened</em>.
               </p>
             </div>
-            <Figure caption="Acknowledgement at the press." />
+            <Figure caption="Acknowledgement at the press — the entry pulses when the effect lands off-screen." />
           </div>
 
-          <p className={styles.body}>
-            That covers half the gap. <em>Something happened</em> — but not{" "}
-            <em>where</em>. The other half belongs to a different surface
-            entirely.
-          </p>
           <p className={styles.body}>
             A keycap that started as a static hint now tells you what’s relevant
             right now, accepts a click as readily as a press, and acknowledges
@@ -298,7 +267,7 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
           </p>
           <p className={styles.body}>
             What I have in mind is a mini-map — a slim strip alongside the log
-            list that mirrors it in miniature. Matched lines appear as small
+            list that mirrors it in miniature. Anchor lines appear as small
             marks, open contexts as highlighted regions, the visible viewport as
             a sliding indicator. When{" "}
             <KeycapSequence keys={["Shift", "E"]} decorative={false} /> expands
@@ -307,7 +276,7 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
             landed.
           </p>
 
-          <Figure caption="An idea on paper." />
+          <Figure caption="An idea on paper — a mini-map to hold your place across open contexts." />
 
           <p className={styles.body}>
             The mini-map answers a second question alongside the first. With
@@ -331,10 +300,10 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
           </p>
           <p className={styles.body}>
             <strong>Cut what isn’t doing work.</strong> The animated reveal
-            looked great at ten lines. It would have looked great in a portfolio
-            shot. It went anyway, because it wasn’t doing the work the prototype
-            needed. Polish has a finite budget; the pieces that survive should
-            be the ones moving the central idea forward.
+            looked great at a few dozen lines. It would have looked great in a
+            portfolio shot. It went anyway, because it wasn’t doing the work the
+            prototype needed. Polish has a finite budget; the pieces that
+            survive should be the ones moving the central idea forward.
           </p>
           <p className={styles.body}>
             <strong>Acknowledge what you can’t see.</strong> When a press fires

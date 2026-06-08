@@ -92,8 +92,19 @@ describe("useContextWindows", () => {
   it("closeMostRecentContext on an empty list is a no-op", () => {
     const { result } = setup();
     const before = result.current.openContexts;
+    const beforePulse = result.current.closePulseKey;
     act(() => result.current.closeMostRecentContext());
     expect(result.current.openContexts).toBe(before);
+    // No context closed, so the acknowledgement pulse must not fire.
+    expect(result.current.closePulseKey).toBe(beforePulse);
+  });
+
+  it("closePulseKey bumps on every successful close", () => {
+    const { result } = setup();
+    act(() => result.current.toggleContext("31"));
+    const before = result.current.closePulseKey;
+    act(() => result.current.closeMostRecentContext());
+    expect(result.current.closePulseKey).toBe(before + 1);
   });
 
   it("closeAllContexts clears every context", () => {

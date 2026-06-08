@@ -63,6 +63,7 @@ export function LogExplorer({
     closeAllContexts,
     selectedContextLineIds,
     expandPulseKey,
+    closePulseKey,
   } = useContextWindows({
     lines,
     linesById,
@@ -260,7 +261,7 @@ export function LogExplorer({
       ) {
         items.push({
           keys: SHORTCUTS.expandContext.keys,
-          label: "Expand context",
+          label: "Expand",
           ariaLabel: "Expand the most recent context window",
           onClick: expandMostRecentContext,
           pulseKey: expandPulseKey,
@@ -280,7 +281,7 @@ export function LogExplorer({
       if (focusedCanToggle || focusedIsAnchor) {
         items.push({
           keys: SHORTCUTS.toggleContext.keys,
-          label: focusedIsAnchor ? "Hide context" : "View context",
+          label: focusedIsAnchor ? "Hide" : "View",
           ariaLabel: focusedIsAnchor
             ? "Hide context on focused line"
             : "View context on focused line",
@@ -292,14 +293,15 @@ export function LogExplorer({
     if (openContexts.length > 0) {
       items.push({
         keys: SHORTCUTS.closeRecent.keys,
-        label: "Close recent",
+        label: "Close",
         ariaLabel: "Close the most recent context",
         onClick: closeMostRecentContext,
+        pulseKey: closePulseKey,
       });
     } else if (hasAnyFilter(filterState)) {
       items.push({
         keys: SHORTCUTS.closeRecent.keys,
-        label: "Clear filter",
+        label: "Clear",
         ariaLabel: "Clear active filters",
         onClick: () => dispatch({ type: "clear" }),
       });
@@ -310,7 +312,7 @@ export function LogExplorer({
     if (items.length === 0) {
       items.push({
         keys: SHORTCUTS.openShortcuts.keys,
-        label: "for all shortcuts",
+        label: "shortcuts",
         ariaLabel: "Show keyboard shortcuts",
         onClick: () => setSheetOpen(true),
       });
@@ -324,6 +326,7 @@ export function LogExplorer({
     expandMostRecentContext,
     expandPulseKey,
     closeMostRecentContext,
+    closePulseKey,
     focusedLineId,
     selectedContextLineIds,
     visibleLines,
