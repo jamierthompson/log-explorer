@@ -27,6 +27,7 @@ import type { LogLine } from "@/demo/types/log";
 import "@/demo/styles/base.css";
 
 import styles from "./log-explorer.module.css";
+import { deriveSnapshot, type LogExplorerSnapshot } from "./log-explorer-state";
 import { LogList, lineDomId } from "./log-list";
 import { useContextWindows } from "./use-context-windows";
 import { useListboxKeyboard } from "./use-listbox-keyboard";
@@ -34,9 +35,11 @@ import { useListboxKeyboard } from "./use-listbox-keyboard";
 export function LogExplorer({
   lines,
   initialFilter = initialFilterState,
+  onStateChange,
 }: {
   lines: readonly LogLine[];
   initialFilter?: FilterState;
+  onStateChange?: (snapshot: LogExplorerSnapshot) => void;
 }) {
   const [filterState, dispatch] = useReducer(filterReducer, initialFilter);
   const [focusedLineId, setFocusedLineId] = useState<string | null>(null);
@@ -333,6 +336,19 @@ export function LogExplorer({
     filterState,
     toggleContext,
   ]);
+
+  /*
+   * Report a curated snapshot of investigation progress to the host so a
+   * surrounding experience can react without reaching into the explorer's
+   * internals.
+   */
+  const snapshot = useMemo(
+    () => deriveSnapshot(filterState, openContexts, SCENARIOS),
+    [filterState, openContexts],
+  );
+  useEffect(() => {
+    onStateChange?.(snapshot);
+  }, [snapshot, onStateChange]);
 
   return (
     <div className={styles.root} data-logx-surface>

@@ -3,6 +3,7 @@
  * Consumers (the site) import from here, never from internal paths.
  */
 export { LogExplorer } from "./features/log-explorer/log-explorer";
+export type { LogExplorerSnapshot } from "./features/log-explorer/log-explorer-state";
 export { Legend, type LegendItem } from "./ui/legend/legend";
 export { Keycap, KeycapSequence } from "./ui/keycap/keycap";
 export type { LogLine } from "./types/log";
