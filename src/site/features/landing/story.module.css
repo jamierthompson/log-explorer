@@ -1,0 +1,240 @@
+/*
+ * Table of contents above the prose on mobile, a sidebar to its left on
+ * desktop. Setting font-size here anchors ch to one font context so the
+ * prose column has a predictable width; the desktop max-width widens to
+ * hold the sidebar, its gap, and that same prose measure.
+ */
+.layout {
+  --toc-width: 14rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  /* Padding lives inside max-width (border-box), so the measure widens
+   * by the gutter to keep the prose column at its intended width. */
+  max-width: calc(var(--prose-measure) + 2 * var(--content-padding-x));
+  margin: 0 auto;
+  padding: var(--space-7) var(--content-padding-x) 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-prose-base);
+  color: var(--color-fg);
+}
+
+@media (--desktop) {
+  .layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--space-7);
+    max-width: calc(
+      var(--toc-width) + var(--space-7) + var(--prose-measure) + 2 *
+        var(--content-padding-x)
+    );
+  }
+}
+
+.article {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+  padding-bottom: var(--space-8);
+}
+
+@media (--tablet) {
+  .article {
+    gap: var(--space-8);
+  }
+}
+
+@media (--desktop) {
+  .article {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.proseHead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.proseTitle {
+  margin: 0;
+  font-size: var(--text-prose-hero);
+  font-weight: 500;
+  line-height: var(--line-height-prose-tight);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  font-variation-settings: "opsz" 40;
+  font-feature-settings: "ss01";
+}
+
+.proseTitle em {
+  font-style: italic;
+}
+
+.proseLead {
+  margin: 0;
+  font-size: var(--text-prose-lead);
+  line-height: var(--line-height-prose);
+  color: var(--color-fg-muted);
+  font-variation-settings: "opsz" 17;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  /* Clear the sticky nav when the table of contents jumps here. */
+  scroll-margin-top: calc(var(--topnav-height) + var(--space-4));
+}
+
+.heading {
+  margin: 0;
+  font-size: var(--text-prose-h2);
+  font-weight: 600;
+  line-height: var(--line-height-prose-tight);
+  letter-spacing: -0.01em;
+  font-variation-settings: "opsz" 28;
+  font-feature-settings: "ss01";
+}
+
+.body {
+  margin: 0;
+  font-size: var(--text-prose-base);
+  line-height: var(--line-height-prose);
+  font-variation-settings: "opsz" 17;
+  font-feature-settings: "ss01";
+  /*
+   * Bump the Keycap defaults inside body prose so inline keys read
+   * proportional to body text instead of toolbar-sized. The demo's
+   * Legend keeps its compact defaults because this cascade doesn't
+   * reach it (.demoFrame isn't a .body descendant).
+   */
+  --legend-keycap-size: 1.375rem;
+  --legend-keycap-font-size: 0.8125rem;
+}
+
+/*
+ * Italic for emphasis (including strong-tagged lead-in phrases),
+ * never bold. Semantics stay on <strong>/<em>, visuals stay italic.
+ */
+.body strong {
+  font-style: italic;
+  font-weight: inherit;
+}
+
+/*
+ * Inline mono code. The multiplier pulls JetBrains Mono down to
+ * roughly match Newsreader's visual size, since mono reads larger
+ * at matched point sizes.
+ */
+.body code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+/*
+ * Pull quote — light weight at display opsz.
+ */
+.pullQuote {
+  margin: var(--space-3) 0;
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--color-prose-rule);
+  font-size: var(--text-prose-pullquote);
+  font-style: italic;
+  font-weight: 300;
+  line-height: var(--line-height-prose-tight);
+  font-variation-settings: "opsz" 48;
+}
+
+.pullQuote p {
+  margin: 0;
+}
+
+/*
+ * --figure-aspect is overridden here because the halves share the
+ * column horizontally on tablet+; 4/3 keeps each one visually
+ * substantial against neighboring text and figures.
+ */
+.figurePair {
+  --figure-aspect: 4 / 3;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+@media (--tablet) {
+  .figurePair {
+    flex-direction: row;
+  }
+
+  .figurePair > * {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* === TWO-COLUMN BLOCKS === */
+
+/*
+ * The mirrored variant reverses visual order via flex-direction;
+ * DOM order stays text-then-figure for screen-reader reading order.
+ */
+.twoColumn,
+.twoColumnMirrored {
+  --figure-aspect: 4 / 3;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.twoColumnText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.twoColumnText p {
+  margin: 0;
+  font-size: var(--text-prose-base);
+  line-height: var(--line-height-prose);
+  font-variation-settings: "opsz" 17;
+  font-feature-settings: "ss01";
+  --legend-keycap-size: 1.375rem;
+  --legend-keycap-font-size: 0.8125rem;
+}
+
+.twoColumnText strong {
+  font-style: italic;
+  font-weight: inherit;
+}
+
+.twoColumnText code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+@media (--tablet) {
+  .twoColumn,
+  .twoColumnMirrored {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  .twoColumnMirrored {
+    flex-direction: row-reverse;
+  }
+
+  .twoColumn > *,
+  .twoColumnMirrored > * {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.storyCta {
+  display: flex;
+}

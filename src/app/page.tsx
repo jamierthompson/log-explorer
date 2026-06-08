@@ -1,6 +1,5 @@
-import { LandingExperience } from "@/components/features/landing/landing-experience";
-import { SCENARIOS } from "@/lib/scenarios";
-import { mockLogs } from "@/mocks/logs";
+import { mockLogs, SCENARIOS } from "@/demo";
+import { LandingExperience } from "@/site/features/landing/landing-experience";
 
 /* Pre-applies the trace scenario on first paint so the demo opens
  * already filtered, showing the affordance immediately instead of

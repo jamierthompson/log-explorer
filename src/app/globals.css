@@ -110,7 +110,7 @@ html body[data-scroll-locked] {
 
   --prose-measure: 70ch;
 
-  --color-page-bg: light-dark(oklch(0.97 0 0), oklch(0.19 0 0));
+  --color-page-bg: light-dark(oklch(0.975 0 0), oklch(0.185 0 0));
   --color-prose-rule: var(--color-accent);
 }
 
