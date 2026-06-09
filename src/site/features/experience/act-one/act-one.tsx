@@ -85,8 +85,8 @@ export function ActOne({
   const items: readonly GuideItem[] = [
     {
       id: "filter",
-      title: "Filter to the failing request",
-      description: "Pick a chip to narrow the live tail to one request.",
+      title: "Narrow to the failure",
+      description: "Pick a chip to filter the live tail to one request.",
       done: everFiltered,
     },
     {
@@ -97,16 +97,16 @@ export function ActOne({
     },
     {
       id: "lost",
-      title: "Land in a new tab",
+      title: "The slice lands elsewhere",
       description:
-        "The context opens elsewhere — and your filter didn't follow.",
+        "A new tab holds the context. Your filtered tail is still here — one tab back.",
       done: tabCount >= 1,
     },
     {
       id: "pile",
-      title: "Watch the tabs pile up",
+      title: "Reassemble by hand",
       description:
-        "Every view is one more tab to juggle and lose your place in.",
+        "Two tabs, two slices — you're holding the timeline together in your head.",
       done: tabCount >= 2,
     },
   ];
@@ -115,8 +115,8 @@ export function ActOne({
     <ActLayout
       step="Act 1"
       kicker="The old way"
-      title="One failing request, scattered across tabs"
-      lead="Filter the live tail to the failing request, then open a line for context — it opens in a new tab that left your filter behind."
+      title="A tab for every click"
+      lead="Filter the live tail to the failing request, then open a line for context. Every look opens another tab — and the investigation starts to scatter."
       aside={
         <GuideBox
           title="What's happening"
@@ -130,6 +130,11 @@ export function ActOne({
             ),
             onClick: onAdvance,
           }}
+          foot={
+            tabCount >= 3
+              ? `${tabCount} tabs open. You're rebuilding the timeline by flipping between them.`
+              : "Every look at context buys one thin slice and opens one more tab."
+          }
         />
       }
     >

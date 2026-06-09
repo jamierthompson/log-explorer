@@ -13,15 +13,17 @@ import { RootCauseDialog } from "../root-cause-dialog/root-cause-dialog";
  * than the explorer's current state — closing a context can't un-check a
  * step the visitor already reached. */
 type Progress = {
-  readonly filtered: boolean;
+  readonly triaged: boolean;
+  readonly traced: boolean;
   readonly context: boolean;
-  readonly stack: boolean;
+  readonly radius: boolean;
 };
 
 const INITIAL_PROGRESS: Progress = {
-  filtered: false,
+  triaged: false,
+  traced: false,
   context: false,
-  stack: false,
+  radius: false,
 };
 
 /**
@@ -40,46 +42,52 @@ export function ActTwo({
   onReadStory?: () => void;
 }) {
   const [rootCauseOpen, setRootCauseOpen] = useState(false);
-  const [called, setCalled] = useState(false);
   const [progress, setProgress] = useState<Progress>(INITIAL_PROGRESS);
 
   const handleState = useCallback((snapshot: LogExplorerSnapshot) => {
+    const active = snapshot.activeScenarioIds;
     setProgress((prev) => ({
-      filtered: prev.filtered || snapshot.hasFilter,
+      triaged: prev.triaged || active.includes("errors"),
+      traced: prev.traced || active.includes("trace"),
       context: prev.context || snapshot.openContextCount >= 1,
-      stack: prev.stack || snapshot.openContextCount >= 2,
+      radius:
+        prev.radius ||
+        snapshot.openContextCount >= 2 ||
+        active.includes("instance"),
     }));
   }, []);
 
   const callRootCause = useCallback(() => {
-    setCalled(true);
     setRootCauseOpen(true);
   }, []);
 
   const items: readonly GuideItem[] = [
     {
-      id: "narrow",
-      title: "Narrow to the failure",
-      description: "Filter the live tail to the one request that failed.",
-      done: progress.filtered,
+      id: "triage",
+      title: "Triage the symptom",
+      description: "Filter to errors to see what's actually failing.",
+      done: progress.triaged,
+    },
+    {
+      id: "trace",
+      title: "Trace the failing request",
+      description:
+        "Follow req=r4d8a2 span by span. It dies waiting on the db pool.",
+      done: progress.traced,
     },
     {
       id: "context",
       title: "Open context in place",
-      description: "Click a line to expand the rows around it — filter intact.",
+      description:
+        "The cause carries no request id — only the lines around the failure can show it.",
       done: progress.context,
     },
     {
-      id: "stack",
-      title: "Stack a second context",
-      description: "Open another without losing the first or your position.",
-      done: progress.stack,
-    },
-    {
-      id: "cause",
-      title: "Call the root cause",
-      description: "Name what broke, once the picture is clear.",
-      done: called,
+      id: "radius",
+      title: "Check the blast radius",
+      description:
+        "Keep the filter and open another context. One instance, or all three?",
+      done: progress.radius,
     },
   ];
 
@@ -88,8 +96,8 @@ export function ActTwo({
       <ActLayout
         step="Act 2"
         kicker="In place"
-        title="The same investigation, kept in one view"
-        lead="Open context where the line lives. The filter holds, your position holds, and every view stacks in the same window."
+        title="Open context where the line lives"
+        lead="The same investigation, kept in one view. The trace can show you where checkout broke — opening context in place shows you why."
         aside={
           <GuideBox
             title="The Method"
@@ -98,6 +106,12 @@ export function ActTwo({
               label: "Call the root cause",
               onClick: callRootCause,
             }}
+            foot={
+              <>
+                Checkout times out at <strong>13:31:58</strong>. What put it
+                there?
+              </>
+            }
           />
         }
       >
