@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import type { LogLine } from "@/demo";
 import { ActOne } from "@/site/features/experience/act-one/act-one";
@@ -27,6 +27,13 @@ const lines: readonly LogLine[] = [
     level: "INFO",
     message: "GET /api/users",
     requestId: "r4d8a2",
+  },
+  {
+    id: "4",
+    timestamp: 3,
+    instance: "kc4qn",
+    level: "ERROR",
+    message: "pool exhausted",
   },
 ];
 
@@ -71,5 +78,31 @@ describe("ActOne", () => {
 
     await user.click(screen.getByText("request timeout"));
     expect(openStep.closest("li")).toHaveAttribute("data-done");
+  });
+
+  it("arms 'There's a better way' once every step is done, dropping the skip link", async () => {
+    const user = userEvent.setup();
+    const onAdvance = vi.fn();
+    render(<ActOne lines={lines} onAdvance={onAdvance} />);
+
+    const better = screen.getByRole("button", { name: /better way/i });
+    const skip = () => screen.queryByRole("button", { name: /skip ahead/i });
+    expect(better).toBeDisabled();
+    expect(skip()).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    await user.click(screen.getByText("request timeout"));
+    // Filtered with one tab — the "tabs pile up" step is still undone.
+    expect(better).toBeDisabled();
+
+    // Back to the live tail (the open pane unmounts) to open a second tab.
+    await user.click(screen.getByRole("tab", { name: "Live tail" }));
+    await user.click(screen.getByText("pool exhausted"));
+    // Every step checked: the call arms and the escape hatch disappears.
+    expect(better).toBeEnabled();
+    expect(skip()).not.toBeInTheDocument();
+
+    await user.click(better);
+    expect(onAdvance).toHaveBeenCalledOnce();
   });
 });

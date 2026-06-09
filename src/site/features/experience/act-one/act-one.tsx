@@ -1,6 +1,7 @@
 "use client";
 
 import * as Tabs from "@radix-ui/react-tabs";
+import { ArrowRight, ChevronRight, X } from "lucide-react";
 import { useCallback, useState } from "react";
 
 import {
@@ -120,6 +121,7 @@ export function ActOne({
       done: tabCount >= 2,
     },
   ];
+  const allDone = items.every((item) => item.done);
 
   return (
     <ActLayout
@@ -132,11 +134,25 @@ export function ActOne({
           <GuideBox
             title="What's happening"
             items={items}
+            action={{
+              label: (
+                <>
+                  There&rsquo;s a better way
+                  <ArrowRight size={16} aria-hidden="true" />
+                </>
+              ),
+              onClick: onAdvance,
+              // Arm it only once every step is checked — the full scatter felt.
+              disabled: !allDone,
+            }}
             note={guideNote(tabCount)}
           />
-          <Button variant="link" className={styles.skip} onClick={onAdvance}>
-            Skip ahead →
-          </Button>
+          {!allDone && (
+            <Button variant="link" className={styles.skip} onClick={onAdvance}>
+              Skip ahead
+              <ChevronRight size={14} aria-hidden="true" />
+            </Button>
+          )}
         </>
       }
     >
@@ -161,7 +177,7 @@ export function ActOne({
                 aria-label={`Close ${tabLabel(tab.line)}`}
                 onClick={() => closeTab(tab.id)}
               >
-                ✕
+                <X size={14} aria-hidden="true" />
               </button>
             </span>
           ))}

@@ -13,7 +13,7 @@ export type GuideItem = {
 };
 
 export type GuideAction = {
-  readonly label: string;
+  readonly label: ReactNode;
   readonly onClick: () => void;
   readonly disabled?: boolean;
 };
