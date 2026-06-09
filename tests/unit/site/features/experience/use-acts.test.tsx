@@ -41,6 +41,18 @@ describe("useActs", () => {
     expect(result.current.act).toBe("act1");
   });
 
+  it("resets to Act 1 and clears the marker on replay", () => {
+    const { result } = renderHook(() => useActs());
+    act(() => result.current.advance());
+    expect(result.current.act).toBe("act2");
+
+    act(() => result.current.reset());
+    expect(result.current.act).toBe("act1");
+    expect(
+      (window.history.state as { act?: string } | null)?.act,
+    ).toBeUndefined();
+  });
+
   it("starts on Act 1 on a reload that carried an Act 2 marker, and clears it", () => {
     // A reload preserves history state, so model landing with act: act2.
     window.history.replaceState({ act: "act2" }, "", window.location.href);

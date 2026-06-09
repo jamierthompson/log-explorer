@@ -1,5 +1,7 @@
 "use client";
 
+import { useCallback, useState } from "react";
+
 import { type LogLine } from "@/demo";
 
 import { ActOne } from "./act-one/act-one";
@@ -16,17 +18,25 @@ import { useActs } from "./use-acts";
  * Both acts stay mounted and the inactive one is hidden, so navigating
  * between them preserves each act's progress — filters, open views, guide
  * state, and the explorer's own internal state all survive the round trip.
+ * Replay is the one deliberate reset: bumping the run key remounts both
+ * acts fresh, and reset returns to Act 1.
  */
 export function Experience({ lines }: { lines: readonly LogLine[] }) {
-  const { act, advance } = useActs();
+  const { act, advance, reset } = useActs();
+  const [runId, setRunId] = useState(0);
+
+  const replay = useCallback(() => {
+    setRunId((n) => n + 1);
+    reset();
+  }, [reset]);
 
   return (
     <div className={styles.experience}>
       <div className={styles.act} hidden={act !== "act1"}>
-        <ActOne lines={lines} onAdvance={advance} />
+        <ActOne key={runId} lines={lines} onAdvance={advance} />
       </div>
       <div className={styles.act} hidden={act !== "act2"}>
-        <ActTwo lines={lines} />
+        <ActTwo key={runId} lines={lines} onReplay={replay} />
       </div>
     </div>
   );

@@ -30,7 +30,13 @@ const INITIAL_PROGRESS: Progress = {
  * lives here, with the explorer it concludes, rather than up in the
  * sequencer.
  */
-export function ActTwo({ lines }: { lines: readonly LogLine[] }) {
+export function ActTwo({
+  lines,
+  onReplay,
+}: {
+  lines: readonly LogLine[];
+  onReplay?: () => void;
+}) {
   const [rootCauseOpen, setRootCauseOpen] = useState(false);
   const [called, setCalled] = useState(false);
   const [progress, setProgress] = useState<Progress>(INITIAL_PROGRESS);
@@ -98,7 +104,11 @@ export function ActTwo({ lines }: { lines: readonly LogLine[] }) {
       >
         <LogExplorer lines={lines} onStateChange={handleState} />
       </ActLayout>
-      <RootCauseDialog open={rootCauseOpen} onOpenChange={setRootCauseOpen} />
+      <RootCauseDialog
+        open={rootCauseOpen}
+        onOpenChange={setRootCauseOpen}
+        onReplay={onReplay}
+      />
     </>
   );
 }

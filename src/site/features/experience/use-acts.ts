@@ -16,18 +16,26 @@ function actFromState(state: unknown): Act {
  * browser preserved across the reload is cleared, so a reload can't drop
  * the visitor mid-experience.
  */
-export function useActs(): { act: Act; advance: () => void } {
+export function useActs(): {
+  act: Act;
+  advance: () => void;
+  reset: () => void;
+} {
   const [act, setAct] = useState<Act>("act1");
 
-  useEffect(() => {
-    // Clear a marker carried over from a reload so this load — and any
-    // later forward navigation — can't resurrect a prior Act 2.
+  const clearMarker = useCallback(() => {
     if (actFromState(window.history.state) !== "act1") {
       const state = { ...(window.history.state as object | null) };
       delete (state as { act?: string }).act;
       window.history.replaceState(state, "", window.location.href);
     }
   }, []);
+
+  useEffect(() => {
+    // Clear a marker carried over from a reload so this load — and any
+    // later forward navigation — can't resurrect a prior Act 2.
+    clearMarker();
+  }, [clearMarker]);
 
   useEffect(() => {
     // Within a session, honor browser back/forward between the acts.
@@ -42,5 +50,12 @@ export function useActs(): { act: Act; advance: () => void } {
     setAct("act2");
   }, []);
 
-  return { act, advance };
+  // Return to Act 1 deliberately (replay), dropping the act marker so
+  // forward navigation can't jump back into Act 2.
+  const reset = useCallback(() => {
+    clearMarker();
+    setAct("act1");
+  }, [clearMarker]);
+
+  return { act, advance, reset };
 }
