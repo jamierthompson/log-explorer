@@ -7,7 +7,6 @@ export function formatTime(timestamp: number): string {
   )}`;
 }
 
-const DAY_NAMES = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"] as const;
 const MONTH_NAMES = [
   "JAN",
   "FEB",
@@ -23,8 +22,12 @@ const MONTH_NAMES = [
   "DEC",
 ] as const;
 
-/** `DAY · MON DD` in UTC, e.g. `MON · MAY 11`. */
-export function formatDayLabel(timestamp: number): string {
+/** `MON DD, HH:MM UTC` in UTC, e.g. `MAY 11, 13:00 UTC` — where a
+ * log stream starts, for labeling the whole view. */
+export function formatStreamStart(timestamp: number): string {
   const d = new Date(timestamp);
-  return `${DAY_NAMES[d.getUTCDay()]} · ${MONTH_NAMES[d.getUTCMonth()]} ${d.getUTCDate()}`;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${MONTH_NAMES[d.getUTCMonth()]} ${d.getUTCDate()}, ${pad(
+    d.getUTCHours(),
+  )}:${pad(d.getUTCMinutes())} UTC`;
 }

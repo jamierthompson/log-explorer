@@ -99,7 +99,11 @@ export function ActTwo({
           />
         }
       >
-        <LogExplorer lines={lines} onStateChange={handleState} />
+        <LogExplorer
+          lines={lines}
+          service="api-gateway"
+          onStateChange={handleState}
+        />
       </ActLayout>
       <RootCauseDialog
         open={rootCauseOpen}

@@ -29,6 +29,8 @@ export type Scenario = FilterState;
 export type ScenarioPreset = {
   readonly id: string;
   readonly label: string;
+  /** One-line reason to reach for this preset, surfaced as a hover hint. */
+  readonly hint?: string;
   readonly scenario: Scenario;
 };
 

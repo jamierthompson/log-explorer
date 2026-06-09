@@ -63,7 +63,7 @@ describe("LogExplorer", () => {
   it("pressing Esc closes an open context", async () => {
     const user = userEvent.setup();
     render(<LogExplorer lines={lines} />);
-    await user.click(screen.getByRole("button", { name: /trace req=r4d8a2/i }));
+    await user.click(screen.getByRole("button", { name: /req=r4d8a2/i }));
     await user.click(screen.getByText("GET /api/users"));
     expect(document.querySelector('[data-selected="true"]')).not.toBeNull();
 
@@ -86,7 +86,7 @@ describe("LogExplorer", () => {
   it("pressing Shift+Esc closes every open context", async () => {
     const user = userEvent.setup();
     render(<LogExplorer lines={lines} />);
-    await user.click(screen.getByRole("button", { name: /trace req=r4d8a2/i }));
+    await user.click(screen.getByRole("button", { name: /req=r4d8a2/i }));
     await user.click(screen.getByText("GET /api/users"));
     expect(document.querySelector('[data-selected="true"]')).not.toBeNull();
 
@@ -113,7 +113,7 @@ describe("LogExplorer", () => {
   it("pressing Esc with the sheet open closes only the sheet", async () => {
     const user = userEvent.setup();
     render(<LogExplorer lines={lines} />);
-    await user.click(screen.getByRole("button", { name: /trace req=r4d8a2/i }));
+    await user.click(screen.getByRole("button", { name: /req=r4d8a2/i }));
     await user.click(screen.getByText("GET /api/users"));
     expect(document.querySelector('[data-selected="true"]')).not.toBeNull();
 
@@ -131,7 +131,7 @@ describe("LogExplorer", () => {
     render(<LogExplorer lines={lines} />);
     const errorsChip = screen.getByRole("button", { name: /errors only/i });
     const instanceChip = screen.getByRole("button", {
-      name: /instance kc4qn/i,
+      name: /@kc4qn/i,
     });
 
     // Only errors: just the ERROR line is visible.
@@ -232,7 +232,7 @@ describe("LogExplorer anchor cycling", () => {
   async function openThreeContexts() {
     const user = userEvent.setup();
     render(<LogExplorer lines={cyclingLines} />);
-    await user.click(screen.getByRole("button", { name: /trace req=r4d8a2/i }));
+    await user.click(screen.getByRole("button", { name: /req=r4d8a2/i }));
     await user.click(screen.getByText("alpha trace"));
     await user.click(screen.getByText("beta trace"));
     await user.click(screen.getByText("gamma trace"));
@@ -274,7 +274,7 @@ describe("LogExplorer anchor cycling", () => {
   it("] from a non-anchor focus lands on the first anchor", async () => {
     const user = userEvent.setup();
     render(<LogExplorer lines={cyclingLines} />);
-    await user.click(screen.getByRole("button", { name: /trace req=r4d8a2/i }));
+    await user.click(screen.getByRole("button", { name: /req=r4d8a2/i }));
     await user.click(screen.getByText("alpha trace"));
     await user.click(screen.getByText("gamma trace"));
 
@@ -304,7 +304,7 @@ describe("LogExplorer context delegation and Legend visibility", () => {
     const onViewContext = vi.fn();
     render(<LogExplorer lines={lines} onViewContext={onViewContext} />);
 
-    await user.click(screen.getByRole("button", { name: /trace req=r4d8a2/i }));
+    await user.click(screen.getByRole("button", { name: /req=r4d8a2/i }));
     await user.click(screen.getByText("GET /api/users"));
 
     expect(onViewContext).toHaveBeenCalledWith("3");

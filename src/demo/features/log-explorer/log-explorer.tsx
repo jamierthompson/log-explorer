@@ -11,6 +11,7 @@ import {
 } from "react";
 
 import { ScenarioChips } from "@/demo/features/scenario-chips/scenario-chips";
+import { formatStreamStart } from "@/demo/lib/format-timestamp";
 import { SCENARIOS } from "@/demo/lib/scenarios";
 import { ShortcutSheet } from "@/demo/features/shortcut-sheet/shortcut-sheet";
 import { Legend, type LegendItem } from "@/demo/ui/legend";
@@ -34,12 +35,15 @@ import { useListboxKeyboard } from "./use-listbox-keyboard";
 
 export function LogExplorer({
   lines,
+  service,
   initialFilter = initialFilterState,
   onStateChange,
   onViewContext,
   showLegend = true,
 }: {
   lines: readonly LogLine[];
+  /** Name of the service emitting the stream, shown in the list header. */
+  service?: string;
   initialFilter?: FilterState;
   onStateChange?: (snapshot: LogExplorerSnapshot) => void;
   onViewContext?: (lineId: string) => void;
@@ -102,6 +106,23 @@ export function LogExplorer({
     () => derivedLines.filter((l) => l.isVisible),
     [derivedLines],
   );
+
+  /*
+   * Stream header: where the stream starts plus how much of it is
+   * showing. The count names the full stream when everything is
+   * visible and the narrowed share once filtering or context windows
+   * hide lines — making the collapse legible at a glance.
+   */
+  const header = useMemo(() => {
+    if (lines.length === 0) return undefined;
+    const count =
+      visibleLines.length === lines.length
+        ? `${lines.length} lines`
+        : `${visibleLines.length} of ${lines.length} lines`;
+    return [service, formatStreamStart(lines[0].timestamp), count]
+      .filter(Boolean)
+      .join(" · ");
+  }, [lines, service, visibleLines.length]);
 
   /*
    * Keyboard navigation hops between actionable rows only — dimmed
@@ -394,6 +415,7 @@ export function LogExplorer({
       </div>
       <LogList
         lines={visibleLines}
+        header={header}
         focusedLineId={focusedLineId}
         selectedContextLineIds={selectedContextLineIds}
         hasAnyFilter={hasAnyFilter(filterState)}

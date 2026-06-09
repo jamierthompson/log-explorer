@@ -169,6 +169,7 @@ export function ActOne({
         <Tabs.Content value={LIVE} className={styles.panel} forceMount>
           <LogExplorer
             lines={lines}
+            service="api-gateway"
             showLegend={false}
             onViewContext={openContext}
             onStateChange={handleState}

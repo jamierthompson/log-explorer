@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatDayLabel, formatTime } from "@/demo/lib/format-timestamp";
+import { formatStreamStart, formatTime } from "@/demo/lib/format-timestamp";
 
 describe("formatTime", () => {
   it("formats a UTC timestamp as HH:MM:SS", () => {
@@ -19,16 +19,21 @@ describe("formatTime", () => {
   });
 });
 
-describe("formatDayLabel", () => {
-  it("formats a UTC timestamp as DAY · MON DD", () => {
-    const t = new Date("2026-05-11T13:04:38Z").getTime();
-    expect(formatDayLabel(t)).toBe("MON · MAY 11");
+describe("formatStreamStart", () => {
+  it("formats a UTC timestamp as MON DD, HH:MM UTC", () => {
+    const t = new Date("2026-05-11T13:00:00Z").getTime();
+    expect(formatStreamStart(t)).toBe("MAY 11, 13:00 UTC");
   });
 
-  it("uses UTC for day and month regardless of the runner's timezone", () => {
+  it("zero-pads the time", () => {
+    const t = new Date("2026-05-11T03:07:00Z").getTime();
+    expect(formatStreamStart(t)).toBe("MAY 11, 03:07 UTC");
+  });
+
+  it("uses UTC for date and time regardless of the runner's timezone", () => {
     // Just past midnight UTC — a negative-offset local zone would roll
     // this back to the previous day if the label didn't use UTC.
     const t = new Date("2026-01-01T00:30:00Z").getTime();
-    expect(formatDayLabel(t)).toBe("THU · JAN 1");
+    expect(formatStreamStart(t)).toBe("JAN 1, 00:30 UTC");
   });
 });
