@@ -1,6 +1,7 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
+import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/site/ui/button/button";
@@ -21,14 +22,14 @@ const CAUSES: readonly Cause[] = [
     name: "The database is down",
     detail: "Postgres fell over and every instance is failing.",
     outcome:
-      "Worth another look — @m7w3p and @t2x8r kept serving 200s right through the incident. A database that was truly down wouldn't spare two of three instances.",
+      "Worth another look — @m7w3p and @t2x8r kept serving 200s through the whole incident, and checkout itself succeeded on @m7w3p at 13:31:55. A database that was truly down wouldn't spare two of three instances.",
   },
   {
     id: "payload",
     name: "A malformed checkout payload",
     detail: "Bad client input crashed the request.",
     outcome:
-      "Follow the trace once more: the request was accepted, then sat waiting on a database connection until it timed out — it never reached validation.",
+      "Follow the trace once more: the request was accepted, then sat waiting on a database connection until it timed out — it never reached validation. And the same instance failed an unrelated add-to-cart the same way; bad input doesn't spread between requests.",
   },
   {
     id: "pool",
@@ -36,7 +37,7 @@ const CAUSES: readonly Cause[] = [
     detail: "db.pool.max dropped 20 → 5, starving connections.",
     correct: true,
     outcome:
-      "The trace tells you where checkout broke — a pool timeout — but not why. The cause carried no request id, so it never entered the trace. Opening context in place, with your filter intact, put the config reload one line from the failure instead of one tab away. The work of narrowing in followed you to where you looked.",
+      "At 13:30:11 a hot-reload set db.pool.max from 20 to 5 on @kc4qn alone; within a minute the pool was saturated and every request on it — r4d8a2 included — timed out waiting for a connection. The reload carried no request id, so the trace could never show it. Opening context in place, with your filter intact, put it one line from the failure instead of one tab away. The cause was never in the trace; it was in the line beside it.",
   },
 ];
 
@@ -44,10 +45,12 @@ export function RootCauseDialog({
   open,
   onOpenChange,
   onReplay,
+  onReadStory,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onReplay?: () => void;
+  onReadStory?: () => void;
 }) {
   const [picked, setPicked] = useState<Cause | null>(null);
 
@@ -73,14 +76,24 @@ export function RootCauseDialog({
               <p className={styles.resultName}>{picked.name}</p>
               <p className={styles.lesson}>{picked.outcome}</p>
               {/* Dismissal is handled by the overlay and Esc, so the only
-                  buttons here advance: replay on the closing bookend, or a
-                  retry after a miss. */}
-              {(onReplay || !picked.correct) && (
+                  buttons here advance: on the closing bookend, onward to the
+                  build story or another run; after a miss, a retry. */}
+              {(onReadStory || onReplay || !picked.correct) && (
                 <div className={styles.actions}>
                   {picked.correct ? (
-                    <Button variant="primary" onClick={onReplay}>
-                      Replay the incident
-                    </Button>
+                    <>
+                      {onReadStory && (
+                        <Button variant="primary" onClick={onReadStory}>
+                          Read how it was built
+                          <ArrowRight size={16} aria-hidden="true" />
+                        </Button>
+                      )}
+                      {onReplay && (
+                        <Button variant="ghost" onClick={onReplay}>
+                          Replay the incident
+                        </Button>
+                      )}
+                    </>
                   ) : (
                     <Button variant="primary" onClick={() => setPicked(null)}>
                       Reconsider

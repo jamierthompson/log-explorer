@@ -30,7 +30,10 @@ export function Landing({ lines }: { lines: readonly LogLine[] }) {
           {view === "demo" ? (
             <div className={styles.demoView}>
               <div className={styles.demoInner}>
-                <Experience lines={lines} />
+                <Experience
+                  lines={lines}
+                  onReadStory={() => navigate("story")}
+                />
               </div>
             </div>
           ) : view === "story" ? (

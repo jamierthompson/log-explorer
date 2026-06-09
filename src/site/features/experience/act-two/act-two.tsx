@@ -33,9 +33,11 @@ const INITIAL_PROGRESS: Progress = {
 export function ActTwo({
   lines,
   onReplay,
+  onReadStory,
 }: {
   lines: readonly LogLine[];
   onReplay?: () => void;
+  onReadStory?: () => void;
 }) {
   const [rootCauseOpen, setRootCauseOpen] = useState(false);
   const [called, setCalled] = useState(false);
@@ -109,6 +111,7 @@ export function ActTwo({
         open={rootCauseOpen}
         onOpenChange={setRootCauseOpen}
         onReplay={onReplay}
+        onReadStory={onReadStory}
       />
     </>
   );
