@@ -1,46 +1,45 @@
 "use client";
 
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export type Act = "act1" | "act2";
-
-/*
- * pushState fires neither popstate nor hashchange, so advancing announces
- * itself with this event to keep the store in sync — mirroring how the
- * view router signals its own pushState navigations.
- */
-const ACT_EVENT = "experience:actchange";
 
 function actFromState(state: unknown): Act {
   return (state as { act?: string } | null)?.act === "act2" ? "act2" : "act1";
 }
 
-function subscribe(onStoreChange: () => void): () => void {
-  window.addEventListener("popstate", onStoreChange);
-  window.addEventListener(ACT_EVENT, onStoreChange);
-  return () => {
-    window.removeEventListener("popstate", onStoreChange);
-    window.removeEventListener(ACT_EVENT, onStoreChange);
-  };
-}
-
 /**
- * Sequences the guided experience. The act lives in history state, so
- * advancing to Act 2 pushes an entry the browser back button can return
- * from — landing back on Act 1 without leaving the demo view. The act is
- * derived via useSyncExternalStore so back/forward stay authoritative.
+ * Sequences the guided experience. Advancing to Act 2 pushes a history
+ * entry, so the browser back button returns to Act 1 (and forward restores
+ * Act 2) within a session. A fresh page load always starts on Act 1: the
+ * act is held in local state seeded to Act 1, and any stale act marker the
+ * browser preserved across the reload is cleared, so a reload can't drop
+ * the visitor mid-experience.
  */
 export function useActs(): { act: Act; advance: () => void } {
-  const act = useSyncExternalStore<Act>(
-    subscribe,
-    () => actFromState(window.history.state),
-    () => "act1",
-  );
+  const [act, setAct] = useState<Act>("act1");
+
+  useEffect(() => {
+    // Clear a marker carried over from a reload so this load — and any
+    // later forward navigation — can't resurrect a prior Act 2.
+    if (actFromState(window.history.state) !== "act1") {
+      const state = { ...(window.history.state as object | null) };
+      delete (state as { act?: string }).act;
+      window.history.replaceState(state, "", window.location.href);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Within a session, honor browser back/forward between the acts.
+    const onPop = () => setAct(actFromState(window.history.state));
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   const advance = useCallback(() => {
     const state = { ...(window.history.state ?? {}), act: "act2" };
     window.history.pushState(state, "", window.location.href);
-    window.dispatchEvent(new Event(ACT_EVENT));
+    setAct("act2");
   }, []);
 
   return { act, advance };

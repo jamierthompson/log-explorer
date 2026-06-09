@@ -40,4 +40,17 @@ describe("useActs", () => {
     });
     expect(result.current.act).toBe("act1");
   });
+
+  it("starts on Act 1 on a reload that carried an Act 2 marker, and clears it", () => {
+    // A reload preserves history state, so model landing with act: act2.
+    window.history.replaceState({ act: "act2" }, "", window.location.href);
+
+    const { result } = renderHook(() => useActs());
+
+    expect(result.current.act).toBe("act1");
+    // The stale marker is wiped so forward nav can't resurrect Act 2.
+    expect(
+      (window.history.state as { act?: string } | null)?.act,
+    ).toBeUndefined();
+  });
 });
