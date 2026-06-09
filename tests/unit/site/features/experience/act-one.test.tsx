@@ -56,4 +56,20 @@ describe("ActOne", () => {
     // The filter survived the round trip: the non-matching line stays hidden.
     expect(screen.queryByText("Healthcheck OK")).not.toBeInTheDocument();
   });
+
+  it("checks off the guide as the visitor filters and opens tabs", async () => {
+    const user = userEvent.setup();
+    render(<ActOne lines={lines} onAdvance={() => {}} />);
+
+    const filterStep = screen.getByText("Filter to the failing request");
+    const openStep = screen.getByText("Open a line for context");
+    expect(filterStep.closest("li")).not.toHaveAttribute("data-done");
+    expect(openStep.closest("li")).not.toHaveAttribute("data-done");
+
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    expect(filterStep.closest("li")).toHaveAttribute("data-done");
+
+    await user.click(screen.getByText("request timeout"));
+    expect(openStep.closest("li")).toHaveAttribute("data-done");
+  });
 });

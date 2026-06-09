@@ -3,35 +3,28 @@
 import * as Tabs from "@radix-ui/react-tabs";
 import { useCallback, useState } from "react";
 
-import { formatLogTime, LogExplorer, LogRow, type LogLine } from "@/demo";
+import {
+  formatLogTime,
+  LogExplorer,
+  type LogExplorerSnapshot,
+  LogRow,
+  type LogLine,
+} from "@/demo";
 import { Button } from "@/site/ui/button/button";
 
 import { ActLayout } from "../act-layout/act-layout";
 import { GuideBox, type GuideItem } from "../guide-box/guide-box";
 import styles from "./act-one.module.css";
 
-const GUIDE_ITEMS: readonly GuideItem[] = [
-  {
-    id: "filter",
-    title: "Filter to the failing request",
-    description: "Pick a chip to narrow the live tail to one request.",
-  },
-  {
-    id: "open",
-    title: "Open a line for context",
-    description: "Click a matching line to see what surrounded it.",
-  },
-  {
-    id: "lost",
-    title: "Land in a new tab",
-    description: "The context opens elsewhere — and your filter didn't follow.",
-  },
-  {
-    id: "pile",
-    title: "Watch the tabs pile up",
-    description: "Every view is one more tab to juggle and lose your place in.",
-  },
-];
+function guideNote(tabCount: number): string {
+  if (tabCount >= 3) {
+    return `${tabCount} tabs open — you're rebuilding the timeline by flipping between them.`;
+  }
+  if (tabCount >= 1) {
+    return "Every view buys one slice and costs you your place — that's the fan of tabs.";
+  }
+  return "Filter to the failing request, then open a line and watch where the context lands.";
+}
 
 /* Lines of unfiltered context a tab shows on each side of its anchor —
  * enough to read around the line, small enough to feel like a scrap torn
@@ -73,6 +66,13 @@ export function ActOne({
 }) {
   const [tabs, setTabs] = useState<readonly ContextTab[]>([]);
   const [active, setActive] = useState<string>(LIVE);
+  // Sticky: once the visitor has filtered, the step stays checked even if
+  // they later clear it — the guide tracks progress, not current state.
+  const [everFiltered, setEverFiltered] = useState(false);
+
+  const handleState = useCallback((snapshot: LogExplorerSnapshot) => {
+    if (snapshot.hasFilter) setEverFiltered(true);
+  }, []);
 
   const openContext = useCallback(
     (lineId: string) => {
@@ -91,6 +91,36 @@ export function ActOne({
     setActive((current) => (current === lineId ? LIVE : current));
   }, []);
 
+  const tabCount = tabs.length;
+  const items: readonly GuideItem[] = [
+    {
+      id: "filter",
+      title: "Filter to the failing request",
+      description: "Pick a chip to narrow the live tail to one request.",
+      done: everFiltered,
+    },
+    {
+      id: "open",
+      title: "Open a line for context",
+      description: "Click a matching line to see what surrounded it.",
+      done: tabCount >= 1,
+    },
+    {
+      id: "lost",
+      title: "Land in a new tab",
+      description:
+        "The context opens elsewhere — and your filter didn't follow.",
+      done: tabCount >= 1,
+    },
+    {
+      id: "pile",
+      title: "Watch the tabs pile up",
+      description:
+        "Every view is one more tab to juggle and lose your place in.",
+      done: tabCount >= 2,
+    },
+  ];
+
   return (
     <ActLayout
       step="Act 1"
@@ -101,8 +131,8 @@ export function ActOne({
         <>
           <GuideBox
             title="What's happening"
-            items={GUIDE_ITEMS}
-            note="One failing request, scattered across tabs."
+            items={items}
+            note={guideNote(tabCount)}
           />
           <Button variant="link" className={styles.skip} onClick={onAdvance}>
             Skip ahead →
@@ -148,6 +178,7 @@ export function ActOne({
             lines={lines}
             showLegend={false}
             onViewContext={openContext}
+            onStateChange={handleState}
           />
         </Tabs.Content>
 
