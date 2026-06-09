@@ -39,9 +39,7 @@ describe("ActOne", () => {
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     await user.click(screen.getByText("request timeout"));
 
-    expect(
-      screen.getByText(/your filter didn’t come with you/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/slice of the live tail/i)).toBeInTheDocument();
     // Nothing expanded in place.
     expect(document.querySelector('[data-selected="true"]')).toBeNull();
   });

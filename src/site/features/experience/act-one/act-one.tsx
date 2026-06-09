@@ -12,32 +12,32 @@ import {
   type LogLine,
 } from "@/demo";
 
+import { ScrollArea } from "@/site/ui/scroll-area/scroll-area";
+
 import { ActLayout } from "../act-layout/act-layout";
 import { GuideBox, type GuideItem } from "../guide-box/guide-box";
 import styles from "./act-one.module.css";
 
 /* Lines of unfiltered context a tab shows on each side of its anchor —
- * enough to read around the line, small enough to feel like a scrap torn
- * out of the stream. */
-const PANE_RANGE = 14;
+ * a deliberately small window, so each tab reads as a thin slice torn out
+ * of the live tail rather than a second log view. */
+const PANE_RANGE = 5;
 
 const LIVE = "live";
 
 type ContextTab = { readonly id: string; readonly line: LogLine };
 
-const tabLabel = (line: LogLine) =>
-  `${formatLogTime(line.timestamp)} · @${line.instance}`;
-
-/* The pane's note escalates with the open-tab count, so the scatter is
- * felt rather than just stated, and points back to the live tail. */
+/* The pane's note names what the tab is — a slice of the live tail with no
+ * filter — and escalates with the count so the scatter is felt, pointing
+ * back to the live tail that still holds the visitor's place. */
 function paneNote(tabCount: number): string {
   if (tabCount >= 3) {
-    return `${tabCount} tabs open — the investigation’s scattered across them. Live tail still holds your filter.`;
+    return `${tabCount} slices of the live tail, each stranded in its own tab — you're rebuilding the timeline by flipping between them.`;
   }
   if (tabCount === 2) {
-    return "Two tabs now — flip back to Live tail to pick up where you were.";
+    return "Another slice of the live tail — two tabs now. Flip back to the live tail for your filtered place.";
   }
-  return "New tab — your filter didn’t come with you.";
+  return "A slice of the live tail around this line, opened in its own tab — and your filter didn’t come with it.";
 }
 
 /**
@@ -144,17 +144,17 @@ export function ActOne({
           </Tabs.Trigger>
 
           {tabs.map((tab) => (
-            <span key={tab.id} className={styles.tabWrap}>
-              <Tabs.Trigger value={tab.id} className={styles.tab}>
-                {tabLabel(tab.line)}
+            <span key={tab.id} className={styles.tab}>
+              <Tabs.Trigger value={tab.id} className={styles.tabTrigger}>
+                {formatLogTime(tab.line.timestamp)}
               </Tabs.Trigger>
               <button
                 type="button"
                 className={styles.tabClose}
-                aria-label={`Close ${tabLabel(tab.line)}`}
+                aria-label={`Close the ${formatLogTime(tab.line.timestamp)} slice`}
                 onClick={() => closeTab(tab.id)}
               >
-                <X size={14} aria-hidden="true" />
+                <X size={12} aria-hidden="true" />
               </button>
             </span>
           ))}
@@ -207,17 +207,19 @@ function ContextPane({
   return (
     <div className={styles.pane}>
       <p className={styles.paneNote}>{paneNote(tabCount)}</p>
-      <ul className={styles.paneList}>
-        {slice.map((line) => (
-          <li
-            key={line.id}
-            className={styles.paneRow}
-            data-anchor={line.id === anchorId || undefined}
-          >
-            <LogRow line={line} />
-          </li>
-        ))}
-      </ul>
+      <ScrollArea>
+        <ul className={styles.paneList}>
+          {slice.map((line) => (
+            <li
+              key={line.id}
+              className={styles.paneRow}
+              data-anchor={line.id === anchorId || undefined}
+            >
+              <LogRow line={line} />
+            </li>
+          ))}
+        </ul>
+      </ScrollArea>
     </div>
   );
 }

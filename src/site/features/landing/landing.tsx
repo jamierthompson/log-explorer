@@ -25,7 +25,7 @@ export function Landing({ lines }: { lines: readonly LogLine[] }) {
   return (
     <>
       <SiteNav view={view} onNavigate={navigate} />
-      <ScrollArea>
+      <ScrollArea isPageScroll>
         <main id="main-content" tabIndex={-1} className={styles.main}>
           {view === "demo" ? (
             <div className={styles.demoView}>
