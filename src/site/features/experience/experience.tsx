@@ -7,6 +7,7 @@ import { type LogLine } from "@/demo";
 import { ActOne } from "./act-one/act-one";
 import { ActTwo } from "./act-two/act-two";
 import styles from "./experience.module.css";
+import { IncidentBrief } from "./incident-brief/incident-brief";
 import { useActs } from "./use-acts";
 
 /**
@@ -38,6 +39,9 @@ export function Experience({
 
   return (
     <div className={styles.experience}>
+      {/* The case facts are chrome for the whole demo, rendered above the
+       * act swap so advancing or going back never shifts the page. */}
+      <IncidentBrief />
       <div className={styles.act} hidden={act !== "act1"}>
         <ActOne key={runId} lines={lines} onAdvance={advance} />
       </div>

@@ -19,22 +19,10 @@ export function Hero({
         Chasing an ID <em>without losing your place</em>.
       </h1>
       <p className={styles.lead}>
-        13:31 UTC. Checkout starts returning 503s on api-gateway while the logs
-        tail live. You filter to the failing request, click a span for context —
-        and a new tab opens, your filter gone, the tail gone. A few clicks in,
-        you’ve got a fan of tabs and the incident scattered across them.
+        Filter a live tail to a failing request, click a line for context — and
+        it opens in a new tab, away from the view you just set up. This
+        prototype opens context in place, so the investigation never scatters.
       </p>
-      <div className={styles.coverMeta}>
-        <span>
-          <em>Service</em> api-gateway
-        </span>
-        <span>
-          <em>Symptom</em> checkout 503s
-        </span>
-        <span>
-          <em>Instances</em> kc4qn · m7w3p · t2x8r
-        </span>
-      </div>
       <div className={styles.heroActions}>
         <Button variant="primary" size="lg" onClick={onOpenDemo}>
           Open the logs
