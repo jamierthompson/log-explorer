@@ -1,7 +1,7 @@
 "use client";
 
 import * as Tabs from "@radix-ui/react-tabs";
-import { ArrowRight, ChevronRight, X } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
 import { useCallback, useState } from "react";
 
 import {
@@ -11,7 +11,6 @@ import {
   LogRow,
   type LogLine,
 } from "@/demo";
-import { Button } from "@/site/ui/button/button";
 
 import { ActLayout } from "../act-layout/act-layout";
 import { GuideBox, type GuideItem } from "../guide-box/guide-box";
@@ -121,7 +120,6 @@ export function ActOne({
       done: tabCount >= 2,
     },
   ];
-  const allDone = items.every((item) => item.done);
 
   return (
     <ActLayout
@@ -130,30 +128,20 @@ export function ActOne({
       title="One failing request, scattered across tabs"
       lead="Filter the live tail to the failing request, then open a line for context — it opens in a new tab that left your filter behind."
       aside={
-        <>
-          <GuideBox
-            title="What's happening"
-            items={items}
-            action={{
-              label: (
-                <>
-                  There&rsquo;s a better way
-                  <ArrowRight size={16} aria-hidden="true" />
-                </>
-              ),
-              onClick: onAdvance,
-              // Arm it only once every step is checked — the full scatter felt.
-              disabled: !allDone,
-            }}
-            note={guideNote(tabCount)}
-          />
-          {!allDone && (
-            <Button variant="link" className={styles.skip} onClick={onAdvance}>
-              Skip ahead
-              <ChevronRight size={14} aria-hidden="true" />
-            </Button>
-          )}
-        </>
+        <GuideBox
+          title="What's happening"
+          items={items}
+          action={{
+            label: (
+              <>
+                There&rsquo;s a better way
+                <ArrowRight size={16} aria-hidden="true" />
+              </>
+            ),
+            onClick: onAdvance,
+          }}
+          note={guideNote(tabCount)}
+        />
       }
     >
       <Tabs.Root

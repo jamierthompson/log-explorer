@@ -1,7 +1,3 @@
-.skip {
-  margin-top: var(--space-4);
-}
-
 .stage {
   display: flex;
   flex: 1;

@@ -37,8 +37,8 @@ describe("Experience", () => {
     const filterStep = screen.getByText("Filter to the failing request");
     expect(filterStep.closest("li")).toHaveAttribute("data-done");
 
-    // Leave for Act 2 via the skip link, confirm we arrived.
-    await user.click(screen.getByRole("button", { name: /skip ahead/i }));
+    // Leave for Act 2 via the always-available advance, confirm we arrived.
+    await user.click(screen.getByRole("button", { name: /better way/i }));
     expect(screen.getByText("The Method")).toBeVisible();
 
     // Browser back returns to Act 1 (model the pop jsdom won't perform).

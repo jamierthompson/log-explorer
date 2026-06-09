@@ -95,8 +95,6 @@ export function ActTwo({
             action={{
               label: "Call the root cause",
               onClick: callRootCause,
-              // Hold the call until there's context to reason from.
-              disabled: !progress.context,
             }}
             note="The filter holds and your place holds — make the call when the picture is clear."
           />

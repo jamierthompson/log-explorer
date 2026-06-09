@@ -28,13 +28,6 @@ const lines: readonly LogLine[] = [
     message: "GET /api/users",
     requestId: "r4d8a2",
   },
-  {
-    id: "4",
-    timestamp: 3,
-    instance: "kc4qn",
-    level: "ERROR",
-    message: "pool exhausted",
-  },
 ];
 
 describe("ActOne", () => {
@@ -80,27 +73,15 @@ describe("ActOne", () => {
     expect(openStep.closest("li")).toHaveAttribute("data-done");
   });
 
-  it("arms 'There's a better way' once every step is done, dropping the skip link", async () => {
+  it("advances to Act 2 via an always-available 'There's a better way'", async () => {
     const user = userEvent.setup();
     const onAdvance = vi.fn();
     render(<ActOne lines={lines} onAdvance={onAdvance} />);
 
     const better = screen.getByRole("button", { name: /better way/i });
-    const skip = () => screen.queryByRole("button", { name: /skip ahead/i });
-    expect(better).toBeDisabled();
-    expect(skip()).toBeInTheDocument();
-
-    await user.click(screen.getByRole("button", { name: /errors only/i }));
-    await user.click(screen.getByText("request timeout"));
-    // Filtered with one tab — the "tabs pile up" step is still undone.
-    expect(better).toBeDisabled();
-
-    // Back to the live tail (the open pane unmounts) to open a second tab.
-    await user.click(screen.getByRole("tab", { name: "Live tail" }));
-    await user.click(screen.getByText("pool exhausted"));
-    // Every step checked: the call arms and the escape hatch disappears.
     expect(better).toBeEnabled();
-    expect(skip()).not.toBeInTheDocument();
+    // The escape-hatch link is gone — the call is the only way forward.
+    expect(screen.queryByRole("button", { name: /skip ahead/i })).toBeNull();
 
     await user.click(better);
     expect(onAdvance).toHaveBeenCalledOnce();

@@ -15,7 +15,6 @@ export type GuideItem = {
 export type GuideAction = {
   readonly label: ReactNode;
   readonly onClick: () => void;
-  readonly disabled?: boolean;
 };
 
 /**
@@ -65,7 +64,6 @@ export function GuideBox({
           variant="primary"
           className={styles.action}
           onClick={action.onClick}
-          disabled={action.disabled}
         >
           {action.label}
         </Button>

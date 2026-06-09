@@ -31,19 +31,11 @@ const lines: readonly LogLine[] = [
 ];
 
 describe("ActTwo", () => {
-  it("holds the root-cause call until context is open", async () => {
+  it("opens the root-cause call, which is always available", async () => {
     const user = userEvent.setup();
     render(<ActTwo lines={lines} />);
 
     const call = screen.getByRole("button", { name: /call the root cause/i });
-    expect(call).toBeDisabled();
-
-    // A filter alone narrows the view but isn't grounds for a verdict.
-    await user.click(screen.getByRole("button", { name: /errors only/i }));
-    expect(call).toBeDisabled();
-
-    // Opening context in place is what arms the call.
-    await user.click(screen.getByText("request timeout"));
     expect(call).toBeEnabled();
 
     await user.click(call);
