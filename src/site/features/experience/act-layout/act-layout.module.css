@@ -8,10 +8,8 @@
 
 .main {
   display: flex;
-  flex: 1;
   flex-direction: column;
-  /* Floor the stage so enough stays visible to use; when the header and
-   * guide leave less room, the page scrolls rather than crushing it. */
+  height: 80dvh;
   min-height: 30rem;
   overflow: hidden;
   background: var(--logx-surface);
@@ -28,7 +26,8 @@
   }
 
   .main {
+    flex: 1;
     min-width: 0;
-    max-width: 48rem;
+    height: max(30rem, calc(100dvh - var(--topnav-height) - 16rem));
   }
 }

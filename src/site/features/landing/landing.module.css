@@ -2,8 +2,6 @@
   outline: none;
 }
 
-/* At least a screenful below the nav; grows (and scrolls the page) when
- * the header + guide + explorer need more room than that. */
 .demoView {
   display: flex;
   flex-direction: column;
