@@ -4,8 +4,34 @@ import * as Tabs from "@radix-ui/react-tabs";
 import { useCallback, useState } from "react";
 
 import { formatLogTime, LogExplorer, LogRow, type LogLine } from "@/demo";
+import { Button } from "@/site/ui/button/button";
 
+import { ActLayout } from "../act-layout/act-layout";
+import { GuideBox, type GuideItem } from "../guide-box/guide-box";
 import styles from "./act-one.module.css";
+
+const GUIDE_ITEMS: readonly GuideItem[] = [
+  {
+    id: "filter",
+    title: "Filter to the failing request",
+    description: "Pick a chip to narrow the live tail to one request.",
+  },
+  {
+    id: "open",
+    title: "Open a line for context",
+    description: "Click a matching line to see what surrounded it.",
+  },
+  {
+    id: "lost",
+    title: "Land in a new tab",
+    description: "The context opens elsewhere — and your filter didn't follow.",
+  },
+  {
+    id: "pile",
+    title: "Watch the tabs pile up",
+    description: "Every view is one more tab to juggle and lose your place in.",
+  },
+];
 
 /* Lines of unfiltered context a tab shows on each side of its anchor —
  * enough to read around the line, small enough to feel like a scrap torn
@@ -32,13 +58,19 @@ function paneNote(tabCount: number): string {
 }
 
 /**
- * Act 1 — the old way. The explorer runs with context delegated out
- * (onViewContext), so opening a line's context spawns a browser-style tab
- * here instead of expanding in place. The live tail's panel is force-
- * mounted, so it stays filtered behind the tabs and returning to it keeps
- * the visitor's place.
+ * Act 1 — the old way. A complete act: narration, a side guide, and a
+ * stage that runs the explorer with context delegated out (onViewContext),
+ * so opening a line's context spawns a browser-style tab here instead of
+ * expanding in place. The live tail's panel is force-mounted, so it stays
+ * filtered behind the tabs and returning to it keeps the visitor's place.
  */
-export function ActOne({ lines }: { lines: readonly LogLine[] }) {
+export function ActOne({
+  lines,
+  onAdvance,
+}: {
+  lines: readonly LogLine[];
+  onAdvance: () => void;
+}) {
   const [tabs, setTabs] = useState<readonly ContextTab[]>([]);
   const [active, setActive] = useState<string>(LIVE);
 
@@ -60,49 +92,76 @@ export function ActOne({ lines }: { lines: readonly LogLine[] }) {
   }, []);
 
   return (
-    <Tabs.Root className={styles.act} value={active} onValueChange={setActive}>
-      <Tabs.List className={styles.tabstrip} aria-label="Open views">
-        <Tabs.Trigger value={LIVE} className={styles.tab}>
-          Live tail
-        </Tabs.Trigger>
+    <ActLayout
+      step="Act 1"
+      kicker="The old way"
+      title="One failing request, scattered across tabs"
+      lead="Filter the live tail to the failing request, then open a line for context — it opens in a new tab that left your filter behind."
+      aside={
+        <>
+          <GuideBox
+            title="What's happening"
+            items={GUIDE_ITEMS}
+            note="One failing request, scattered across tabs."
+          />
+          <Button variant="link" className={styles.skip} onClick={onAdvance}>
+            Skip ahead →
+          </Button>
+        </>
+      }
+    >
+      <Tabs.Root
+        className={styles.stage}
+        value={active}
+        onValueChange={setActive}
+      >
+        <Tabs.List className={styles.tabstrip} aria-label="Open views">
+          <Tabs.Trigger value={LIVE} className={styles.tab}>
+            Live tail
+          </Tabs.Trigger>
+
+          {tabs.map((tab) => (
+            <span key={tab.id} className={styles.tabWrap}>
+              <Tabs.Trigger value={tab.id} className={styles.tab}>
+                {tabLabel(tab.line)}
+              </Tabs.Trigger>
+              <button
+                type="button"
+                className={styles.tabClose}
+                aria-label={`Close ${tabLabel(tab.line)}`}
+                onClick={() => closeTab(tab.id)}
+              >
+                ✕
+              </button>
+            </span>
+          ))}
+
+          {tabs.length > 0 && (
+            <span className={styles.tabCount}>
+              {tabs.length} tab{tabs.length === 1 ? "" : "s"} open
+            </span>
+          )}
+        </Tabs.List>
+
+        <Tabs.Content value={LIVE} className={styles.panel} forceMount>
+          <LogExplorer
+            lines={lines}
+            showLegend={false}
+            onViewContext={openContext}
+          />
+        </Tabs.Content>
 
         {tabs.map((tab) => (
-          <span key={tab.id} className={styles.tabWrap}>
-            <Tabs.Trigger value={tab.id} className={styles.tab}>
-              {tabLabel(tab.line)}
-            </Tabs.Trigger>
-            <button
-              type="button"
-              className={styles.tabClose}
-              aria-label={`Close ${tabLabel(tab.line)}`}
-              onClick={() => closeTab(tab.id)}
-            >
-              ✕
-            </button>
-          </span>
+          <Tabs.Content key={tab.id} value={tab.id} className={styles.panel}>
+            <ContextPane
+              lines={lines}
+              anchorId={tab.id}
+              tabCount={tabs.length}
+            />
+          </Tabs.Content>
         ))}
-
-        {tabs.length > 0 && (
-          <span className={styles.tabCount}>
-            {tabs.length} tab{tabs.length === 1 ? "" : "s"} open
-          </span>
-        )}
-      </Tabs.List>
-
-      <Tabs.Content value={LIVE} className={styles.panel} forceMount>
-        <LogExplorer
-          lines={lines}
-          showLegend={false}
-          onViewContext={openContext}
-        />
-      </Tabs.Content>
-
-      {tabs.map((tab) => (
-        <Tabs.Content key={tab.id} value={tab.id} className={styles.panel}>
-          <ContextPane lines={lines} anchorId={tab.id} tabCount={tabs.length} />
-        </Tabs.Content>
-      ))}
-    </Tabs.Root>
+      </Tabs.Root>
+    </ActLayout>
   );
 }
 

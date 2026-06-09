@@ -3,7 +3,6 @@
 import { useState } from "react";
 
 import { LogExplorer, type LogLine } from "@/demo";
-import { Button } from "@/site/ui/button/button";
 
 import { ActHeader } from "./act-header/act-header";
 import { ActOne } from "./act-one/act-one";
@@ -11,29 +10,6 @@ import styles from "./experience.module.css";
 import { GuideBox, type GuideItem } from "./guide-box/guide-box";
 import { RootCauseDialog } from "./root-cause-dialog/root-cause-dialog";
 import { useActs } from "./use-acts";
-
-const ACT1_ITEMS: readonly GuideItem[] = [
-  {
-    id: "filter",
-    title: "Filter to the failing request",
-    description: "Pick a chip to narrow the live tail to one request.",
-  },
-  {
-    id: "open",
-    title: "Open a line for context",
-    description: "Click a matching line to see what surrounded it.",
-  },
-  {
-    id: "lost",
-    title: "Land in a new tab",
-    description: "The context opens elsewhere — and your filter didn't follow.",
-  },
-  {
-    id: "pile",
-    title: "Watch the tabs pile up",
-    description: "Every view is one more tab to juggle and lose your place in.",
-  },
-];
 
 const ACT2_ITEMS: readonly GuideItem[] = [
   {
@@ -72,29 +48,7 @@ export function Experience({ lines }: { lines: readonly LogLine[] }) {
   return (
     <div className={styles.experience}>
       {act === "act1" ? (
-        <>
-          <ActHeader
-            step="Act 1"
-            kicker="The old way"
-            title="One failing request, scattered across tabs"
-            lead="Filter the live tail to the failing request, then open a line for context — it opens in a new tab that left your filter behind."
-          />
-          <div className={styles.layout}>
-            <div className={styles.aside}>
-              <GuideBox
-                title="What's happening"
-                items={ACT1_ITEMS}
-                note="One failing request, scattered across tabs."
-              />
-              <Button variant="link" className={styles.skip} onClick={advance}>
-                Skip ahead →
-              </Button>
-            </div>
-            <div className={styles.main}>
-              <ActOne lines={lines} />
-            </div>
-          </div>
-        </>
+        <ActOne lines={lines} onAdvance={advance} />
       ) : (
         <>
           <ActHeader

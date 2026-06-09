@@ -1,0 +1,34 @@
+.layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  /* Floor the stage so enough stays visible to use; when the header and
+   * guide leave less room, the page scrolls rather than crushing it. */
+  min-height: 30rem;
+  overflow: hidden;
+  background: var(--logx-surface);
+  border-radius: var(--radius-1);
+}
+
+@media (--desktop) {
+  .layout {
+    flex-direction: row;
+  }
+
+  .aside {
+    flex: 0 0 20rem;
+  }
+
+  .main {
+    min-width: 0;
+    max-width: 48rem;
+  }
+}

@@ -33,7 +33,7 @@ const lines: readonly LogLine[] = [
 describe("ActOne", () => {
   it("opens a context view in a new tab instead of expanding in place", async () => {
     const user = userEvent.setup();
-    render(<ActOne lines={lines} />);
+    render(<ActOne lines={lines} onAdvance={() => {}} />);
 
     // Act 1 opens unfiltered; narrow first so a line is clickable.
     await user.click(screen.getByRole("button", { name: /errors only/i }));
@@ -48,7 +48,7 @@ describe("ActOne", () => {
 
   it("keeps the live tail filtered when the visitor returns to it", async () => {
     const user = userEvent.setup();
-    render(<ActOne lines={lines} />);
+    render(<ActOne lines={lines} onAdvance={() => {}} />);
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     await user.click(screen.getByText("request timeout"));
 
