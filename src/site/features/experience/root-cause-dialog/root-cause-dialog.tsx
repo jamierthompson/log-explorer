@@ -9,33 +9,45 @@ import styles from "./root-cause-dialog.module.css";
 
 type Cause = {
   readonly id: string;
-  readonly label: string;
+  readonly name: string;
+  readonly detail: string;
   readonly correct?: boolean;
+  readonly outcome: string;
 };
 
 const CAUSES: readonly Cause[] = [
   {
-    id: "pool",
-    label: "The upstream connection pool was exhausted",
-    correct: true,
+    id: "db-down",
+    name: "The database is down",
+    detail: "Postgres fell over and every instance is failing.",
+    outcome:
+      "Worth another look — @m7w3p and @t2x8r kept serving 200s right through the incident. A database that was truly down wouldn't spare two of three instances.",
   },
-  { id: "rate", label: "The service hit an upstream rate limit" },
-  { id: "query", label: "A slow database query stalled the request" },
-  { id: "cache", label: "A cache stampede hit cold keys" },
+  {
+    id: "payload",
+    name: "A malformed checkout payload",
+    detail: "Bad client input crashed the request.",
+    outcome:
+      "Follow the trace once more: the request was accepted, then sat waiting on a database connection until it timed out — it never reached validation.",
+  },
+  {
+    id: "pool",
+    name: "A config reload shrank @kc4qn's DB pool",
+    detail: "db.pool.max dropped 20 → 5, starving connections.",
+    correct: true,
+    outcome:
+      "The trace tells you where checkout broke — a pool timeout — but not why. The cause carried no request id, so it never entered the trace. Opening context in place, with your filter intact, put the config reload one line from the failure instead of one tab away. The work of narrowing in followed you to where you looked.",
+  },
 ];
-
-const FOUND_LESSON =
-  "The slow upstream calls held every connection in the pool open; once it drained, new requests had nowhere to go and errored out.";
-
-const MISS_HINT =
-  "Look again at what the errors had in common — every failure traces back to the same exhausted resource.";
 
 export function RootCauseDialog({
   open,
   onOpenChange,
+  onReplay,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onReplay?: () => void;
 }) {
   const [picked, setPicked] = useState<Cause | null>(null);
 
@@ -56,20 +68,26 @@ export function RootCauseDialog({
               data-correct={picked.correct || undefined}
             >
               <Dialog.Title className={styles.eyebrow}>
-                {picked.correct ? "Root cause found" : "Not quite"}
+                {picked.correct ? "Root cause found" : "Keep looking"}
               </Dialog.Title>
-              <p className={styles.resultName}>{picked.label}</p>
-              <p className={styles.lesson}>
-                {picked.correct ? FOUND_LESSON : MISS_HINT}
-              </p>
-              <div className={styles.actions}>
-                <Button variant="ghost" onClick={() => setPicked(null)}>
-                  Reconsider
-                </Button>
-                <Dialog.Close asChild>
-                  <Button variant="primary">Close</Button>
-                </Dialog.Close>
-              </div>
+              <p className={styles.resultName}>{picked.name}</p>
+              <p className={styles.lesson}>{picked.outcome}</p>
+              {/* Dismissal is handled by the overlay and Esc, so the only
+                  buttons here advance: replay on the closing bookend, or a
+                  retry after a miss. */}
+              {(onReplay || !picked.correct) && (
+                <div className={styles.actions}>
+                  {picked.correct ? (
+                    <Button variant="primary" onClick={onReplay}>
+                      Replay the incident
+                    </Button>
+                  ) : (
+                    <Button variant="primary" onClick={() => setPicked(null)}>
+                      Reconsider
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
           ) : (
             <>
@@ -88,7 +106,8 @@ export function RootCauseDialog({
                     className={styles.choice}
                     onClick={() => setPicked(cause)}
                   >
-                    {cause.label}
+                    <span className={styles.choiceName}>{cause.name}</span>
+                    <span className={styles.choiceDetail}>{cause.detail}</span>
                   </button>
                 ))}
               </div>
