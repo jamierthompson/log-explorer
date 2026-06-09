@@ -4,3 +4,14 @@
   min-height: 0;
   flex-direction: column;
 }
+
+.act {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.act[hidden] {
+  display: none;
+}
