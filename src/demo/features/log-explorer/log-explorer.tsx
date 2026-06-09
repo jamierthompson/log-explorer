@@ -178,14 +178,32 @@ export function LogExplorer({
   });
 
   /*
-   * Land at the newest line on first paint, matching how tail-style log
-   * viewers open. useLayoutEffect runs before the browser paints, so
-   * the user never sees the unscrolled position flash by.
+   * Land at the newest line, matching how tail-style log viewers open.
+   * When visible at mount useLayoutEffect runs before
+   * paint, so the unscrolled position never flashes. A host may instead
+   * mount the explorer hidden and reveal it later;
+   * a zero-height viewport can't scroll, so wait for it to gain
+   * height, then land at the bottom once.
    */
   useLayoutEffect(() => {
     const v = viewportRef.current;
     if (!v) return;
-    v.scrollTop = v.scrollHeight;
+    const toBottom = () => {
+      v.scrollTop = v.scrollHeight;
+    };
+    if (v.clientHeight > 0) {
+      toBottom();
+      return;
+    }
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => {
+      if (v.clientHeight > 0) {
+        toBottom();
+        observer.disconnect();
+      }
+    });
+    observer.observe(v);
+    return () => observer.disconnect();
   }, []);
 
   /*
