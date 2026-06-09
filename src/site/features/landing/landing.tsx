@@ -8,6 +8,7 @@ import { SiteNav } from "@/site/features/site-nav/site-nav";
 import { Story } from "@/site/features/story/story";
 import { Footer } from "@/site/shell/footer/footer";
 import { ScrollToTop } from "@/site/shell/scroll-to-top/scroll-to-top";
+import { ScrollArea } from "@/site/ui/scroll-area/scroll-area";
 
 import styles from "./landing.module.css";
 import { useHashRoute } from "./use-hash-route";
@@ -24,30 +25,30 @@ export function Landing({ lines }: { lines: readonly LogLine[] }) {
   return (
     <>
       <SiteNav view={view} onNavigate={navigate} />
-      <main id="main-content" tabIndex={-1} className={styles.main}>
-        {view === "demo" ? (
-          <div className={styles.demoView}>
-            <div className={styles.demoInner}>
-              <Experience lines={lines} />
+      <ScrollArea>
+        <main id="main-content" tabIndex={-1} className={styles.main}>
+          {view === "demo" ? (
+            <div className={styles.demoView}>
+              <div className={styles.demoInner}>
+                <Experience lines={lines} />
+              </div>
             </div>
-          </div>
-        ) : view === "story" ? (
-          <Story onOpenDemo={() => navigate("demo")} />
-        ) : (
-          <Hero
-            onOpenDemo={() => navigate("demo")}
-            onStory={() => navigate("story")}
-          />
-        )}
-      </main>
-      {/* Footer and scroll-to-top belong to the long-form reading view
-       * only. */}
-      {view === "story" && (
-        <>
-          <Footer />
-          <ScrollToTop />
-        </>
-      )}
+          ) : view === "story" ? (
+            <Story onOpenDemo={() => navigate("demo")} />
+          ) : (
+            <Hero
+              onOpenDemo={() => navigate("demo")}
+              onStory={() => navigate("story")}
+            />
+          )}
+        </main>
+        {/* The footer belongs to the long-form reading view only, and
+         * scrolls with it. */}
+        {view === "story" && <Footer />}
+      </ScrollArea>
+      {/* Floating chrome stays outside the scroll container so it's fixed
+       * to the screen, not clipped by it. */}
+      {view === "story" && <ScrollToTop />}
     </>
   );
 }
