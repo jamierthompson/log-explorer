@@ -1,15 +1,12 @@
 "use client";
 
-import { useCallback, useRef, useSyncExternalStore } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 
-/** The two base pages of the landing experience. */
-export type View = "hero" | "story";
+/** Every routable view of the single-page experience. */
+export type View = "hero" | "demo" | "story";
 
-/** Every routable location: the base views plus the demo overlay. */
-export type Route = View | "demo";
-
-/** Map a URL hash to a route, defaulting to the hero. */
-export function routeFromHash(hash: string): Route {
+/** Map a URL hash to a view, defaulting to the hero. */
+export function viewFromHash(hash: string): View {
   if (hash === "#demo") return "demo";
   if (hash === "#story") return "story";
   return "hero";
@@ -33,62 +30,31 @@ function subscribe(onStoreChange: () => void): () => void {
 }
 
 /**
- * Hash-driven routing for the landing experience. The route is derived
+ * Hash-driven routing for the single-page experience. The view is derived
  * from the URL via useSyncExternalStore, so links, reloads, and
  * back/forward all resolve to the same place; the server snapshot is the
  * hero, avoiding a hydration mismatch.
- *
- * The demo is a full-screen overlay rather than a view of its own, so the
- * base view underneath it is never seen — `view` collapses to the hero
- * while the demo is open. Exiting steps back through history to return to
- * whichever base the demo was opened from.
  */
 export function useHashRoute(): {
   view: View;
-  demoOpen: boolean;
   navigate: (view: View) => void;
-  openDemo: () => void;
-  exitDemo: () => void;
 } {
   const hash = useSyncExternalStore(
     subscribe,
     () => window.location.hash,
     () => "",
   );
-  const route = routeFromHash(hash);
-  const view: View = route === "story" ? "story" : "hero";
-  const demoOpen = route === "demo";
+  const view = viewFromHash(hash);
 
-  // Whether the demo was opened from within the app (so a history step
-  // back lands on its base) versus deep-linked (so there's nowhere to
-  // step back to). Touched only in handlers, never during render.
-  const openedInApp = useRef(false);
-
-  const navTo = useCallback((next: Route) => {
+  const navigate = useCallback((next: View) => {
     const url =
       next === "hero"
         ? window.location.pathname + window.location.search
         : `#${next}`;
-    window.history.pushState({ route: next }, "", url);
+    window.history.pushState({ view: next }, "", url);
     window.dispatchEvent(new Event(LOCATION_EVENT));
-    if (next !== "demo") window.scrollTo(0, 0);
+    window.scrollTo(0, 0);
   }, []);
 
-  const navigate = useCallback((next: View) => navTo(next), [navTo]);
-
-  const openDemo = useCallback(() => {
-    openedInApp.current = true;
-    navTo("demo");
-  }, [navTo]);
-
-  const exitDemo = useCallback(() => {
-    if (openedInApp.current) {
-      openedInApp.current = false;
-      window.history.back();
-    } else {
-      navTo("hero");
-    }
-  }, [navTo]);
-
-  return { view, demoOpen, navigate, openDemo, exitDemo };
+  return { view, navigate };
 }

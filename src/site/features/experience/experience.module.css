@@ -16,8 +16,10 @@
 .main {
   display: flex;
   flex: 1;
-  min-height: 0;
   flex-direction: column;
+  /* Floor the explorer so enough stays visible to use; when the header
+   * and guide leave less room, the page scrolls rather than crushing it. */
+  min-height: 30rem;
   overflow: hidden;
   background: var(--logx-surface);
   border-radius: var(--radius-1);

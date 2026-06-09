@@ -43,9 +43,9 @@
 
   /* Layout */
   --content-padding-x: 1rem;
-  /* Max width of the demo stage's content column; the nav, act header, and
-   * both layout columns align to it. */
-  --stage-max: 74rem;
+  /* Max width of every view's content column; the nav and all pages align
+   * to it. */
+  --page-max: 74rem;
   /* Sticky-nav height; sections offset their scroll target by it so a
    * jumped-to heading clears the nav. */
   --topnav-height: 3.5rem;

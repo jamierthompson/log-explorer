@@ -1,15 +1,15 @@
 /*
  * Table of contents above the prose on mobile, a sidebar to its left on
- * desktop. Setting font-size here anchors ch to one font context so the
- * prose column has a predictable width; the desktop max-width widens to
- * hold the sidebar, its gap, and that same prose measure.
+ * desktop. Setting font-size here anchors ch so the prose measure is
+ * predictable. The page column matches the rest of the site (--page-max);
+ * the article stays capped at that measure for readability.
  */
 .layout {
   --toc-width: 14rem;
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
-  max-width: var(--prose-measure);
+  max-width: var(--page-max);
   margin: 0 auto;
   padding: var(--space-7) var(--content-padding-x) 0;
   font-family: var(--font-sans);
@@ -22,7 +22,6 @@
     flex-direction: row;
     align-items: flex-start;
     gap: var(--space-7);
-    max-width: calc(var(--toc-width) + var(--space-7) + var(--prose-measure));
   }
 }
 
@@ -43,6 +42,7 @@
   .article {
     flex: 1;
     min-width: 0;
+    max-width: var(--prose-measure);
   }
 }
 
