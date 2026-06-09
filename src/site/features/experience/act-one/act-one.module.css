@@ -1,0 +1,138 @@
+.stage {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.tabstrip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3) 0;
+  background: var(--surface-page);
+  border-bottom: 1px solid var(--color-border);
+  overflow-x: auto;
+}
+
+/* The tab box. Used both as the bare "Live tail" trigger and as the
+ * wrapper around a slice's trigger + close control, so it carries the
+ * border, fill, and active state for both. */
+.tab {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  max-width: 12.5rem;
+  padding: var(--space-2) var(--space-3);
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-subtle);
+  white-space: nowrap;
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: var(--radius-1) var(--radius-1) 0 0;
+  cursor: pointer;
+}
+
+/* Active either as the bare trigger ("Live tail") or as the box wrapping
+ * the active slice trigger. */
+.tab[data-state="active"],
+.tab:has([data-state="active"]) {
+  color: var(--color-text);
+  background: var(--surface);
+  border-color: var(--color-border);
+}
+
+/* A slice's clickable label, sitting inside the box next to the close
+ * control — no box of its own. */
+.tabTrigger {
+  flex: 0 1 auto;
+  overflow: hidden;
+  color: inherit;
+  font: inherit;
+  text-overflow: ellipsis;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.tabClose {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 1.25em;
+  height: 1.25em;
+  margin-left: var(--space-1);
+  color: var(--color-text-subtle);
+  background: none;
+  border: none;
+  border-radius: var(--radius-1);
+  cursor: pointer;
+}
+
+.tabClose:hover {
+  color: var(--color-text);
+  background: var(--color-border);
+}
+
+.tabCount {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-subtle);
+  white-space: nowrap;
+}
+
+.panel {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+}
+
+/* The live-tail panel is force-mounted to preserve its filter, so Radix
+ * leaves it visible and only marks it inactive — hide it ourselves. */
+.panel[data-state="inactive"] {
+  display: none;
+}
+
+.pane {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  background: var(--surface);
+  /* The row component inherits the demo typeface from the explorer root,
+   * which isn't an ancestor here, so set it on the pane directly. */
+  font-family: var(--logx-font, ui-monospace, monospace);
+}
+
+.paneNote {
+  flex: 0 0 auto;
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-subtle);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Mirror the live tail's row metrics so a torn-out scrap reads identically:
+ * the list insets the rows, each row carries the accent-capable left
+ * border, and the line component supplies the vertical rhythm. */
+.paneList {
+  margin: 0;
+  padding: var(--logx-space-2) var(--logx-space-4) var(--logx-space-4);
+  list-style: none;
+}
+
+.paneRow {
+  border-left: var(--logx-space-1) solid transparent;
+  padding-left: var(--logx-space-2);
+}
+
+.paneRow[data-anchor] {
+  background: color-mix(in oklch, var(--brand-accent) 8%, transparent);
+  border-left-color: var(--brand-accent);
+}

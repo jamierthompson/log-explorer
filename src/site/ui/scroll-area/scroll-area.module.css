@@ -1,0 +1,42 @@
+.root {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.viewport {
+  width: 100%;
+  height: 100%;
+}
+
+/* The scroll primitive wraps viewport content in a display:table box;
+ * flatten it to block so the children's height and width chains behave,
+ * and let it grow past the viewport so there's something to scroll. */
+.viewport > div {
+  display: block !important;
+  min-width: 100% !important;
+  min-height: 100%;
+}
+
+.scrollbar {
+  display: flex;
+  user-select: none;
+  touch-action: none;
+  width: 0.625rem;
+  padding: 2px;
+  box-sizing: border-box;
+  background: transparent;
+}
+
+.thumb {
+  flex: 1;
+  position: relative;
+  background: var(--brand-accent);
+  border-radius: var(--radius-1);
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.thumb:hover {
+  background: var(--brand-accent-hover);
+}

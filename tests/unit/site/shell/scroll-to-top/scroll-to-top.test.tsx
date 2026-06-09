@@ -1,6 +1,6 @@
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ScrollToTop } from "@/site/shell/scroll-to-top/scroll-to-top";
 
@@ -32,8 +32,6 @@ class MockIO {
   }
 }
 
-const sentinelObserver = () =>
-  MockIO.instances.find((io) => io.elements.some((e) => e.tagName === "DIV"));
 const footerObserver = () =>
   MockIO.instances.find((io) =>
     io.elements.some((e) => e.tagName === "FOOTER"),
@@ -58,6 +56,14 @@ function rect(
   } as DOMRect;
 }
 
+// The component drives off the shared scroll container; stand one in.
+let scroller: HTMLDivElement;
+
+function scrollPastHero() {
+  scroller.scrollTop = 2000;
+  act(() => scroller.dispatchEvent(new Event("scroll")));
+}
+
 describe("ScrollToTop", () => {
   beforeEach(() => {
     MockIO.instances = [];
@@ -66,6 +72,14 @@ describe("ScrollToTop", () => {
     window.matchMedia = vi.fn().mockReturnValue({
       matches: false,
     }) as unknown as typeof window.matchMedia;
+    scroller = document.createElement("div");
+    scroller.setAttribute("data-app-scroll-viewport", "");
+    scroller.scrollTo = vi.fn();
+    document.body.appendChild(scroller);
+  });
+
+  afterEach(() => {
+    scroller.remove();
   });
 
   it("is hidden and inert at the top of the page", () => {
@@ -75,10 +89,10 @@ describe("ScrollToTop", () => {
     expect(btn).toHaveAttribute("inert");
   });
 
-  it("appears once the top sentinel scrolls out of view", () => {
+  it("appears once the container is scrolled past the hero", () => {
     render(<ScrollToTop />);
     const btn = screen.getByRole("button", { name: "Scroll to top" });
-    act(() => sentinelObserver()!.fire([{ isIntersecting: false }]));
+    scrollPastHero();
     expect(btn).toHaveAttribute("data-visible");
     expect(btn).not.toHaveAttribute("inert");
   });
@@ -94,7 +108,7 @@ describe("ScrollToTop", () => {
     vi.spyOn(btn, "getBoundingClientRect").mockReturnValue(
       rect(300, 700, 344, 744),
     );
-    act(() => sentinelObserver()!.fire([{ isIntersecting: false }]));
+    scrollPastHero();
     act(() =>
       footerObserver()!.fire([
         { isIntersecting: true, boundingClientRect: rect(0, 680, 1280, 760) },
@@ -114,7 +128,7 @@ describe("ScrollToTop", () => {
     vi.spyOn(btn, "getBoundingClientRect").mockReturnValue(
       rect(1173, 800, 1217, 844),
     );
-    act(() => sentinelObserver()!.fire([{ isIntersecting: false }]));
+    scrollPastHero();
     act(() =>
       footerObserver()!.fire([
         { isIntersecting: true, boundingClientRect: rect(200, 800, 1047, 880) },
@@ -123,12 +137,13 @@ describe("ScrollToTop", () => {
     expect(btn).toHaveAttribute("data-visible");
   });
 
-  it("scrolls back to the top when clicked", async () => {
-    const scrollTo = vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+  it("scrolls the container back to the top when clicked", async () => {
     const user = userEvent.setup();
     render(<ScrollToTop />);
-    act(() => sentinelObserver()!.fire([{ isIntersecting: false }]));
+    scrollPastHero();
     await user.click(screen.getByRole("button", { name: "Scroll to top" }));
-    expect(scrollTo).toHaveBeenCalledWith(expect.objectContaining({ top: 0 }));
+    expect(scroller.scrollTo).toHaveBeenCalledWith(
+      expect.objectContaining({ top: 0 }),
+    );
   });
 });

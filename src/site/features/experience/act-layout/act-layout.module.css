@@ -1,0 +1,33 @@
+.layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  height: 80dvh;
+  min-height: 30rem;
+  overflow: hidden;
+  background: var(--logx-surface);
+  border-radius: var(--radius-1);
+}
+
+@media (--desktop) {
+  .layout {
+    flex-direction: row;
+  }
+
+  .aside {
+    flex: 0 0 20rem;
+  }
+
+  .main {
+    flex: 1;
+    min-width: 0;
+    height: max(30rem, calc(100dvh - var(--topnav-height) - 16rem));
+  }
+}

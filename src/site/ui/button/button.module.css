@@ -22,13 +22,18 @@
   outline-offset: var(--focus-ring-offset);
 }
 
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
 .button[data-variant="primary"] {
   padding: var(--space-2) var(--space-5);
   background: var(--brand-accent);
   color: var(--color-on-accent);
 }
 
-.button[data-variant="primary"]:hover {
+.button[data-variant="primary"]:hover:not(:disabled) {
   background: var(--brand-accent-hover);
 }
 
@@ -42,7 +47,7 @@
   color: var(--color-text-muted);
 }
 
-.button[data-variant="ghost"]:hover {
+.button[data-variant="ghost"]:hover:not(:disabled) {
   color: var(--color-text);
   border-color: var(--color-border);
 }
@@ -55,7 +60,7 @@
   text-underline-offset: 0.2em;
 }
 
-.button[data-variant="link"]:hover {
+.button[data-variant="link"]:hover:not(:disabled) {
   color: var(--color-link-hover);
 }
 
@@ -71,7 +76,7 @@
   justify-content: flex-start;
 }
 
-.button[data-variant="quiet"]:hover {
+.button[data-variant="quiet"]:hover:not(:disabled) {
   color: var(--color-text);
 }
 

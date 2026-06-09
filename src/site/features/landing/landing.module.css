@@ -1,3 +1,21 @@
 .main {
   outline: none;
 }
+
+.demoView {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - var(--topnav-height));
+  background: var(--surface-page);
+}
+
+.demoInner {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding: var(--space-5) var(--content-padding-x);
+}

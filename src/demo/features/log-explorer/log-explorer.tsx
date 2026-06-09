@@ -27,6 +27,7 @@ import type { LogLine } from "@/demo/types/log";
 import "@/demo/styles/base.css";
 
 import styles from "./log-explorer.module.css";
+import { deriveSnapshot, type LogExplorerSnapshot } from "./log-explorer-state";
 import { LogList, lineDomId } from "./log-list";
 import { useContextWindows } from "./use-context-windows";
 import { useListboxKeyboard } from "./use-listbox-keyboard";
@@ -34,9 +35,15 @@ import { useListboxKeyboard } from "./use-listbox-keyboard";
 export function LogExplorer({
   lines,
   initialFilter = initialFilterState,
+  onStateChange,
+  onViewContext,
+  showLegend = true,
 }: {
   lines: readonly LogLine[];
   initialFilter?: FilterState;
+  onStateChange?: (snapshot: LogExplorerSnapshot) => void;
+  onViewContext?: (lineId: string) => void;
+  showLegend?: boolean;
 }) {
   const [filterState, dispatch] = useReducer(filterReducer, initialFilter);
   const [focusedLineId, setFocusedLineId] = useState<string | null>(null);
@@ -71,6 +78,20 @@ export function LogExplorer({
     filterState,
     scenarios: SCENARIOS,
   });
+
+  /*
+   * When onViewContext is provided, the explorer delegates the context
+   * action to the host instead of opening context in place — letting the
+   * host present it its own way. Without it, the action toggles context
+   * in place as usual.
+   */
+  const handleViewContext = useCallback(
+    (lineId: string) => {
+      if (onViewContext) onViewContext(lineId);
+      else toggleContext(lineId);
+    },
+    [onViewContext, toggleContext],
+  );
 
   const derivedLines = useMemo(
     () => deriveLines(lines, filterState, openContexts),
@@ -150,21 +171,39 @@ export function LogExplorer({
     lines: navigableLines,
     focusedLineId,
     setFocusedLineId,
-    onToggleContext: toggleContext,
+    onToggleContext: handleViewContext,
     onExpandContext: expandMostRecentContext,
     onNextAnchor: navigateNextAnchor,
     onPrevAnchor: navigatePrevAnchor,
   });
 
   /*
-   * Land at the newest line on first paint, matching how tail-style log
-   * viewers open. useLayoutEffect runs before the browser paints, so
-   * the user never sees the unscrolled position flash by.
+   * Land at the newest line, matching how tail-style log viewers open.
+   * When visible at mount useLayoutEffect runs before
+   * paint, so the unscrolled position never flashes. A host may instead
+   * mount the explorer hidden and reveal it later;
+   * a zero-height viewport can't scroll, so wait for it to gain
+   * height, then land at the bottom once.
    */
   useLayoutEffect(() => {
     const v = viewportRef.current;
     if (!v) return;
-    v.scrollTop = v.scrollHeight;
+    const toBottom = () => {
+      v.scrollTop = v.scrollHeight;
+    };
+    if (v.clientHeight > 0) {
+      toBottom();
+      return;
+    }
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => {
+      if (v.clientHeight > 0) {
+        toBottom();
+        observer.disconnect();
+      }
+    });
+    observer.observe(v);
+    return () => observer.disconnect();
   }, []);
 
   /*
@@ -285,7 +324,7 @@ export function LogExplorer({
           ariaLabel: focusedIsAnchor
             ? "Hide context on focused line"
             : "View context on focused line",
-          onClick: () => toggleContext(focusedLineId),
+          onClick: () => handleViewContext(focusedLineId),
         });
       }
     }
@@ -331,13 +370,26 @@ export function LogExplorer({
     selectedContextLineIds,
     visibleLines,
     filterState,
-    toggleContext,
+    handleViewContext,
   ]);
+
+  /*
+   * Report a curated snapshot of investigation progress to the host so a
+   * surrounding experience can react without reaching into the explorer's
+   * internals.
+   */
+  const snapshot = useMemo(
+    () => deriveSnapshot(filterState, openContexts, SCENARIOS),
+    [filterState, openContexts],
+  );
+  useEffect(() => {
+    onStateChange?.(snapshot);
+  }, [snapshot, onStateChange]);
 
   return (
     <div className={styles.root} data-logx-surface>
       <div className={styles.toolbar}>
-        <Legend items={legendItems} />
+        {showLegend && <Legend items={legendItems} />}
         <ScenarioChips state={filterState} dispatch={dispatch} />
       </div>
       <LogList
@@ -347,7 +399,7 @@ export function LogExplorer({
         hasAnyFilter={hasAnyFilter(filterState)}
         onKeyDown={handleKeyDown}
         onLineFocus={setFocusedLineId}
-        onToggleContext={toggleContext}
+        onToggleContext={handleViewContext}
         viewportRef={viewportRef}
       />
       <ShortcutSheet open={sheetOpen} onOpenChange={setSheetOpen} />

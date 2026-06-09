@@ -43,6 +43,9 @@
 
   /* Layout */
   --content-padding-x: 1rem;
+  /* Max width of every view's content column; the nav and all pages align
+   * to it. */
+  --page-max: 74rem;
   /* Sticky-nav height; sections offset their scroll target by it so a
    * jumped-to heading clears the nav. */
   --topnav-height: 3.5rem;
@@ -55,6 +58,7 @@
   --color-border: light-dark(oklch(0.92 0 0), oklch(0.285 0 0));
   --color-on-accent: light-dark(oklch(0.985 0 0), oklch(0.205 0 0));
   --color-page-bg: light-dark(oklch(0.975 0 0), oklch(0.185 0 0));
+  --color-raised: light-dark(oklch(1 0 0), oklch(0.21 0 0));
   --color-accent: light-dark(oklch(0.485 0.18 349.8), oklch(0.725 0.175 349.8));
 
   /* Prose scale — mobile-first; the breakpoints below step it up. */
@@ -84,6 +88,7 @@
   --color-link-hover: var(--brand-accent-hover);
   --surface-page: var(--color-page-bg);
   --surface: var(--color-bg);
+  --surface-raised: var(--color-raised);
   --color-prose-rule: var(--brand-accent);
 }
 

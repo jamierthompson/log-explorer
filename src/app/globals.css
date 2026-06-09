@@ -8,29 +8,29 @@ html,
 body {
   margin: 0;
   padding: 0;
-  min-height: 100%;
 }
 
 html {
+  height: 100%;
   color-scheme: light dark;
-  /*
-   * Reserve the scrollbar gutter so modal scroll-locks don't shift
-   * page content right when the scrollbar disappears.
-   */
-  scrollbar-gutter: stable;
 }
 
 /*
- * The modal's scroll-lock adds a compensating margin-right on the
- * locked body to fill the space left by the hidden scrollbar. The
- * gutter is already reserved above, so that compensation would double
- * up as a visible shift — override it back to 0.
+ * The shared scroll container owns scrolling; the document doesn't scroll,
+ * so a modal scroll-lock has nothing to compensate. Neutralize any
+ * margin it would add to avoid a content shift.
  */
 html body[data-scroll-locked] {
   margin-right: 0 !important;
 }
 
 body {
+  /* The nav sits at the top; the shared scroll container fills the rest
+   * and is the only thing that scrolls. */
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   background: var(--surface-page);
   color: var(--color-text);
   font-family: var(--font-mono);
