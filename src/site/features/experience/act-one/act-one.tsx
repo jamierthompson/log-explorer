@@ -16,16 +16,6 @@ import { ActLayout } from "../act-layout/act-layout";
 import { GuideBox, type GuideItem } from "../guide-box/guide-box";
 import styles from "./act-one.module.css";
 
-function guideNote(tabCount: number): string {
-  if (tabCount >= 3) {
-    return `${tabCount} tabs open — you're rebuilding the timeline by flipping between them.`;
-  }
-  if (tabCount >= 1) {
-    return "Every view buys one slice and costs you your place — that's the fan of tabs.";
-  }
-  return "Filter to the failing request, then open a line and watch where the context lands.";
-}
-
 /* Lines of unfiltered context a tab shows on each side of its anchor —
  * enough to read around the line, small enough to feel like a scrap torn
  * out of the stream. */
@@ -140,7 +130,6 @@ export function ActOne({
             ),
             onClick: onAdvance,
           }}
-          note={guideNote(tabCount)}
         />
       }
     >

@@ -18,7 +18,7 @@
 .steps {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-5);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -85,13 +85,4 @@
   width: 100%;
   margin-top: var(--space-5);
   justify-content: center;
-}
-
-.note {
-  margin: var(--space-4) 0 0;
-  font-family: var(--font-sans);
-  font-size: var(--text-prose-base);
-  font-style: italic;
-  line-height: var(--line-height-base);
-  color: var(--color-text-subtle);
 }

@@ -96,7 +96,6 @@ export function ActTwo({
               label: "Call the root cause",
               onClick: callRootCause,
             }}
-            note="The filter holds and your place holds — make the call when the picture is clear."
           />
         }
       >

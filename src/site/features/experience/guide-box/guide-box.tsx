@@ -19,18 +19,16 @@ export type GuideAction = {
 
 /**
  * The act's side guide — a titled checklist whose items fill with the
- * accent as they complete, with an optional action and a closing note.
+ * accent as they complete, with an optional closing action.
  */
 export function GuideBox({
   title,
   items,
   action,
-  note,
 }: {
   title: string;
   items: readonly GuideItem[];
   action?: GuideAction;
-  note?: ReactNode;
 }) {
   return (
     <aside className={styles.guide} aria-label={title}>
@@ -68,7 +66,6 @@ export function GuideBox({
           {action.label}
         </Button>
       )}
-      {note && <p className={styles.note}>{note}</p>}
     </aside>
   );
 }
