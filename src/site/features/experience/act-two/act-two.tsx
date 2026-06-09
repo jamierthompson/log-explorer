@@ -1,35 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
-import { LogExplorer, type LogLine } from "@/demo";
+import { LogExplorer, type LogExplorerSnapshot, type LogLine } from "@/demo";
 
 import { ActLayout } from "../act-layout/act-layout";
 import { GuideBox, type GuideItem } from "../guide-box/guide-box";
 import { RootCauseDialog } from "../root-cause-dialog/root-cause-dialog";
 
-const GUIDE_ITEMS: readonly GuideItem[] = [
-  {
-    id: "narrow",
-    title: "Narrow to the failure",
-    description: "Filter the live tail to the one request that failed.",
-  },
-  {
-    id: "context",
-    title: "Open context in place",
-    description: "Click a line to expand the rows around it — filter intact.",
-  },
-  {
-    id: "stack",
-    title: "Stack a second context",
-    description: "Open another without losing the first or your position.",
-  },
-  {
-    id: "cause",
-    title: "Call the root cause",
-    description: "Name what broke, once the picture is clear.",
-  },
-];
+/* Progress is sticky: each step latches the first time the explorer
+ * reports it, so the checklist tracks how far the investigation got rather
+ * than the explorer's current state — closing a context can't un-check a
+ * step the visitor already reached. */
+type Progress = {
+  readonly filtered: boolean;
+  readonly context: boolean;
+  readonly stack: boolean;
+};
+
+const INITIAL_PROGRESS: Progress = {
+  filtered: false,
+  context: false,
+  stack: false,
+};
 
 /**
  * Act 2 — the method. The real explorer with context-in-place, paired
@@ -39,6 +32,48 @@ const GUIDE_ITEMS: readonly GuideItem[] = [
  */
 export function ActTwo({ lines }: { lines: readonly LogLine[] }) {
   const [rootCauseOpen, setRootCauseOpen] = useState(false);
+  const [called, setCalled] = useState(false);
+  const [progress, setProgress] = useState<Progress>(INITIAL_PROGRESS);
+
+  const handleState = useCallback((snapshot: LogExplorerSnapshot) => {
+    setProgress((prev) => ({
+      filtered: prev.filtered || snapshot.hasFilter,
+      context: prev.context || snapshot.openContextCount >= 1,
+      stack: prev.stack || snapshot.openContextCount >= 2,
+    }));
+  }, []);
+
+  const callRootCause = useCallback(() => {
+    setCalled(true);
+    setRootCauseOpen(true);
+  }, []);
+
+  const items: readonly GuideItem[] = [
+    {
+      id: "narrow",
+      title: "Narrow to the failure",
+      description: "Filter the live tail to the one request that failed.",
+      done: progress.filtered,
+    },
+    {
+      id: "context",
+      title: "Open context in place",
+      description: "Click a line to expand the rows around it — filter intact.",
+      done: progress.context,
+    },
+    {
+      id: "stack",
+      title: "Stack a second context",
+      description: "Open another without losing the first or your position.",
+      done: progress.stack,
+    },
+    {
+      id: "cause",
+      title: "Call the root cause",
+      description: "Name what broke, once the picture is clear.",
+      done: called,
+    },
+  ];
 
   return (
     <>
@@ -50,16 +85,18 @@ export function ActTwo({ lines }: { lines: readonly LogLine[] }) {
         aside={
           <GuideBox
             title="The Method"
-            items={GUIDE_ITEMS}
+            items={items}
             action={{
               label: "Call the root cause",
-              onClick: () => setRootCauseOpen(true),
+              onClick: callRootCause,
+              // Hold the call until there's context to reason from.
+              disabled: !progress.context,
             }}
             note="The filter holds and your place holds — make the call when the picture is clear."
           />
         }
       >
-        <LogExplorer lines={lines} />
+        <LogExplorer lines={lines} onStateChange={handleState} />
       </ActLayout>
       <RootCauseDialog open={rootCauseOpen} onOpenChange={setRootCauseOpen} />
     </>

@@ -15,12 +15,12 @@ export type GuideItem = {
 export type GuideAction = {
   readonly label: string;
   readonly onClick: () => void;
+  readonly disabled?: boolean;
 };
 
 /**
  * The act's side guide — a titled checklist whose items fill with the
- * accent as they complete, with an optional action (e.g. "Call the root
- * cause") and a closing note.
+ * accent as they complete, with an optional action and a closing note.
  */
 export function GuideBox({
   title,
@@ -65,6 +65,7 @@ export function GuideBox({
           variant="primary"
           className={styles.action}
           onClick={action.onClick}
+          disabled={action.disabled}
         >
           {action.label}
         </Button>
