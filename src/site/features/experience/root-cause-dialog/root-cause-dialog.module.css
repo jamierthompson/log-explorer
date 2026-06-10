@@ -109,6 +109,12 @@
   margin-bottom: var(--space-6);
 }
 
+/* Emphasis inside a lesson lifts to full text color so the line reads
+ * as the takeaway rather than another muted clause. */
+.lesson em {
+  color: var(--color-text);
+}
+
 /* A lone centered action at natural width floats oddly in the dialog;
  * give it enough width to read as the verdict's footer. */
 .wide {

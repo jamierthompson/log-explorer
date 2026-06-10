@@ -1,7 +1,7 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 import { Button } from "@/site/ui/button/button";
 
@@ -13,7 +13,7 @@ type Cause = {
   readonly detail: string;
   readonly correct?: boolean;
   /** Verdict prose, one entry per paragraph. */
-  readonly outcome: readonly string[];
+  readonly outcome: readonly ReactNode[];
 };
 
 const CAUSES: readonly Cause[] = [
@@ -40,7 +40,11 @@ const CAUSES: readonly Cause[] = [
     correct: true,
     outcome: [
       "At 13:30:11 a hot-reload set db.pool.max from 20 to 5 on @kc4qn alone. Within a minute the pool was saturated, and every request on it — r4d8a2 included — timed out waiting for a connection. The reload carried no request id, so the trace could never show it.",
-      "Opening context in place, with your filter intact, put it one line from the failure instead of one tab away. The cause was never in the trace; it was in the line beside it.",
+      <>
+        Opening context in place, with your filter intact, put it one line from
+        the failure instead of one tab away.{" "}
+        <em>The cause was never in the trace; it was in the line beside it.</em>
+      </>,
     ],
   },
 ];
@@ -78,8 +82,8 @@ export function RootCauseDialog({
                 {picked.correct ? "Root cause found" : "Keep looking"}
               </Dialog.Title>
               <p className={styles.resultName}>{picked.name}</p>
-              {picked.outcome.map((paragraph) => (
-                <p key={paragraph} className={styles.lesson}>
+              {picked.outcome.map((paragraph, i) => (
+                <p key={i} className={styles.lesson}>
                   {paragraph}
                 </p>
               ))}
