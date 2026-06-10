@@ -23,8 +23,9 @@ const newsreader = Newsreader({
 });
 
 const SITE_NAME = "Log Explorer";
+const SITE_TITLE = "Log Explorer — an incident, investigated in place";
 const SITE_DESCRIPTION =
-  "A log explorer prototype for investigating an incident without losing your place.";
+  "13:31 UTC: checkout starts returning 503s. Investigate a live incident in a log explorer that opens context in place — no new tab for every look, no scattered timeline — then read how it was built.";
 
 // TODO: The Open Graph card has no URL or preview image until the site is
 // deployed. Add `metadataBase` (or absolute URLs), `openGraph.url`, and a
@@ -32,10 +33,10 @@ const SITE_DESCRIPTION =
 // relative image paths fail the build unless `metadataBase` is set. A
 // `twitter` block (card: "summary_large_image") can reuse the same image.
 export const metadata: Metadata = {
-  title: SITE_NAME,
+  title: SITE_TITLE,
   description: SITE_DESCRIPTION,
   openGraph: {
-    title: SITE_NAME,
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     siteName: SITE_NAME,
     type: "website",
