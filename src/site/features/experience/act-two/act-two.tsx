@@ -92,7 +92,7 @@ export function ActTwo({
       id: "context",
       title: "Open context in place",
       description:
-        "The cause carries no request id — only the lines around the failure can show it.",
+        "The cause carries no request id — only the lines around the failure can show it. Not there yet? Shift+E widens the window.",
       done: progress.context,
     },
     {
