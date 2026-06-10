@@ -35,6 +35,11 @@ describe("LogLine", () => {
     }
   });
 
+  it("marks its root as a demo surface so the scoped reset applies outside the explorer", () => {
+    const { container } = render(<LogLine line={base} />);
+    expect(container.querySelector("[data-logx-surface]")).not.toBeNull();
+  });
+
   it("renders the requestId when present and nothing when absent", () => {
     const { rerender } = render(
       <LogLine line={{ ...base, requestId: "r4d8a2" }} />,

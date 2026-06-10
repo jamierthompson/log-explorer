@@ -4,7 +4,11 @@
  */
 export { LogExplorer } from "./features/log-explorer/log-explorer";
 export type { LogExplorerSnapshot } from "./features/log-explorer/log-explorer-state";
-/** The bare, read-only log row — for composing slices outside the explorer. */
+/**
+ * The bare, read-only log row — for composing slices outside the explorer.
+ * Self-contained: it carries the demo's surface marker, scoped reset,
+ * tokens, and typeface, so it renders correctly under any host styling.
+ */
 export { LogLine as LogRow } from "./features/log-explorer/log-line";
 /** Format a line's timestamp the same way the explorer's rows do. */
 export { formatTime as formatLogTime } from "./lib/format-timestamp";

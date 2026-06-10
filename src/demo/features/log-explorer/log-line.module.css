@@ -4,6 +4,9 @@
   column-gap: var(--logx-space-3);
   row-gap: var(--logx-space-1);
   padding: var(--logx-space-2) 0;
+  /* The row sets its own typeface so it reads in the demo's mono even
+   * when a host renders it outside the explorer root. */
+  font-family: var(--logx-font);
   font-size: var(--logx-font-size-base);
   line-height: var(--logx-line-height);
 }

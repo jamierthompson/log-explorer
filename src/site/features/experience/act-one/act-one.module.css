@@ -132,9 +132,6 @@
   min-height: 0;
   flex-direction: column;
   background: var(--surface);
-  /* The row component inherits the demo typeface from the explorer root,
-   * which isn't an ancestor here, so set it on the pane directly. */
-  font-family: var(--logx-font, ui-monospace, monospace);
 }
 
 .paneNote {
