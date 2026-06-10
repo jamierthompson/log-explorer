@@ -84,23 +84,42 @@
   color: var(--brand-accent);
 }
 
+/* Matches the question view's title size so the verdict reads as a
+ * headline over its prose, not another line of it. */
 .resultName {
   margin: 0 0 var(--space-4);
   font-family: var(--font-sans);
-  font-size: var(--text-prose-lead);
+  font-size: var(--text-prose-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-prose-tight);
   color: var(--color-text);
+  text-wrap: balance;
 }
 
 .lesson {
-  margin: 0 0 var(--space-5);
+  margin: 0 0 var(--space-3);
   font-family: var(--font-sans);
   font-size: var(--text-prose-base);
   line-height: var(--line-height-prose);
   color: var(--color-text-muted);
+  text-wrap: pretty;
 }
 
+.lesson:last-of-type {
+  margin-bottom: var(--space-6);
+}
+
+/* A lone centered action at natural width floats oddly in the dialog;
+ * give it enough width to read as the verdict's footer. */
+.wide {
+  min-width: min(10rem, 100%);
+}
+
+/* The verdict is the experience's bookend, so its actions stack as a
+ * centered end-card: the onward call first, the replay beneath it. */
 .actions {
   display: flex;
-  justify-content: flex-end;
-  gap: var(--space-3);
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
 }
