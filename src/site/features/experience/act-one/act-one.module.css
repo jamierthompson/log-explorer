@@ -161,6 +161,6 @@
 }
 
 .paneRow[data-anchor] {
-  background: color-mix(in oklch, var(--brand-accent) 8%, transparent);
+  background: linear-gradient(90deg, var(--logx-accent-soft), transparent 72%);
   border-left-color: var(--brand-accent);
 }
