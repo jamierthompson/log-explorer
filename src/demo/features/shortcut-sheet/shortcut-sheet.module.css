@@ -56,6 +56,31 @@
   color: var(--logx-color-text);
 }
 
+.close {
+  position: absolute;
+  top: var(--logx-space-3);
+  right: var(--logx-space-3);
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  font: inherit;
+  color: var(--logx-color-text-muted);
+  background: none;
+  border: none;
+  border-radius: var(--logx-radius);
+  cursor: pointer;
+}
+
+.close:hover {
+  color: var(--logx-color-text);
+}
+
+.close:focus-visible {
+  outline: var(--logx-focus-ring-width) solid var(--logx-focus-ring-color);
+  outline-offset: var(--logx-focus-ring-offset);
+}
+
 .subtitle {
   margin: var(--logx-space-2) 0 0;
   font-size: var(--logx-font-size-base);

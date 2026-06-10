@@ -24,6 +24,16 @@ describe("ShortcutSheet", () => {
     }
   });
 
+  it("offers a visible labeled close button", async () => {
+    const onOpenChange = vi.fn();
+    const { default: userEvent } = await import("@testing-library/user-event");
+    const user = userEvent.setup();
+    render(<ShortcutSheet open={true} onOpenChange={onOpenChange} />);
+
+    await user.click(screen.getByRole("button", { name: "Close" }));
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
   it("calls onOpenChange(false) when Esc is pressed", async () => {
     const onOpenChange = vi.fn();
     const { default: userEvent } = await import("@testing-library/user-event");

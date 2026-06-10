@@ -42,6 +42,11 @@ describe("ActOne", () => {
     expect(screen.getByText(/slice of the live tail/i)).toBeInTheDocument();
     // Nothing expanded in place.
     expect(document.querySelector('[data-selected="true"]')).toBeNull();
+    // The line the slice centers on is conveyed to AT, not just by color.
+    expect(document.querySelector("[data-anchor]")).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
   });
 
   it("keeps the live tail filtered when the visitor returns to it", async () => {

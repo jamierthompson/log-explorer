@@ -32,4 +32,21 @@ describe("TableOfContents", () => {
 
     target.remove();
   });
+
+  it("moves focus to the section a jump lands on", async () => {
+    const user = userEvent.setup();
+    window.matchMedia = vi.fn().mockReturnValue({ matches: true });
+    const first = STORY_SECTIONS[0];
+    const target = document.createElement("section");
+    target.id = first.id;
+    target.tabIndex = -1;
+    document.body.appendChild(target);
+    render(<TableOfContents />);
+
+    await user.click(screen.getByRole("button", { name: first.label }));
+
+    // Reading continues from the jump target, not from the contents list.
+    expect(target).toHaveFocus();
+    target.remove();
+  });
 });

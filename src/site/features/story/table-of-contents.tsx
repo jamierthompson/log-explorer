@@ -68,6 +68,10 @@ export function TableOfContents() {
       behavior: prefersReduced ? "auto" : "smooth",
       block: "start",
     });
+    // Carry focus to the section so reading continues from the jump
+    // target; preventScroll leaves the scroll (smooth or not) to the
+    // call above.
+    el.focus({ preventScroll: true });
   };
 
   return (

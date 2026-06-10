@@ -249,6 +249,7 @@ function ContextPane({
               key={line.id}
               className={styles.paneRow}
               data-anchor={line.id === anchorId || undefined}
+              aria-current={line.id === anchorId || undefined}
             >
               <LogRow line={line} />
             </li>

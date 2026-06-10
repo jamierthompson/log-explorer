@@ -58,7 +58,7 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
           </p>
         </header>
 
-        <section id="the-problem" className={styles.section}>
+        <section id="the-problem" tabIndex={-1} className={styles.section}>
           <SectionHead eyebrow="The problem">
             Chasing an ID scatters the investigation across tabs
           </SectionHead>
@@ -86,7 +86,7 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
           </blockquote>
         </section>
 
-        <section id="the-idea" className={styles.section}>
+        <section id="the-idea" tabIndex={-1} className={styles.section}>
           <SectionHead eyebrow="The idea">
             Open context where the line lives
           </SectionHead>
@@ -101,7 +101,7 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
 
         <StoryCta onOpenDemo={onOpenDemo} />
 
-        <section id="what-i-built" className={styles.section}>
+        <section id="what-i-built" tabIndex={-1} className={styles.section}>
           <SectionHead eyebrow="What I built">
             A small prototype built around one tight incident
           </SectionHead>
@@ -121,7 +121,7 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
           </p>
         </section>
 
-        <section id="the-cut" className={styles.section}>
+        <section id="the-cut" tabIndex={-1} className={styles.section}>
           <SectionHead eyebrow="The cut">
             The animation looked great but wasn’t doing the work
           </SectionHead>
@@ -145,7 +145,7 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
           </p>
         </section>
 
-        <section id="the-legend" className={styles.section}>
+        <section id="the-legend" tabIndex={-1} className={styles.section}>
           <SectionHead eyebrow="The Legend">
             A static hint grew into the primary surface
           </SectionHead>
@@ -197,7 +197,7 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
           <LegendDemo />
         </section>
 
-        <section id="whats-next" className={styles.section}>
+        <section id="whats-next" tabIndex={-1} className={styles.section}>
           <SectionHead eyebrow="What’s next">
             The pulse says it happened; a mini-map would say where
           </SectionHead>
@@ -212,7 +212,7 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
           </p>
         </section>
 
-        <section id="closing" className={styles.section}>
+        <section id="closing" tabIndex={-1} className={styles.section}>
           <SectionHead eyebrow="Closing">
             The application carries the work
           </SectionHead>
