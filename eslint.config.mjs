@@ -65,6 +65,8 @@ const eslintConfig = defineConfig([
                 "@/demo/lib/**",
                 "@/demo/types/**",
                 "@/demo/mocks/**",
+                "@/demo/styles/**",
+                "!@/demo/styles/*.css",
               ],
               message:
                 "Import demo code through its public barrel (@/demo); only its published stylesheet may be imported by path.",

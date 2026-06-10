@@ -19,6 +19,15 @@
   --logx-font:
     var(--logx-font-family, ui-monospace), "SF Mono", Menlo, Consolas, monospace;
   --logx-radius: 0.25rem;
+  /* The left-lit wash that marks an anchor row. Public because a host
+   * composing rows outside the explorer needs the same treatment for
+   * its own anchors; it derives from the accent so a single accent
+   * override re-tints it along with everything else. */
+  --logx-wash-accent: linear-gradient(
+    90deg,
+    var(--logx-accent-soft),
+    transparent 72%
+  );
 
   /* ── Internals — derived or fixed; not part of the stable API ── */
   --logx-accent-hover: oklch(from var(--logx-accent) l calc(c + 0.06) h);
@@ -26,13 +35,8 @@
    * re-tints every accent-tinted surface with it. */
   --logx-accent-soft: oklch(from var(--logx-accent) l c h / 0.12);
   --logx-accent-dim: oklch(from var(--logx-accent) l c h / 0.85);
-  /* Row washes share one left-lit geometry: accent marks an anchor,
-   * neutral marks provisional attention (the keyboard cursor, hover). */
-  --logx-wash-accent: linear-gradient(
-    90deg,
-    var(--logx-accent-soft),
-    transparent 72%
-  );
+  /* Shares the accent wash's left-lit geometry; marks provisional
+   * attention (the keyboard cursor, hover) rather than an anchor. */
   --logx-wash-neutral: linear-gradient(
     90deg,
     oklch(from var(--logx-color-text) l c h / 0.07),

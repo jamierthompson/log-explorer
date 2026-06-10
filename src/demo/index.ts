@@ -4,13 +4,21 @@
  */
 export { LogExplorer } from "./features/log-explorer/log-explorer";
 export type { LogExplorerSnapshot } from "./features/log-explorer/log-explorer-state";
-/** The bare, read-only log row — for composing slices outside the explorer. */
+/**
+ * The bare, read-only log row — for composing slices outside the explorer.
+ * Self-contained: it carries the demo's surface marker, scoped reset,
+ * tokens, and typeface, so it renders correctly under any host styling.
+ */
 export { LogLine as LogRow } from "./features/log-explorer/log-line";
 /** Format a line's timestamp the same way the explorer's rows do. */
 export { formatTime as formatLogTime } from "./lib/format-timestamp";
 export { Legend, type LegendItem } from "./ui/legend/legend";
 export { Keycap, KeycapSequence } from "./ui/keycap/keycap";
 export type { LogLine } from "./types/log";
-export type { FilterState } from "./lib/filter-state";
 export { mockLogs } from "./mocks/logs";
-export { SCENARIOS } from "./lib/scenarios";
+/**
+ * The demo's typeface. A host mounts `.variable` on the document root so
+ * the tokens' `--logx-font` resolves to it; without it the tokens fall
+ * back to a system mono stack.
+ */
+export { demoFont } from "./styles/fonts";

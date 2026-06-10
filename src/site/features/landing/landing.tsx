@@ -4,7 +4,7 @@ import type { LogLine } from "@/demo";
 
 import { Experience } from "@/site/features/experience/experience";
 import { Hero } from "@/site/features/hero/hero";
-import { SiteNav } from "@/site/features/site-nav/site-nav";
+import { SiteNav } from "@/site/shell/site-nav/site-nav";
 import { Story } from "@/site/features/story/story";
 import { Footer } from "@/site/shell/footer/footer";
 import { ScrollArea } from "@/site/ui/scroll-area/scroll-area";
