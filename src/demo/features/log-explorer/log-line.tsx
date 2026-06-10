@@ -1,5 +1,8 @@
 import { formatTime } from "@/demo/lib/format-timestamp";
 import type { LogLine as LogLineType } from "@/demo/types/log";
+// The row is exported standalone, so it must carry the tokens its
+// styles read rather than relying on the explorer having mounted them.
+import "@/demo/styles/tokens.css";
 
 import styles from "./log-line.module.css";
 

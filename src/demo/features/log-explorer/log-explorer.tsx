@@ -26,6 +26,7 @@ import {
 import { SHORTCUTS } from "@/demo/lib/keyboard-shortcuts";
 import type { LogLine } from "@/demo/types/log";
 import "@/demo/styles/base.css";
+import "@/demo/styles/tokens.css";
 
 import styles from "./log-explorer.module.css";
 import { deriveSnapshot, type LogExplorerSnapshot } from "./log-explorer-state";
