@@ -2,6 +2,7 @@ import { Keycap, KeycapSequence } from "@/demo";
 import { Button } from "@/site/ui/button/button";
 import { Eyebrow } from "@/site/ui/eyebrow/eyebrow";
 
+import { LegendDemo } from "./legend-demo";
 import styles from "./story.module.css";
 import { TableOfContents } from "./table-of-contents";
 
@@ -192,6 +193,8 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
             <code>prefers-reduced-motion</code>, catching the eye in the
             periphery. <em>Something happened.</em>
           </p>
+
+          <LegendDemo />
         </section>
 
         <section id="whats-next" className={styles.section}>

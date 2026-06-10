@@ -1,0 +1,18 @@
+.figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* A quiet stage sized to the strip, not to an image aspect — the
+ * component is small, so the padding gives it room to read as an
+ * exhibit rather than a stray toolbar. */
+.stage {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-6) var(--space-5);
+  background: var(--surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-1);
+}
