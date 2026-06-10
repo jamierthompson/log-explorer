@@ -109,9 +109,9 @@
   font-feature-settings: "ss01";
   /*
    * Bump the Keycap defaults inside body prose so inline keys read
-   * proportional to body text instead of toolbar-sized. The demo's
-   * Legend keeps its compact defaults because this cascade doesn't
-   * reach it (.demoFrame isn't a .body descendant).
+   * proportional to body text instead of toolbar-sized. The embedded
+   * legend exhibit keeps its compact defaults because it isn't
+   * rendered inside body prose, so this cascade never reaches it.
    */
   --legend-keycap-size: 1.375rem;
   --legend-keycap-font-size: var(--font-size-base);
@@ -127,9 +127,9 @@
 }
 
 /*
- * Inline mono code. The multiplier pulls JetBrains Mono down to
- * roughly match Newsreader's visual size, since mono reads larger
- * at matched point sizes.
+ * Inline mono code. The multiplier pulls the mono face down to
+ * roughly match the serif body face's visual size, since mono reads
+ * larger at matched point sizes.
  */
 .body code {
   font-family: var(--font-mono);

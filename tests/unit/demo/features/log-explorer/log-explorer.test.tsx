@@ -333,13 +333,15 @@ describe("LogExplorer anchor cycling", () => {
     await user.click(screen.getByText("alpha trace"));
     await user.click(screen.getByText("gamma trace"));
 
-    // Pad lines are filtered out under trace, so use the keyboard to
-    // shift focus away from any anchor before cycling.
+    // The pad lines the contexts reveal are dimmed and not navigable,
+    // so step from the first line to the one trace line that has no
+    // open context — a genuinely non-anchor focus.
     await user.keyboard("g");
-    expect(focusedLineId()).toBe("alpha");
+    await user.keyboard("j");
+    expect(focusedLineId()).toBe("beta");
+
     await user.keyboard("]");
-    // Cycling from a focused anchor moves to the next; alpha -> gamma.
-    expect(focusedLineId()).toBe("gamma");
+    expect(focusedLineId()).toBe("alpha");
   });
 
   it("] with no open contexts is a no-op", async () => {

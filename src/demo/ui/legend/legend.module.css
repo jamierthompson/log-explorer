@@ -7,8 +7,10 @@
  *   --legend-*        public override surface a consumer can set at
  *                     any cascade level above the entry
  *
- * Each property uses `var(--public, var(--_internal))` so a consumer's
- * value wins when set; otherwise the built-in default applies.
+ * Visual properties use `var(--public, var(--_internal))` so a
+ * consumer's value wins when set; otherwise the built-in default
+ * applies. Motion timings are internal-only and not part of the
+ * override surface.
  */
 :where(.legend) {
   --_legend-gap: 0.5rem;

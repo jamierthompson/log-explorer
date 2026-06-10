@@ -24,7 +24,9 @@
 }
 
 /* A part-scrolled tab dissolves at the strip's right edge instead of
- * hard-clipping against the pinned count beside it. */
+ * hard-clipping against the pinned count beside it. Targets the scroll
+ * primitive's own viewport attribute since it exposes no class hook
+ * here. */
 .tabScroll [data-radix-scroll-area-viewport] {
   mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
 }
@@ -136,8 +138,9 @@
   flex-direction: column;
 }
 
-/* The live-tail panel is force-mounted to preserve its filter, so Radix
- * leaves it visible and only marks it inactive — hide it ourselves. */
+/* The live-tail panel is force-mounted to preserve its filter, so the
+ * tabs primitive leaves it visible and only marks it inactive — hide
+ * it ourselves. */
 .panel[data-state="inactive"] {
   display: none;
 }

@@ -13,6 +13,7 @@ afterEach(() => {
 describe("Footer", () => {
   it("returns the reader to the top of the app scroller", async () => {
     const user = userEvent.setup();
+    // No reduced-motion preference, so the scroll takes the smooth path.
     window.matchMedia = vi.fn().mockReturnValue({ matches: false });
     const viewport = document.createElement("div");
     viewport.setAttribute("data-app-scroll-viewport", "");
@@ -30,6 +31,7 @@ describe("Footer", () => {
 
   it("moves focus to the main region along with the scroll", async () => {
     const user = userEvent.setup();
+    // Force the reduced-motion branch so the scroll is synchronous in jsdom.
     window.matchMedia = vi.fn().mockReturnValue({ matches: true });
     const viewport = document.createElement("div");
     viewport.setAttribute("data-app-scroll-viewport", "");

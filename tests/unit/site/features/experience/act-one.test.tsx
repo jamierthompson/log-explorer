@@ -120,7 +120,8 @@ describe("ActOne", () => {
 
     const better = screen.getByRole("button", { name: /better way/i });
     expect(better).toBeEnabled();
-    // The escape-hatch link is gone — the call is the only way forward.
+    // No skip affordance is offered; the advance call is the only way
+    // forward.
     expect(screen.queryByRole("button", { name: /skip ahead/i })).toBeNull();
 
     await user.click(better);
