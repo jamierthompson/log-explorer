@@ -19,14 +19,31 @@
   min-height: 100%;
 }
 
+/* When scrolling sideways the content box must size to its content
+ * rather than the viewport, or there's nothing to scroll to. */
+.root[data-orientation="horizontal"] .viewport > div {
+  width: max-content;
+}
+
 .scrollbar {
   display: flex;
   user-select: none;
   touch-action: none;
-  width: 0.625rem;
   padding: 2px;
   box-sizing: border-box;
   background: transparent;
+}
+
+.scrollbar[data-orientation="vertical"] {
+  width: 0.625rem;
+}
+
+/* Slimmer than the vertical bar: horizontal bars overlay short strips
+ * (a tab row), where a full-size thumb would crowd the content. */
+.scrollbar[data-orientation="horizontal"] {
+  flex-direction: column;
+  height: 0.375rem;
+  padding: 1px;
 }
 
 .thumb {

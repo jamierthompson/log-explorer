@@ -138,36 +138,40 @@ export function ActOne({
         value={active}
         onValueChange={setActive}
       >
-        <Tabs.List className={styles.tabstrip} aria-label="Open views">
-          <Tabs.Trigger
-            value={LIVE}
-            className={`${styles.tab} ${styles.tabLive}`}
-          >
-            Live tail
-          </Tabs.Trigger>
-
-          {tabs.map((tab) => (
-            <span key={tab.id} className={styles.tab}>
-              <Tabs.Trigger value={tab.id} className={styles.tabTrigger}>
-                {formatLogTime(tab.line.timestamp)}
-              </Tabs.Trigger>
-              <button
-                type="button"
-                className={styles.tabClose}
-                aria-label={`Close the ${formatLogTime(tab.line.timestamp)} slice`}
-                onClick={() => closeTab(tab.id)}
+        <div className={styles.tabBar}>
+          <ScrollArea orientation="horizontal" className={styles.tabScroll}>
+            <Tabs.List className={styles.tabstrip} aria-label="Open views">
+              <Tabs.Trigger
+                value={LIVE}
+                className={`${styles.tab} ${styles.tabLive}`}
               >
-                <X size={12} aria-hidden="true" />
-              </button>
-            </span>
-          ))}
+                Live tail
+              </Tabs.Trigger>
+
+              {tabs.map((tab) => (
+                <span key={tab.id} className={styles.tab}>
+                  <Tabs.Trigger value={tab.id} className={styles.tabTrigger}>
+                    {formatLogTime(tab.line.timestamp)}
+                  </Tabs.Trigger>
+                  <button
+                    type="button"
+                    className={styles.tabClose}
+                    aria-label={`Close the ${formatLogTime(tab.line.timestamp)} slice`}
+                    onClick={() => closeTab(tab.id)}
+                  >
+                    <X size={12} aria-hidden="true" />
+                  </button>
+                </span>
+              ))}
+            </Tabs.List>
+          </ScrollArea>
 
           {tabs.length > 0 && (
             <span className={styles.tabCount}>
               {tabs.length} tab{tabs.length === 1 ? "" : "s"} open
             </span>
           )}
-        </Tabs.List>
+        </div>
 
         <Tabs.Content value={LIVE} className={styles.panel} forceMount>
           <LogExplorer
