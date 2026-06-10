@@ -197,7 +197,16 @@ export function ActOne({
           )}
         </div>
 
-        <Tabs.Content value={LIVE} className={styles.panel} forceMount>
+        {/* The tabs primitive makes each panel a tab stop by default,
+         * which is for panels with no focusable content; these contain
+         * the explorer or a focusable scroller, so the panel itself
+         * stays out of the tab order. */}
+        <Tabs.Content
+          value={LIVE}
+          className={styles.panel}
+          tabIndex={-1}
+          forceMount
+        >
           <LogExplorer
             lines={lines}
             service="api-gateway"
@@ -208,7 +217,12 @@ export function ActOne({
         </Tabs.Content>
 
         {tabs.map((tab) => (
-          <Tabs.Content key={tab.id} value={tab.id} className={styles.panel}>
+          <Tabs.Content
+            key={tab.id}
+            value={tab.id}
+            className={styles.panel}
+            tabIndex={-1}
+          >
             <ContextPane
               lines={lines}
               anchorId={tab.id}
