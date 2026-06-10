@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import type { LogLine } from "@/demo";
 import { ActTwo } from "@/site/features/experience/act-two/act-two";
@@ -64,6 +64,27 @@ describe("ActTwo", () => {
 
     await user.click(screen.getByText("request timeout"));
     expect(context.closest("li")).toHaveAttribute("data-done");
+  });
+
+  it("closes the verdict dialog when leaving for the story", async () => {
+    const user = userEvent.setup();
+    const onReadStory = vi.fn();
+    render(<ActTwo lines={lines} onReadStory={onReadStory} />);
+
+    await user.click(
+      screen.getByRole("button", { name: /call the root cause/i }),
+    );
+    await user.click(
+      screen.getByRole("button", { name: /config reload shrank/i }),
+    );
+    await user.click(
+      screen.getByRole("button", { name: /read how it was built/i }),
+    );
+
+    expect(onReadStory).toHaveBeenCalledOnce();
+    // The act is only hidden on navigation, so a dialog left open would
+    // float over the story view.
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
   it("latches the blast-radius step across contexts opened one at a time", async () => {

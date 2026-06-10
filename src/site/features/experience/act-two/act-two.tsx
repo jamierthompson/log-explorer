@@ -76,6 +76,16 @@ export function ActTwo({
     setRootCauseOpen(true);
   }, []);
 
+  /*
+   * The dialog portals to the document body, so it outlives this act
+   * when the visitor leaves for the story — the experience is only
+   * hidden, never unmounted. Close it as part of the handoff.
+   */
+  const readStoryAndClose = useCallback(() => {
+    setRootCauseOpen(false);
+    onReadStory?.();
+  }, [onReadStory]);
+
   const items: readonly GuideItem[] = [
     {
       id: "triage",
@@ -141,7 +151,7 @@ export function ActTwo({
         open={rootCauseOpen}
         onOpenChange={setRootCauseOpen}
         onReplay={onReplay}
-        onReadStory={onReadStory}
+        onReadStory={onReadStory && readStoryAndClose}
       />
     </>
   );
