@@ -240,7 +240,9 @@ function ContextPane({
   return (
     <div className={styles.pane}>
       <p className={styles.paneNote}>{paneNote(tabCount)}</p>
-      <ScrollArea>
+      {/* A text-only scroller: nothing inside takes focus, so the
+       * viewport itself must, or keyboard users can't scroll it. */}
+      <ScrollArea focusLabel="Log slice">
         <ul className={styles.paneList}>
           {slice.map((line) => (
             <li

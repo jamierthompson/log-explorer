@@ -10,6 +10,13 @@
   height: 100%;
 }
 
+/* The viewport fills its container, so an outset ring would be clipped
+ * by the root's overflow — draw it just inside the edge instead. */
+.viewport[tabindex]:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: calc(-2 * var(--focus-ring-width));
+}
+
 /* The scroll primitive wraps viewport content in a display:table box;
  * flatten it to block so the children's height and width chains behave,
  * and let it grow past the viewport so there's something to scroll. */

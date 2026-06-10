@@ -11,16 +11,23 @@ import styles from "./scroll-area.module.css";
  * The bar overlays the content on either axis, taking no layout space.
  * `isPageScroll` tags the viewport as the single app-level scroller so
  * controls elsewhere on the page can drive it; nested uses leave it off.
+ *
+ * `focusLabel` makes the viewport itself a focusable, labeled region so
+ * keyboard-only users can reach it and scroll with the arrow keys. Meant
+ * for scrollers with no focusable content of their own (the page scroll,
+ * text-only panes) — leave it off where focus already lands inside.
  */
 export function ScrollArea({
   className,
   children,
   isPageScroll = false,
+  focusLabel,
   orientation = "vertical",
 }: {
   className?: string;
   children: ReactNode;
   isPageScroll?: boolean;
+  focusLabel?: string;
   orientation?: "vertical" | "horizontal";
 }) {
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -56,6 +63,9 @@ export function ScrollArea({
         ref={viewportRef}
         className={styles.viewport}
         data-app-scroll-viewport={isPageScroll ? "" : undefined}
+        tabIndex={focusLabel === undefined ? undefined : 0}
+        role={focusLabel === undefined ? undefined : "region"}
+        aria-label={focusLabel}
       >
         {children}
       </RadixScrollArea.Viewport>
