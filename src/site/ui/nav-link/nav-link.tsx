@@ -20,6 +20,7 @@ export function NavLink(props: NavLinkProps) {
       <a
         className={styles.link}
         data-active={props.active || undefined}
+        aria-current={props.active ? "page" : undefined}
         href={props.href}
         target={props.external ? "_blank" : undefined}
         rel={props.external ? "noreferrer" : undefined}
@@ -37,6 +38,7 @@ export function NavLink(props: NavLinkProps) {
       type="button"
       className={styles.link}
       data-active={props.active || undefined}
+      aria-current={props.active ? "page" : undefined}
       onClick={props.onClick}
     >
       {props.children}

@@ -14,6 +14,25 @@ describe("NavLink", () => {
     expect(onClick).toHaveBeenCalledOnce();
   });
 
+  it("marks the active item as the current page for assistive tech", () => {
+    render(
+      <NavLink active onClick={() => {}}>
+        Demo
+      </NavLink>,
+    );
+    expect(screen.getByRole("button", { name: "Demo" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+  });
+
+  it("omits aria-current when the item is not active", () => {
+    render(<NavLink onClick={() => {}}>Demo</NavLink>);
+    expect(screen.getByRole("button", { name: "Demo" })).not.toHaveAttribute(
+      "aria-current",
+    );
+  });
+
   it("renders an external link that opens in a new tab", () => {
     render(
       <NavLink href="https://example.com" external>
