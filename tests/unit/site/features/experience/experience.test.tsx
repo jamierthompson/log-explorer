@@ -46,6 +46,45 @@ describe("Experience", () => {
     expect(viewport.scrollTop).toBe(0);
   });
 
+  it("moves focus into the entering act when the visitor advances", async () => {
+    const user = userEvent.setup();
+    render(<Experience lines={lines} />);
+
+    // Advancing hides the container holding the clicked button, which
+    // would otherwise drop focus to the body.
+    await user.click(screen.getByRole("button", { name: /better way/i }));
+
+    expect(document.activeElement).toContainElement(
+      screen.getByText("The Method"),
+    );
+  });
+
+  it("does not steal focus on initial mount", () => {
+    render(<Experience lines={lines} />);
+    expect(document.body).toHaveFocus();
+  });
+
+  it("lands focus on Act 1 after a replay remount", async () => {
+    const user = userEvent.setup();
+    render(<Experience lines={lines} />);
+
+    await user.click(screen.getByRole("button", { name: /better way/i }));
+    await user.click(
+      screen.getByRole("button", { name: /call the root cause/i }),
+    );
+    await user.click(screen.getByRole("button", { name: /config reload/i }));
+    // Replay remounts both acts, destroying the dialog's focus-restore
+    // target — focus must land inside the fresh Act 1, not on the body.
+    await user.click(
+      screen.getByRole("button", { name: /replay the incident/i }),
+    );
+
+    expect(screen.getByText("What’s happening")).toBeVisible();
+    expect(document.activeElement).toContainElement(
+      screen.getByText("What’s happening"),
+    );
+  });
+
   it("preserves an act's state when the visitor navigates away and back", async () => {
     const user = userEvent.setup();
     render(<Experience lines={lines} />);
