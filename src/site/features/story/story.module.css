@@ -57,7 +57,7 @@
 .proseTitle {
   margin: 0;
   font-size: var(--text-prose-title);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   line-height: var(--line-height-prose-tight);
   letter-spacing: var(--tracking-tight);
   text-wrap: balance;
@@ -114,7 +114,7 @@
    * reach it (.demoFrame isn't a .body descendant).
    */
   --legend-keycap-size: 1.375rem;
-  --legend-keycap-font-size: 0.8125rem;
+  --legend-keycap-font-size: var(--font-size-base);
 }
 
 /*

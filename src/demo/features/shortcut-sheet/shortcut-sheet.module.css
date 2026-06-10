@@ -40,7 +40,7 @@
 
   --legend-keycap-font: var(--logx-font);
   --legend-keycap-size: 1.625rem;
-  --legend-keycap-font-size: 0.8125rem;
+  --legend-keycap-font-size: var(--logx-font-size-base);
 
   animation: content-in var(--logx-duration) var(--logx-ease) backwards;
 }

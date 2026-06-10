@@ -10,6 +10,11 @@
   --logx-color-text-muted: light-dark(oklch(0.47 0 0), oklch(0.68 0 0));
   --logx-color-text-subtle: light-dark(oklch(0.53 0 0), oklch(0.6 0 0));
   --logx-surface: light-dark(oklch(1 0 0), oklch(0.145 0 0));
+  /* In light mode the default surface already sits at the top of the
+   * lightness range, so a raised plane can only differentiate by
+   * nudging darker. Hosts that dim their page background solve the
+   * same role by lifting raised surfaces instead — the near-miss with
+   * look-alike host palettes is deliberate, not drift. */
   --logx-surface-raised: light-dark(oklch(0.99 0 0), oklch(0.205 0 0));
   --logx-border: light-dark(oklch(0.92 0 0), oklch(0.285 0 0));
   --logx-border-soft: light-dark(oklch(0.95 0 0), oklch(0.235 0 0));
