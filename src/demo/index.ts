@@ -15,6 +15,10 @@ export { formatTime as formatLogTime } from "./lib/format-timestamp";
 export { Legend, type LegendItem } from "./ui/legend/legend";
 export { Keycap, KeycapSequence } from "./ui/keycap/keycap";
 export type { LogLine } from "./types/log";
-export type { FilterState } from "./lib/filter-state";
 export { mockLogs } from "./mocks/logs";
-export { SCENARIOS } from "./lib/scenarios";
+/**
+ * The demo's typeface. A host mounts `.variable` on the document root so
+ * the tokens' `--logx-font` resolves to it; without it the tokens fall
+ * back to a system mono stack.
+ */
+export { demoFont } from "./styles/fonts";
