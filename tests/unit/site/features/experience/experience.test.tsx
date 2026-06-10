@@ -34,7 +34,7 @@ describe("Experience", () => {
     // Filtering checks Act 1's first guide step. (Role queries ignore the
     // hidden act, so the visible explorer's chip is unambiguous.)
     await user.click(screen.getByRole("button", { name: /errors only/i }));
-    const filterStep = screen.getByText("Narrow to the failure");
+    const filterStep = screen.getByText("Filter the live tail");
     expect(filterStep.closest("li")).toHaveAttribute("data-done");
 
     // Leave for Act 2 via the always-available advance, confirm we arrived.

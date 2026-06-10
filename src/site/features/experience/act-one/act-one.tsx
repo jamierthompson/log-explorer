@@ -85,21 +85,16 @@ export function ActOne({
   const items: readonly GuideItem[] = [
     {
       id: "filter",
-      title: "Narrow to the failure",
-      description: "Pick a chip to filter the live tail to one request.",
+      title: "Filter the live tail",
+      description:
+        "Pick a chip to narrow the stream — errors, a request, an instance.",
       done: everFiltered,
     },
     {
       id: "open",
       title: "Open a line for context",
-      description: "Click a matching line to see what surrounded it.",
-      done: tabCount >= 1,
-    },
-    {
-      id: "lost",
-      title: "The slice lands elsewhere",
       description:
-        "A new tab holds the context. Your filtered tail is still here — one tab back.",
+        "Click a matching line — the slice lands in a new tab, and your filtered tail stays put, one tab back.",
       done: tabCount >= 1,
     },
     {
