@@ -5,6 +5,8 @@ import { describe, expect, it, vi } from "vitest";
 import type { LogLine } from "@/demo";
 import { ActOne } from "@/site/features/experience/act-one/act-one";
 
+import { getGuideStep } from "../../../../helpers/experience-dom";
+
 const lines: readonly LogLine[] = [
   {
     id: "1",
@@ -64,16 +66,16 @@ describe("ActOne", () => {
     const user = userEvent.setup();
     render(<ActOne lines={lines} onAdvance={() => {}} />);
 
-    const filterStep = screen.getByText("Filter the live tail");
-    const openStep = screen.getByText("Open a line for context");
-    expect(filterStep.closest("li")).not.toHaveAttribute("data-done");
-    expect(openStep.closest("li")).not.toHaveAttribute("data-done");
+    const filterStep = getGuideStep("filter");
+    const openStep = getGuideStep("open");
+    expect(filterStep).not.toHaveAttribute("data-done");
+    expect(openStep).not.toHaveAttribute("data-done");
 
     await user.click(screen.getByRole("button", { name: /errors only/i }));
-    expect(filterStep.closest("li")).toHaveAttribute("data-done");
+    expect(filterStep).toHaveAttribute("data-done");
 
     await user.click(screen.getByText("request timeout"));
-    expect(openStep.closest("li")).toHaveAttribute("data-done");
+    expect(openStep).toHaveAttribute("data-done");
   });
 
   it("closes the active slice tab with the Delete key", async () => {

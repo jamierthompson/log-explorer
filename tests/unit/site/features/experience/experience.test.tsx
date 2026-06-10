@@ -9,6 +9,7 @@ import {
   createAppScrollViewport,
   removeAppScrollViewports,
 } from "../../../../helpers/app-scroll-viewport";
+import { getAct, getGuideStep } from "../../../../helpers/experience-dom";
 
 const lines: readonly LogLine[] = [
   {
@@ -43,7 +44,7 @@ describe("Experience", () => {
     viewport.scrollTop = 600;
     await user.click(screen.getByRole("button", { name: /better way/i }));
 
-    expect(screen.getByText("The Method")).toBeVisible();
+    expect(getAct("act2")).toBeVisible();
     expect(viewport.scrollTop).toBe(0);
   });
 
@@ -55,9 +56,7 @@ describe("Experience", () => {
     // would otherwise drop focus to the body.
     await user.click(screen.getByRole("button", { name: /better way/i }));
 
-    expect(document.activeElement).toContainElement(
-      screen.getByText("The Method"),
-    );
+    expect(getAct("act2")).toHaveFocus();
   });
 
   it("does not steal focus on initial mount", () => {
@@ -80,10 +79,8 @@ describe("Experience", () => {
       screen.getByRole("button", { name: /replay the incident/i }),
     );
 
-    expect(screen.getByText("What’s happening")).toBeVisible();
-    expect(document.activeElement).toContainElement(
-      screen.getByText("What’s happening"),
-    );
+    expect(getAct("act1")).toBeVisible();
+    expect(getAct("act1")).toHaveFocus();
   });
 
   it("announces guide-step completions through the live region", async () => {
@@ -94,7 +91,10 @@ describe("Experience", () => {
     expect(status).toHaveTextContent("");
 
     await user.click(screen.getByRole("button", { name: /errors only/i }));
-    expect(status).toHaveTextContent("Step done: Filter the live tail");
+    // The wiring under test is the relay into the live region; the
+    // announcement's exact wording is the guide's own contract.
+    expect(getGuideStep("filter")).toHaveAttribute("data-done");
+    expect(status).toHaveTextContent(/step done/i);
   });
 
   it("clears the live region when the visitor replays", async () => {
@@ -124,12 +124,12 @@ describe("Experience", () => {
     // Filtering checks Act 1's first guide step. (Role queries ignore the
     // hidden act, so the visible explorer's chip is unambiguous.)
     await user.click(screen.getByRole("button", { name: /errors only/i }));
-    const filterStep = screen.getByText("Filter the live tail");
-    expect(filterStep.closest("li")).toHaveAttribute("data-done");
+    const filterStep = getGuideStep("filter");
+    expect(filterStep).toHaveAttribute("data-done");
 
     // Leave for Act 2 via the always-available advance, confirm we arrived.
     await user.click(screen.getByRole("button", { name: /better way/i }));
-    expect(screen.getByText("The Method")).toBeVisible();
+    expect(getAct("act2")).toBeVisible();
 
     // Browser back returns to Act 1 (model the pop jsdom won't perform).
     act(() => {
@@ -138,8 +138,8 @@ describe("Experience", () => {
     });
 
     // The checked step survived the round trip — Act 1 was never unmounted.
-    expect(screen.getByText("What’s happening")).toBeVisible();
-    expect(filterStep.closest("li")).toHaveAttribute("data-done");
+    expect(getAct("act1")).toBeVisible();
+    expect(filterStep).toHaveAttribute("data-done");
   });
 
   it("rewinds to Act 1 on a narrative entry, keeping both acts' progress", async () => {
@@ -151,16 +151,16 @@ describe("Experience", () => {
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     await user.click(screen.getByRole("button", { name: /better way/i }));
     await user.click(screen.getByRole("button", { name: /errors only/i }));
-    const triage = screen.getByText("Triage the symptom");
-    expect(triage.closest("li")).toHaveAttribute("data-done");
+    const triage = getGuideStep("triage");
+    expect(triage).toHaveAttribute("data-done");
 
     // A narrative entry rewinds the sequencing, not the acts' state.
     rerender(<Experience lines={lines} entryCount={1} />);
-    expect(screen.getByText("What’s happening")).toBeVisible();
-    expect(screen.getByText("The Method")).not.toBeVisible();
+    expect(getAct("act1")).toBeVisible();
+    expect(getAct("act2")).not.toBeVisible();
 
     // Advancing again finds Act 2 exactly as it was left.
     await user.click(screen.getByRole("button", { name: /better way/i }));
-    expect(triage.closest("li")).toHaveAttribute("data-done");
+    expect(triage).toHaveAttribute("data-done");
   });
 });

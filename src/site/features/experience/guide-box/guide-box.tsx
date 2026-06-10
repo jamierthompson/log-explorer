@@ -65,6 +65,7 @@ export function GuideBox({
           <li
             key={item.id}
             className={styles.step}
+            data-guide-step={item.id}
             data-done={item.done || undefined}
           >
             {item.done ? (
