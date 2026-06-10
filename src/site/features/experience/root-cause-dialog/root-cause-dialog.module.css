@@ -2,7 +2,7 @@
   position: fixed;
   inset: 0;
   z-index: var(--z-overlay);
-  background: light-dark(oklch(0.4 0 0 / 0.4), oklch(0 0 0 / 0.66));
+  background: var(--overlay-scrim);
   backdrop-filter: blur(3px);
 }
 

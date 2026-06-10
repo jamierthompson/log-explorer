@@ -47,6 +47,10 @@
     oklch(from var(--logx-color-text) l c h / 0.07),
     transparent 72%
   );
+  /* Dims the page behind the component's modal layer. Solid black at
+   * partial opacity reads correctly over both color schemes, so one
+   * value serves both without a scheme switch. */
+  --logx-overlay-scrim: oklch(0 0 0 / 0.55);
   --logx-font-size-sm: 0.6875rem;
   --logx-font-size-base: 0.8125rem;
   --logx-font-weight-medium: 500;
