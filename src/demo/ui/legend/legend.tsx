@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+
 import { KeycapSequence } from "@/demo/ui/keycap/keycap";
 
 import styles from "./legend.module.css";
@@ -9,7 +11,7 @@ type LegendItemBase = {
   readonly keys: readonly string[];
   /** User-facing description; rendered next to keycaps. */
   readonly label: string;
-  /** Bump to re-trigger the entry's mount animation. */
+  /** Bump to replay the entry's pulse animation. */
   readonly pulseKey?: number;
 };
 
@@ -31,13 +33,34 @@ export function Legend({ items }: { items: readonly LegendItem[] }) {
   return (
     <div className={styles.legend} role="toolbar" aria-label="Keyboard hints">
       {items.map((item) => (
-        <LegendEntry key={`${item.label}-${item.pulseKey ?? 0}`} item={item} />
+        <LegendEntry key={item.label} item={item} />
       ))}
     </div>
   );
 }
 
 function LegendEntry({ item }: { item: LegendItem }) {
+  const elementRef = useRef<HTMLElement | null>(null);
+  const setElement = (node: HTMLElement | null) => {
+    elementRef.current = node;
+  };
+
+  /*
+   * Replay the entry's pulse by restarting its animations in place.
+   * Keying the element on pulseKey would remount it instead, tearing a
+   * clickable entry out from under keyboard focus mid-activation.
+   * Guarded because not every environment implements getAnimations.
+   */
+  const prevPulse = useRef(item.pulseKey);
+  useEffect(() => {
+    if (item.pulseKey === prevPulse.current) return;
+    prevPulse.current = item.pulseKey;
+    elementRef.current?.getAnimations?.().forEach((animation) => {
+      animation.cancel();
+      animation.play();
+    });
+  }, [item.pulseKey]);
+
   const content = (
     <>
       <KeycapSequence keys={item.keys} />
@@ -48,6 +71,7 @@ function LegendEntry({ item }: { item: LegendItem }) {
   if (item.onClick) {
     return (
       <button
+        ref={setElement}
         type="button"
         className={styles.entry}
         aria-label={item.ariaLabel}
@@ -58,5 +82,9 @@ function LegendEntry({ item }: { item: LegendItem }) {
     );
   }
 
-  return <div className={styles.entry}>{content}</div>;
+  return (
+    <div ref={setElement} className={styles.entry}>
+      {content}
+    </div>
+  );
 }

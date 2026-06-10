@@ -69,6 +69,55 @@ describe("Legend", () => {
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
+  it("keeps focus on a clickable entry when its pulse re-triggers", () => {
+    const makeItems = (pulseKey: number): LegendItem[] => [
+      {
+        keys: ["Shift", "E"],
+        label: "Expand",
+        onClick: () => {},
+        ariaLabel: "Expand context",
+        pulseKey,
+      },
+    ];
+    const { rerender } = render(<Legend items={makeItems(0)} />);
+    const button = screen.getByRole("button", { name: "Expand context" });
+    button.focus();
+
+    // The pulse acknowledges an activation; it must not remount (and
+    // thereby blur) the very button the user just pressed.
+    rerender(<Legend items={makeItems(1)} />);
+    expect(
+      screen.getByRole("button", { name: "Expand context" }),
+    ).toHaveFocus();
+    expect(screen.getByRole("button", { name: "Expand context" })).toBe(button);
+  });
+
+  it("restarts the entry's animations in place when pulseKey bumps", () => {
+    const cancel = vi.fn();
+    const play = vi.fn();
+    const makeItems = (pulseKey: number): LegendItem[] => [
+      {
+        keys: ["Esc"],
+        label: "Close",
+        onClick: () => {},
+        ariaLabel: "Close context",
+        pulseKey,
+      },
+    ];
+    const { rerender } = render(<Legend items={makeItems(0)} />);
+    const button = screen.getByRole("button", { name: "Close context" });
+    (button as unknown as { getAnimations: () => unknown[] }).getAnimations =
+      () => [{ cancel, play }];
+
+    rerender(<Legend items={makeItems(1)} />);
+    expect(cancel).toHaveBeenCalledOnce();
+    expect(play).toHaveBeenCalledOnce();
+
+    // Same pulseKey, no replay.
+    rerender(<Legend items={makeItems(1)} />);
+    expect(cancel).toHaveBeenCalledOnce();
+  });
+
   it("renders a question-mark entry like any other (no special label-only path)", () => {
     const items: LegendItem[] = [
       {
