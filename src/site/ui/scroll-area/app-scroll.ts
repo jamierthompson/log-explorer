@@ -11,3 +11,12 @@ export function scrollAppViewportToTop(): void {
   const viewport = getAppScrollViewport();
   if (viewport) viewport.scrollTop = 0;
 }
+
+/** Animated return to the top, honoring reduced-motion preferences. */
+export function smoothScrollAppViewportToTop(): void {
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  (getAppScrollViewport() ?? window).scrollTo({
+    top: 0,
+    behavior: reduce ? "auto" : "smooth",
+  });
+}

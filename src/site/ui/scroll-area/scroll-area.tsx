@@ -10,7 +10,7 @@ import styles from "./scroll-area.module.css";
  * own scrollbar, so page-level and nested scrolling read consistently.
  * The bar overlays the content on either axis, taking no layout space.
  * `isPageScroll` tags the viewport as the single app-level scroller so
- * fixed chrome (scroll-to-top) can drive it; nested uses leave it off.
+ * controls elsewhere on the page can drive it; nested uses leave it off.
  */
 export function ScrollArea({
   className,
