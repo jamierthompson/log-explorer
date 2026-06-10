@@ -410,8 +410,8 @@ export function LogExplorer({
   return (
     <div className={styles.root} data-logx-surface>
       <div className={styles.toolbar}>
-        {showLegend && <Legend items={legendItems} />}
         <ScenarioChips state={filterState} dispatch={dispatch} />
+        {showLegend && <Legend items={legendItems} />}
       </div>
       <LogList
         lines={visibleLines}

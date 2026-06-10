@@ -34,27 +34,15 @@
 }
 
 .dayMarker {
-  display: flex;
-  align-items: center;
-  gap: var(--logx-space-3);
-  padding: var(--logx-space-3) var(--logx-space-4) var(--logx-space-4);
-}
-
-.dayMarker::before,
-.dayMarker::after {
-  content: "";
-  flex: 1;
-  border-top: 1px solid var(--logx-border);
+  padding: var(--logx-space-2) var(--logx-space-3);
+  border-bottom: 1px solid var(--logx-border-soft);
 }
 
 .dayMarkerLabel {
   font-family: var(--logx-font);
   font-size: var(--logx-font-size-sm);
-  font-weight: var(--logx-font-weight-medium);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--logx-color-text-muted);
-  white-space: nowrap;
+  letter-spacing: 0.06em;
+  color: var(--logx-color-text-subtle);
 }
 
 /* Outline lives on the visible scroll container, not the <ul> itself,

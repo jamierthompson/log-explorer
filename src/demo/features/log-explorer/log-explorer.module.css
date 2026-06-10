@@ -9,23 +9,22 @@
   min-height: 0;
   flex-direction: column;
   font-family: var(--logx-font);
+  background: var(--logx-surface);
 }
 
 .toolbar {
   display: flex;
-  flex-direction: column;
-  gap: var(--logx-space-5);
-  padding: var(--logx-space-5) var(--logx-space-5) var(--logx-space-4);
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--logx-space-2) var(--logx-space-4);
+  padding: var(--logx-space-2) var(--logx-space-3);
+  background: var(--logx-surface-raised);
+  border-bottom: 1px solid var(--logx-border-soft);
   /* The Legend and Keycap assume no host tokens, so map the demo's into
    * their portable hooks here — without this their text falls back to a
    * system font instead of the demo's. */
   --legend-focus-color: var(--logx-focus-ring-color);
   --legend-label-font: var(--logx-font);
   --legend-keycap-font: var(--logx-font);
-}
-
-@media (--logx-tablet) {
-  .toolbar {
-    gap: var(--logx-space-4);
-  }
 }

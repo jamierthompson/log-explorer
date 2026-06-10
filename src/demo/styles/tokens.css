@@ -10,7 +10,9 @@
   --logx-color-text-muted: light-dark(oklch(0.47 0 0), oklch(0.68 0 0));
   --logx-color-text-subtle: light-dark(oklch(0.53 0 0), oklch(0.6 0 0));
   --logx-surface: light-dark(oklch(1 0 0), oklch(0.145 0 0));
+  --logx-surface-raised: light-dark(oklch(0.99 0 0), oklch(0.205 0 0));
   --logx-border: light-dark(oklch(0.92 0 0), oklch(0.285 0 0));
+  --logx-border-soft: light-dark(oklch(0.95 0 0), oklch(0.235 0 0));
   --logx-color-warn: light-dark(oklch(0.5 0.13 80), oklch(0.78 0.15 80));
   --logx-color-error: light-dark(oklch(0.5 0.2 27), oklch(0.73 0.2 27));
   --logx-font:

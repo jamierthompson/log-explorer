@@ -6,6 +6,9 @@
   gap: var(--space-5);
 }
 
+/* The bounding box around the whole stage — in Act 1 that's the tab
+ * row and its panel together, in Act 2 the bare explorer. The demo
+ * draws no frame of its own; the site supplies it here. */
 .main {
   display: flex;
   flex-direction: column;
@@ -13,7 +16,9 @@
   min-height: 30rem;
   overflow: hidden;
   background: var(--logx-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-1);
+  box-shadow: var(--shadow-1);
 }
 
 @media (--desktop) {
