@@ -86,7 +86,7 @@ export function ActTwo({
       id: "radius",
       title: "Check the blast radius",
       description:
-        "Keep the filter and open another context. One instance, or all three?",
+        "One instance, or all three? Open another context — or narrow to @kc4qn — and see.",
       done: progress.radius,
     },
   ];
