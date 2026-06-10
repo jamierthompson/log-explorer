@@ -140,4 +140,26 @@ describe("Experience", () => {
     expect(screen.getByText("What’s happening")).toBeVisible();
     expect(filterStep.closest("li")).toHaveAttribute("data-done");
   });
+
+  it("rewinds to Act 1 on a narrative entry, keeping both acts' progress", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(<Experience lines={lines} entryCount={0} />);
+
+    // Build progress in both acts: filter in Act 1, then advance and
+    // filter again so Act 2's triage step latches.
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    await user.click(screen.getByRole("button", { name: /better way/i }));
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    const triage = screen.getByText("Triage the symptom");
+    expect(triage.closest("li")).toHaveAttribute("data-done");
+
+    // A narrative entry rewinds the sequencing, not the acts' state.
+    rerender(<Experience lines={lines} entryCount={1} />);
+    expect(screen.getByText("What’s happening")).toBeVisible();
+    expect(screen.getByText("The Method")).not.toBeVisible();
+
+    // Advancing again finds Act 2 exactly as it was left.
+    await user.click(screen.getByRole("button", { name: /better way/i }));
+    expect(triage.closest("li")).toHaveAttribute("data-done");
+  });
 });

@@ -31,9 +31,18 @@ import { useActs } from "./use-acts";
  */
 export function Experience({
   lines,
+  entryCount = 0,
   onReadStory,
 }: {
   lines: readonly LogLine[];
+  /**
+   * Counts narrative entries into the demo view — the calls to action
+   * that promise the start of the incident. Each increment rewinds the
+   * sequencing to Act 1 while both acts keep their progress; plain
+   * wayfinding back to the view leaves it untouched and should not
+   * increment this.
+   */
+  entryCount?: number;
   onReadStory?: () => void;
 }) {
   const { act, advance, reset } = useActs();
@@ -79,6 +88,13 @@ export function Experience({
   const announce = useCallback((message: string) => {
     setAnnouncement(message);
   }, []);
+
+  // A narrative entry lands on Act 1 regardless of where the visitor
+  // left off; their progress inside each act survives the rewind. The
+  // initial value never fires — only an actual entry does.
+  useEffect(() => {
+    if (entryCount > 0) reset();
+  }, [entryCount, reset]);
 
   const replay = useCallback(() => {
     setRunId((n) => n + 1);
