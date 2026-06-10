@@ -17,6 +17,7 @@ describe("TableOfContents", () => {
 
   it("marks a clicked entry as the current section", async () => {
     const user = userEvent.setup();
+    // Force the reduced-motion branch so the jump is synchronous in jsdom.
     window.matchMedia = vi.fn().mockReturnValue({ matches: true });
     const first = STORY_SECTIONS[0];
     const target = document.createElement("section");
@@ -35,6 +36,7 @@ describe("TableOfContents", () => {
 
   it("moves focus to the section a jump lands on", async () => {
     const user = userEvent.setup();
+    // Force the reduced-motion branch so the jump is synchronous in jsdom.
     window.matchMedia = vi.fn().mockReturnValue({ matches: true });
     const first = STORY_SECTIONS[0];
     const target = document.createElement("section");

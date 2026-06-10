@@ -1,7 +1,7 @@
 /**
  * The story's sections, in document order, for the nav's table of
- * contents. Each `id` must match the `id` on the corresponding
- * <section> in story.tsx — that pairing is what lets the nav jump to a
+ * contents. Each `id` must match the id on the corresponding story
+ * section element — that pairing is what lets the nav jump to a
  * section. Labels match the sections' eyebrows: the short scanning
  * names, not the sentence-like headings.
  */

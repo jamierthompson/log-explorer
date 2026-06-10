@@ -35,8 +35,8 @@
 }
 
 /*
- * Caption sized below body. The 0.75 multiplier counters mono's
- * visually larger appearance at matched point sizes — captions read
+ * Caption sized below body. The multiplier counters mono's visually
+ * larger appearance at matched point sizes — captions read
  * subordinate to the prose rather than competing with it.
  */
 .caption {

@@ -73,7 +73,9 @@ export function useHashRoute(): {
     window.history.pushState({ view: next }, "", url);
     window.dispatchEvent(new Event(LOCATION_EVENT));
     // The page scrolls inside the app-level scroll viewport, not the
-    // window, so a new view must reset that scroller to land at its top.
+    // window, so a new view must reset that scroller to land at its
+    // top. The window reset is a safety net for environments where the
+    // tagged viewport isn't mounted.
     scrollAppViewportToTop();
     window.scrollTo(0, 0);
     // The control that triggered the switch can unmount with the old

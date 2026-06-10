@@ -5,9 +5,9 @@
   gap: var(--space-2);
 }
 
-/* A quiet stage sized to the strip, not to an image aspect — the
- * component is small, so the padding gives it room to read as an
- * exhibit rather than a stray toolbar. */
+/* A quiet stage sized to the component it exhibits, not to an image
+ * aspect — the component is small, so the padding gives it room to
+ * read as an exhibit rather than a stray toolbar. */
 .stage {
   display: flex;
   justify-content: center;

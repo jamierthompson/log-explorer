@@ -98,8 +98,9 @@ export function LogExplorer({
   /*
    * Stream header: where the stream starts plus how much of it is
    * showing. The count names the full stream when everything is
-   * visible and the narrowed share once filtering or context windows
-   * hide lines — making the collapse legible at a glance.
+   * visible and the narrowed share once filtering hides lines —
+   * making the collapse legible at a glance. (Context windows only
+   * ever reveal lines; hiding is always the filter's doing.)
    */
   const header = useMemo(() => {
     if (lines.length === 0) return undefined;
