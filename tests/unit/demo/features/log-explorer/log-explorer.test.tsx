@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -165,6 +165,61 @@ describe("LogExplorer", () => {
     await user.keyboard("?");
 
     expect(screen.queryByText("Keyboard Shortcuts")).not.toBeInTheDocument();
+  });
+});
+
+describe("LogExplorer document shortcut scoping", () => {
+  const errorsOnlyFilter = {
+    instances: [],
+    requestIds: [],
+    levels: ["ERROR" as const],
+  };
+
+  it("ignores ? and Esc while inside a hidden container", async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <div data-testid="shown-host">
+          <LogExplorer lines={lines} />
+        </div>
+        <div hidden data-testid="hidden-host">
+          <LogExplorer lines={lines} initialFilter={errorsOnlyFilter} />
+        </div>
+      </>,
+    );
+    const hiddenHost = within(screen.getByTestId("hidden-host"));
+
+    // Only the visible explorer answers `?`: a single sheet opens and a
+    // single Esc closes it.
+    await user.keyboard("?");
+    expect(screen.getAllByText("Keyboard Shortcuts")).toHaveLength(1);
+    await user.keyboard("{Escape}");
+    expect(screen.queryByText("Keyboard Shortcuts")).not.toBeInTheDocument();
+
+    // Esc on the page must not reach the hidden explorer's filter.
+    await user.keyboard("{Escape}");
+    expect(hiddenHost.getByText("request timeout")).toBeInTheDocument();
+    expect(hiddenHost.queryByText("Healthcheck OK")).not.toBeInTheDocument();
+  });
+
+  it("ignores Esc when focus sits inside a modal that does not contain it", async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <LogExplorer lines={lines} initialFilter={errorsOnlyFilter} />
+        <div role="dialog">
+          <button type="button">Confirm</button>
+        </div>
+      </>,
+    );
+    expect(screen.queryByText("Healthcheck OK")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Confirm" }));
+    await user.keyboard("{Escape}");
+
+    // The filter survives — the key belonged to the modal layer.
+    expect(screen.queryByText("Healthcheck OK")).not.toBeInTheDocument();
+    expect(screen.getByText("request timeout")).toBeInTheDocument();
   });
 });
 

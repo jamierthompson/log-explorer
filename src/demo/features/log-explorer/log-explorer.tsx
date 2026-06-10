@@ -53,6 +53,7 @@ export function LogExplorer({
   const [focusedLineId, setFocusedLineId] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const viewportRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   const linesById = useMemo(() => {
     const m = new Map<string, LogLine>();
@@ -245,12 +246,20 @@ export function LogExplorer({
    * Document-level keyboard handler, registered in the capture phase so
    * it runs before an enclosing dialog's Esc-to-dismiss — pressing Esc
    * closes an open context or clears a filter before it can close a
-   * surrounding overlay. Defers to the shortcut sheet, which owns Esc
-   * while it's open, and ignores editable targets so inputs keep their
-   * own key semantics.
+   * surrounding overlay. Being global, it must also know when keys
+   * aren't meant for this explorer: while a hidden ancestor conceals it
+   * (a host may keep several explorers mounted and reveal one at a
+   * time), while a modal that doesn't contain it holds focus (those
+   * keys belong to that layer — Esc must dismiss it, not mutate state
+   * behind it), while the shortcut sheet is open (the sheet owns Esc),
+   * and when the target is editable (inputs keep their own key
+   * semantics).
    */
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
+      const root = rootRef.current;
+      if (!root || root.closest("[hidden]")) return;
+
       if (sheetOpen) return;
       if (event.metaKey || event.ctrlKey || event.altKey) return;
 
@@ -263,6 +272,14 @@ export function LogExplorer({
       ) {
         return;
       }
+
+      /*
+       * The explorer's own sheet was ruled out above, so any dialog
+       * enclosing the target that doesn't also enclose this explorer
+       * is a foreign modal layer.
+       */
+      const dialog = target?.closest('[role="dialog"]');
+      if (dialog && !dialog.contains(root)) return;
 
       // `?` is Shift+/ on most layouts; match the produced character.
       if (event.key === "?") {
@@ -408,7 +425,7 @@ export function LogExplorer({
   }, [snapshot, onStateChange]);
 
   return (
-    <div className={styles.root} data-logx-surface>
+    <div ref={rootRef} className={styles.root} data-logx-surface>
       <div className={styles.toolbar}>
         <ScenarioChips state={filterState} dispatch={dispatch} />
         {showLegend && <Legend items={legendItems} />}
