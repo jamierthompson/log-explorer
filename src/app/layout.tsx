@@ -4,6 +4,7 @@ import { JetBrains_Mono, Newsreader } from "next/font/google";
 import { demoFont } from "@/demo";
 import "@/site/styles/tokens.css";
 import "@/site/styles/base.css";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE } from "@/site/lib/site-meta";
 import { SkipLink } from "@/site/shell/skip-link/skip-link";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -20,11 +21,6 @@ const newsreader = Newsreader({
   axes: ["opsz"],
   display: "swap",
 });
-
-const SITE_NAME = "Log Explorer";
-const SITE_TITLE = "Log Explorer — an incident, investigated in place";
-const SITE_DESCRIPTION =
-  "13:31 UTC: checkout starts returning 503s. Investigate a live incident in a log explorer that opens context in place — no new tab for every look, no scattered timeline — then read how it was built.";
 
 // TODO: The Open Graph card has no URL or preview image until the site is
 // deployed. Add `metadataBase` (or absolute URLs), `openGraph.url`, and a

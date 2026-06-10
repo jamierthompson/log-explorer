@@ -1,11 +1,22 @@
 "use client";
 
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 
+import { SITE_NAME, SITE_TITLE } from "@/site/lib/site-meta";
 import { scrollAppViewportToTop } from "@/site/ui/scroll-area/app-scroll";
 
 /** Every routable view of the single-page experience. */
 export type View = "hero" | "demo" | "story";
+
+/*
+ * The static head title fits the hero; the other views get their own so
+ * history entries and assistive tech can tell the views apart.
+ */
+const VIEW_TITLES: Record<View, string> = {
+  hero: SITE_TITLE,
+  demo: `Demo — ${SITE_NAME}`,
+  story: `Story — ${SITE_NAME}`,
+};
 
 /** Map a URL hash to a view, defaulting to the hero. */
 export function viewFromHash(hash: string): View {
@@ -47,6 +58,12 @@ export function useHashRoute(): {
     () => "",
   );
   const view = viewFromHash(hash);
+
+  // In an effect for SSR safety; covers deep links, back/forward, and
+  // in-app navigation alike since they all resolve through `view`.
+  useEffect(() => {
+    document.title = VIEW_TITLES[view];
+  }, [view]);
 
   const navigate = useCallback((next: View) => {
     const url =
