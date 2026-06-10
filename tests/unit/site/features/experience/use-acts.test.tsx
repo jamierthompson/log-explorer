@@ -55,12 +55,37 @@ describe("useActs", () => {
 
   it("starts on Act 1 on a reload that carried an Act 2 marker, and clears it", () => {
     // A reload preserves history state, so model landing with act: act2.
-    window.history.replaceState({ act: "act2" }, "", window.location.href);
+    // The unrelated key stands in for another party's bookkeeping (the
+    // routers also store theirs in history.state) and must survive.
+    window.history.replaceState(
+      { act: "act2", unrelated: "keep" },
+      "",
+      window.location.href,
+    );
 
     const { result } = renderHook(() => useActs());
 
     expect(result.current.act).toBe("act1");
     // The stale marker is wiped so forward nav can't resurrect Act 2.
+    expect(
+      (window.history.state as { act?: string } | null)?.act,
+    ).toBeUndefined();
+    expect(window.history.state).toMatchObject({ unrelated: "keep" });
+  });
+
+  it("carries unrelated history state keys through advance and reset", () => {
+    window.history.replaceState(
+      { unrelated: "keep" },
+      "",
+      window.location.href,
+    );
+    const { result } = renderHook(() => useActs());
+
+    act(() => result.current.advance());
+    expect(window.history.state).toMatchObject({ unrelated: "keep" });
+
+    act(() => result.current.reset());
+    expect(window.history.state).toMatchObject({ unrelated: "keep" });
     expect(
       (window.history.state as { act?: string } | null)?.act,
     ).toBeUndefined();

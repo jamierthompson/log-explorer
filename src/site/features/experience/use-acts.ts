@@ -23,6 +23,13 @@ export function useActs(): {
 } {
   const [act, setAct] = useState<Act>("act1");
 
+  /*
+   * Invariant for every history write in this hook: start from the
+   * entry's existing state (spread, never a fresh object) and only add
+   * or remove the act marker. Other parties — the framework router and
+   * the hash router — keep their own keys in history.state, and a write
+   * that drops them breaks their navigation bookkeeping.
+   */
   const clearMarker = useCallback(() => {
     if (actFromState(window.history.state) !== "act1") {
       const state = { ...(window.history.state as object | null) };
