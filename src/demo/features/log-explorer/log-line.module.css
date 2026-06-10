@@ -25,28 +25,45 @@
   }
 }
 
-.time,
-.instance {
+.time {
   color: var(--logx-color-text-muted);
 }
 
-.atSign,
-.requestId {
+.instance {
+  color: var(--logx-accent);
+}
+
+.atSign {
   color: var(--logx-color-text-subtle);
 }
 
+.requestId {
+  color: var(--logx-accent-dim);
+}
+
 .level {
+  display: inline-block;
+  padding: 0.06em 0.4em 0.05em;
+  border-radius: 1px;
+  font-size: var(--logx-font-size-sm);
   font-weight: var(--logx-font-weight-medium);
+  letter-spacing: 0.06em;
+  /* Optically center the badge against the text baseline; without the
+   * nudge its padding makes it sit visibly low in the line. */
+  transform: translateY(-1px);
 }
 
 .level[data-level="DEBUG"] {
-  color: var(--logx-color-text-muted);
+  color: var(--logx-color-text-subtle);
+  border: 1px solid var(--logx-border);
 }
 
 .level[data-level="WARN"] {
   color: var(--logx-color-warn);
+  border: 1px solid color-mix(in oklch, var(--logx-color-warn) 45%, transparent);
 }
 
 .level[data-level="ERROR"] {
-  color: var(--logx-color-error);
+  color: var(--logx-color-on-accent);
+  background: var(--logx-color-error);
 }

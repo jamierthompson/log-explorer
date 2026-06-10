@@ -7,7 +7,6 @@ import { Hero } from "@/site/features/hero/hero";
 import { SiteNav } from "@/site/features/site-nav/site-nav";
 import { Story } from "@/site/features/story/story";
 import { Footer } from "@/site/shell/footer/footer";
-import { ScrollToTop } from "@/site/shell/scroll-to-top/scroll-to-top";
 import { ScrollArea } from "@/site/ui/scroll-area/scroll-area";
 
 import styles from "./landing.module.css";
@@ -30,7 +29,10 @@ export function Landing({ lines }: { lines: readonly LogLine[] }) {
           {view === "demo" ? (
             <div className={styles.demoView}>
               <div className={styles.demoInner}>
-                <Experience lines={lines} />
+                <Experience
+                  lines={lines}
+                  onReadStory={() => navigate("story")}
+                />
               </div>
             </div>
           ) : view === "story" ? (
@@ -43,12 +45,10 @@ export function Landing({ lines }: { lines: readonly LogLine[] }) {
           )}
         </main>
         {/* The footer belongs to the long-form reading view only, and
-         * scrolls with it. */}
+         * scrolls with it — its back-to-top control included, surfacing
+         * only once the reader reaches the end. */}
         {view === "story" && <Footer />}
       </ScrollArea>
-      {/* Floating chrome stays outside the scroll container so it's fixed
-       * to the screen, not clipped by it. */}
-      {view === "story" && <ScrollToTop />}
     </>
   );
 }

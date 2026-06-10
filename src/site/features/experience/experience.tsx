@@ -1,8 +1,10 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 
 import { type LogLine } from "@/demo";
+
+import { scrollAppViewportToTop } from "@/site/ui/scroll-area/app-scroll";
 
 import { ActOne } from "./act-one/act-one";
 import { ActTwo } from "./act-two/act-two";
@@ -21,9 +23,25 @@ import { useActs } from "./use-acts";
  * Replay is the one deliberate reset: bumping the run key remounts both
  * acts fresh, and reset returns to Act 1.
  */
-export function Experience({ lines }: { lines: readonly LogLine[] }) {
+export function Experience({
+  lines,
+  onReadStory,
+}: {
+  lines: readonly LogLine[];
+  onReadStory?: () => void;
+}) {
   const { act, advance, reset } = useActs();
   const [runId, setRunId] = useState(0);
+
+  /*
+   * Each act enters from its top. On narrow viewports the advance and
+   * replay controls sit below the stage, so without this the next act
+   * would open scrolled to wherever the button was. Before paint, so
+   * the old position never flashes.
+   */
+  useLayoutEffect(() => {
+    scrollAppViewportToTop();
+  }, [act]);
 
   const replay = useCallback(() => {
     setRunId((n) => n + 1);
@@ -36,7 +54,12 @@ export function Experience({ lines }: { lines: readonly LogLine[] }) {
         <ActOne key={runId} lines={lines} onAdvance={advance} />
       </div>
       <div className={styles.act} hidden={act !== "act2"}>
-        <ActTwo key={runId} lines={lines} onReplay={replay} />
+        <ActTwo
+          key={runId}
+          lines={lines}
+          onReplay={replay}
+          onReadStory={onReadStory}
+        />
       </div>
     </div>
   );

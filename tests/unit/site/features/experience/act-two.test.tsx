@@ -48,12 +48,12 @@ describe("ActTwo", () => {
     const user = userEvent.setup();
     render(<ActTwo lines={lines} />);
 
-    const narrow = screen.getByText("Narrow to the failure");
+    const triage = screen.getByText("Triage the symptom");
     const context = screen.getByText("Open context in place");
-    expect(narrow.closest("li")).not.toHaveAttribute("data-done");
+    expect(triage.closest("li")).not.toHaveAttribute("data-done");
 
     await user.click(screen.getByRole("button", { name: /errors only/i }));
-    expect(narrow.closest("li")).toHaveAttribute("data-done");
+    expect(triage.closest("li")).toHaveAttribute("data-done");
 
     await user.click(screen.getByText("request timeout"));
     expect(context.closest("li")).toHaveAttribute("data-done");

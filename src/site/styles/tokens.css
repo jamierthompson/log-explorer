@@ -28,6 +28,10 @@
 
   --radius-1: 0.25rem;
 
+  --shadow-1:
+    0 1px 3px light-dark(oklch(0 0 0 / 0.06), oklch(0 0 0 / 0.2)),
+    0 16px 40px -28px light-dark(oklch(0 0 0 / 0.25), oklch(0 0 0 / 0.7));
+
   /*
    * Focus ring: an outline (not box-shadow) so it survives forced-colors
    * mode and tracks border-radius. Elements needing a different gap

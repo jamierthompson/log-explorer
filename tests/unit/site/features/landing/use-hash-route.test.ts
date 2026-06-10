@@ -1,6 +1,32 @@
-import { describe, expect, it } from "vitest";
+import { renderHook, act } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 
-import { viewFromHash } from "@/site/features/landing/use-hash-route";
+import {
+  useHashRoute,
+  viewFromHash,
+} from "@/site/features/landing/use-hash-route";
+
+describe("useHashRoute", () => {
+  afterEach(() => {
+    window.history.replaceState(null, "", window.location.pathname);
+    document
+      .querySelectorAll("[data-app-scroll-viewport]")
+      .forEach((el) => el.remove());
+  });
+
+  it("resets the app scroll viewport when navigating to a view", () => {
+    const viewport = document.createElement("div");
+    viewport.setAttribute("data-app-scroll-viewport", "");
+    document.body.appendChild(viewport);
+    viewport.scrollTop = 480;
+
+    const { result } = renderHook(() => useHashRoute());
+    act(() => result.current.navigate("story"));
+
+    expect(result.current.view).toBe("story");
+    expect(viewport.scrollTop).toBe(0);
+  });
+});
 
 describe("viewFromHash", () => {
   it("maps #demo to the demo view", () => {

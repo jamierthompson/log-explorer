@@ -21,8 +21,9 @@ export function Hero({
       <p className={styles.lead}>
         13:31 UTC. Checkout starts returning 503s on api-gateway while the logs
         tail live. You filter to the failing request, click a span for context —
-        and a new tab opens, your filter gone, the tail gone. A few clicks in,
-        you’ve got a fan of tabs and the incident scattered across them.
+        and it opens in a new tab, a thin slice of the tail your filter didn’t
+        follow. A few clicks in, you’ve got a fan of tabs and the incident
+        scattered across them.
       </p>
       <div className={styles.coverMeta}>
         <span>

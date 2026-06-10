@@ -2,6 +2,8 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 
+import { scrollAppViewportToTop } from "@/site/ui/scroll-area/app-scroll";
+
 /** Every routable view of the single-page experience. */
 export type View = "hero" | "demo" | "story";
 
@@ -53,6 +55,9 @@ export function useHashRoute(): {
         : `#${next}`;
     window.history.pushState({ view: next }, "", url);
     window.dispatchEvent(new Event(LOCATION_EVENT));
+    // The page scrolls inside the app-level scroll viewport, not the
+    // window, so a new view must reset that scroller to land at its top.
+    scrollAppViewportToTop();
     window.scrollTo(0, 0);
   }, []);
 

@@ -59,7 +59,7 @@ describe("ActOne", () => {
     const user = userEvent.setup();
     render(<ActOne lines={lines} onAdvance={() => {}} />);
 
-    const filterStep = screen.getByText("Filter to the failing request");
+    const filterStep = screen.getByText("Filter the live tail");
     const openStep = screen.getByText("Open a line for context");
     expect(filterStep.closest("li")).not.toHaveAttribute("data-done");
     expect(openStep.closest("li")).not.toHaveAttribute("data-done");

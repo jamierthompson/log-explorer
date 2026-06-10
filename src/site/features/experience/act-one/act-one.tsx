@@ -85,28 +85,23 @@ export function ActOne({
   const items: readonly GuideItem[] = [
     {
       id: "filter",
-      title: "Filter to the failing request",
-      description: "Pick a chip to narrow the live tail to one request.",
+      title: "Filter the live tail",
+      description:
+        "Pick a chip to narrow the stream — errors, a request, an instance.",
       done: everFiltered,
     },
     {
       id: "open",
       title: "Open a line for context",
-      description: "Click a matching line to see what surrounded it.",
-      done: tabCount >= 1,
-    },
-    {
-      id: "lost",
-      title: "Land in a new tab",
       description:
-        "The context opens elsewhere — and your filter didn't follow.",
+        "Click a matching line — the slice lands in a new tab, and your filtered tail stays put, one tab back.",
       done: tabCount >= 1,
     },
     {
       id: "pile",
-      title: "Watch the tabs pile up",
+      title: "Reassemble by hand",
       description:
-        "Every view is one more tab to juggle and lose your place in.",
+        "Two tabs, two slices — you're holding the timeline together in your head.",
       done: tabCount >= 2,
     },
   ];
@@ -115,8 +110,8 @@ export function ActOne({
     <ActLayout
       step="Act 1"
       kicker="The old way"
-      title="One failing request, scattered across tabs"
-      lead="Filter the live tail to the failing request, then open a line for context — it opens in a new tab that left your filter behind."
+      title="A tab for every click"
+      lead="Filter the live tail to the failing request, then open a line for context. Every look opens another tab — and the investigation starts to scatter."
       aside={
         <GuideBox
           title="What's happening"
@@ -130,6 +125,11 @@ export function ActOne({
             ),
             onClick: onAdvance,
           }}
+          foot={
+            tabCount >= 3
+              ? `${tabCount} tabs open. You're rebuilding the timeline by flipping between them.`
+              : "Every look at context buys one thin slice and opens one more tab."
+          }
         />
       }
     >
@@ -138,37 +138,45 @@ export function ActOne({
         value={active}
         onValueChange={setActive}
       >
-        <Tabs.List className={styles.tabstrip} aria-label="Open views">
-          <Tabs.Trigger value={LIVE} className={styles.tab}>
-            Live tail
-          </Tabs.Trigger>
-
-          {tabs.map((tab) => (
-            <span key={tab.id} className={styles.tab}>
-              <Tabs.Trigger value={tab.id} className={styles.tabTrigger}>
-                {formatLogTime(tab.line.timestamp)}
-              </Tabs.Trigger>
-              <button
-                type="button"
-                className={styles.tabClose}
-                aria-label={`Close the ${formatLogTime(tab.line.timestamp)} slice`}
-                onClick={() => closeTab(tab.id)}
+        <div className={styles.tabBar}>
+          <ScrollArea orientation="horizontal" className={styles.tabScroll}>
+            <Tabs.List className={styles.tabstrip} aria-label="Open views">
+              <Tabs.Trigger
+                value={LIVE}
+                className={`${styles.tab} ${styles.tabLive}`}
               >
-                <X size={12} aria-hidden="true" />
-              </button>
-            </span>
-          ))}
+                Live tail
+              </Tabs.Trigger>
+
+              {tabs.map((tab) => (
+                <span key={tab.id} className={styles.tab}>
+                  <Tabs.Trigger value={tab.id} className={styles.tabTrigger}>
+                    {formatLogTime(tab.line.timestamp)}
+                  </Tabs.Trigger>
+                  <button
+                    type="button"
+                    className={styles.tabClose}
+                    aria-label={`Close the ${formatLogTime(tab.line.timestamp)} slice`}
+                    onClick={() => closeTab(tab.id)}
+                  >
+                    <X size={12} aria-hidden="true" />
+                  </button>
+                </span>
+              ))}
+            </Tabs.List>
+          </ScrollArea>
 
           {tabs.length > 0 && (
             <span className={styles.tabCount}>
               {tabs.length} tab{tabs.length === 1 ? "" : "s"} open
             </span>
           )}
-        </Tabs.List>
+        </div>
 
         <Tabs.Content value={LIVE} className={styles.panel} forceMount>
           <LogExplorer
             lines={lines}
+            service="api-gateway"
             showLegend={false}
             onViewContext={openContext}
             onStateChange={handleState}

@@ -3,15 +3,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  /* Match the article's font context so 70ch resolves to the same
-   * pixel width as the prose column above. The visible text inside
-   * overrides font-family and font-size locally. */
-  font-family: var(--font-sans);
-  font-size: var(--text-prose-base);
-  /* Box width = content + 2 * padding, so the content area equals
-   * --prose-measure exactly, matching where the article's content
-   * edges sit. */
-  max-width: calc(var(--prose-measure) + var(--content-padding-x) * 2);
+  max-width: var(--page-max);
   margin: 0 auto;
   padding: var(--space-5) var(--content-padding-x) var(--space-6);
   color: var(--color-text-muted);
@@ -23,18 +15,25 @@
   font-size: var(--font-size-base);
 }
 
-.link {
+.toTop {
   display: inline-flex;
   align-items: center;
+  gap: var(--space-1);
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
   color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
   transition: color var(--duration-fast) var(--ease-standard);
 }
 
-.link:hover {
+.toTop:hover {
   color: var(--color-text);
 }
 
-.link:focus-visible {
+.toTop:focus-visible {
   outline: var(--focus-ring-width) solid var(--focus-ring-color);
   outline-offset: var(--focus-ring-offset);
   border-radius: var(--radius-1);

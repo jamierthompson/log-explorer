@@ -7,7 +7,6 @@ import type {
   Ref,
 } from "react";
 
-import { formatDayLabel } from "@/demo/lib/format-timestamp";
 import type { DerivedLogLine } from "@/demo/types/log";
 
 import { LogLine } from "./log-line";
@@ -20,6 +19,7 @@ export const lineDomId = (lineId: string) => `line_${lineId}`;
 
 export function LogList({
   lines,
+  header,
   focusedLineId,
   selectedContextLineIds,
   hasAnyFilter,
@@ -29,6 +29,8 @@ export function LogList({
   viewportRef,
 }: {
   lines: readonly DerivedLogLine[];
+  /** One-line description of the stream and how much of it is showing. */
+  header?: string;
   focusedLineId: string | null;
   selectedContextLineIds: ReadonlySet<string>;
   hasAnyFilter: boolean;
@@ -52,11 +54,9 @@ export function LogList({
 
   return (
     <div className={styles.wrap}>
-      {lines.length > 0 && (
-        <div className={styles.dayMarker} aria-hidden="true">
-          <span className={styles.dayMarkerLabel}>
-            {formatDayLabel(lines[0].timestamp)}
-          </span>
+      {header && (
+        <div className={styles.dayMarker}>
+          <span className={styles.dayMarkerLabel}>{header}</span>
         </div>
       )}
       <ScrollArea.Root className={styles.scrollRoot} type="always">

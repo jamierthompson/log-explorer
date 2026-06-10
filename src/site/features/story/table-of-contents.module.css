@@ -12,6 +12,10 @@
   font-size: var(--font-size-base);
 }
 
+.link[aria-current] {
+  color: var(--brand-accent);
+}
+
 /*
  * On desktop the list becomes a fixed-width sidebar that stays in view
  * while the prose scrolls past it. --toc-width is inherited from the

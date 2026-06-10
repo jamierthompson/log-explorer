@@ -10,15 +10,34 @@
   --logx-color-text-muted: light-dark(oklch(0.47 0 0), oklch(0.68 0 0));
   --logx-color-text-subtle: light-dark(oklch(0.53 0 0), oklch(0.6 0 0));
   --logx-surface: light-dark(oklch(1 0 0), oklch(0.145 0 0));
+  --logx-surface-raised: light-dark(oklch(0.99 0 0), oklch(0.205 0 0));
   --logx-border: light-dark(oklch(0.92 0 0), oklch(0.285 0 0));
+  --logx-border-soft: light-dark(oklch(0.95 0 0), oklch(0.235 0 0));
   --logx-color-warn: light-dark(oklch(0.5 0.13 80), oklch(0.78 0.15 80));
   --logx-color-error: light-dark(oklch(0.5 0.2 27), oklch(0.73 0.2 27));
+  --logx-color-on-accent: light-dark(oklch(0.985 0 0), oklch(0.205 0 0));
   --logx-font:
     var(--logx-font-family, ui-monospace), "SF Mono", Menlo, Consolas, monospace;
   --logx-radius: 0.25rem;
 
   /* ── Internals — derived or fixed; not part of the stable API ── */
   --logx-accent-hover: oklch(from var(--logx-accent) l calc(c + 0.06) h);
+  /* Soft and dimmed shades derive from the accent so a single override
+   * re-tints every accent-tinted surface with it. */
+  --logx-accent-soft: oklch(from var(--logx-accent) l c h / 0.12);
+  --logx-accent-dim: oklch(from var(--logx-accent) l c h / 0.85);
+  /* Row washes share one left-lit geometry: accent marks an anchor,
+   * neutral marks provisional attention (the keyboard cursor, hover). */
+  --logx-wash-accent: linear-gradient(
+    90deg,
+    var(--logx-accent-soft),
+    transparent 72%
+  );
+  --logx-wash-neutral: linear-gradient(
+    90deg,
+    oklch(from var(--logx-color-text) l c h / 0.07),
+    transparent 72%
+  );
   --logx-font-size-sm: 0.6875rem;
   --logx-font-size-base: 0.8125rem;
   --logx-font-weight-medium: 500;

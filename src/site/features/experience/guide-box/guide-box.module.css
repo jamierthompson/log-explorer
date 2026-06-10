@@ -86,3 +86,12 @@
   margin-top: var(--space-5);
   justify-content: center;
 }
+
+.foot {
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-base);
+  color: var(--color-text-subtle);
+  text-wrap: pretty;
+}

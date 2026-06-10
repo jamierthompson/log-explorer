@@ -5,14 +5,34 @@
   flex-direction: column;
 }
 
-.tabstrip {
+/* The strip's bottom line is an inset shadow rather than a border so it
+ * draws behind the tabs — an opaque tab fill sits on top of it, letting
+ * the active tab merge into the panel below. The count is a sibling of
+ * the scroll container, so it stays pinned while the tabs scroll. */
+.tabBar {
   display: flex;
-  align-items: center;
-  gap: var(--space-1);
+  align-items: flex-end;
+  gap: var(--space-3);
   padding: var(--space-2) var(--space-3) 0;
   background: var(--surface-page);
-  border-bottom: 1px solid var(--color-border);
-  overflow-x: auto;
+  box-shadow: inset 0 -1px 0 var(--color-border);
+}
+
+.tabScroll {
+  flex: 1;
+  min-width: 0;
+}
+
+/* A part-scrolled tab dissolves at the strip's right edge instead of
+ * hard-clipping against the pinned count beside it. */
+.tabScroll [data-radix-scroll-area-viewport] {
+  mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
+}
+
+.tabstrip {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-1);
 }
 
 /* The tab box. Used both as the bare "Live tail" trigger and as the
@@ -29,20 +49,27 @@
   font-size: var(--font-size-sm);
   color: var(--color-text-subtle);
   white-space: nowrap;
-  background: transparent;
-  border: 1px solid transparent;
+  background: var(--surface-raised);
+  border: 1px solid var(--logx-border-soft);
   border-bottom: none;
   border-radius: var(--radius-1) var(--radius-1) 0 0;
   cursor: pointer;
 }
 
 /* Active either as the bare trigger ("Live tail") or as the box wrapping
- * the active slice trigger. */
+ * the active slice trigger. The opaque fill covers the bar's inset
+ * bottom line, merging the tab into the panel beneath. */
 .tab[data-state="active"],
 .tab:has([data-state="active"]) {
   color: var(--color-text);
-  background: var(--surface);
-  border-color: var(--color-border);
+  background: var(--logx-surface);
+}
+
+/* The live tail never stops being live — its label keeps the accent in
+ * every state so the visitor always knows which tab still has the
+ * filtered stream. */
+.tab.tabLive {
+  color: var(--brand-accent);
 }
 
 /* A slice's clickable label, sitting inside the box next to the close
@@ -77,11 +104,12 @@
   background: var(--color-border);
 }
 
+/* The count is the act's pain meter, so it reads in the error color. */
 .tabCount {
-  margin-left: auto;
+  align-self: center;
   font-family: var(--font-mono);
   font-size: var(--font-size-sm);
-  color: var(--color-text-subtle);
+  color: var(--logx-color-error);
   white-space: nowrap;
 }
 
@@ -133,6 +161,6 @@
 }
 
 .paneRow[data-anchor] {
-  background: color-mix(in oklch, var(--brand-accent) 8%, transparent);
+  background: var(--logx-wash-accent);
   border-left-color: var(--brand-accent);
 }

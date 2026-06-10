@@ -11,6 +11,7 @@ import {
 } from "react";
 
 import { ScenarioChips } from "@/demo/features/scenario-chips/scenario-chips";
+import { formatStreamStart } from "@/demo/lib/format-timestamp";
 import { SCENARIOS } from "@/demo/lib/scenarios";
 import { ShortcutSheet } from "@/demo/features/shortcut-sheet/shortcut-sheet";
 import { Legend, type LegendItem } from "@/demo/ui/legend";
@@ -34,12 +35,15 @@ import { useListboxKeyboard } from "./use-listbox-keyboard";
 
 export function LogExplorer({
   lines,
+  service,
   initialFilter = initialFilterState,
   onStateChange,
   onViewContext,
   showLegend = true,
 }: {
   lines: readonly LogLine[];
+  /** Name of the service emitting the stream, shown in the list header. */
+  service?: string;
   initialFilter?: FilterState;
   onStateChange?: (snapshot: LogExplorerSnapshot) => void;
   onViewContext?: (lineId: string) => void;
@@ -102,6 +106,23 @@ export function LogExplorer({
     () => derivedLines.filter((l) => l.isVisible),
     [derivedLines],
   );
+
+  /*
+   * Stream header: where the stream starts plus how much of it is
+   * showing. The count names the full stream when everything is
+   * visible and the narrowed share once filtering or context windows
+   * hide lines — making the collapse legible at a glance.
+   */
+  const header = useMemo(() => {
+    if (lines.length === 0) return undefined;
+    const count =
+      visibleLines.length === lines.length
+        ? `${lines.length} lines`
+        : `${visibleLines.length} of ${lines.length} lines`;
+    return [service, formatStreamStart(lines[0].timestamp), count]
+      .filter(Boolean)
+      .join(" · ");
+  }, [lines, service, visibleLines.length]);
 
   /*
    * Keyboard navigation hops between actionable rows only — dimmed
@@ -301,7 +322,7 @@ export function LogExplorer({
         items.push({
           keys: SHORTCUTS.expandContext.keys,
           label: "Expand",
-          ariaLabel: "Expand the most recent context window",
+          ariaLabel: "Expand the most recent context",
           onClick: expandMostRecentContext,
           pulseKey: expandPulseKey,
         });
@@ -322,8 +343,8 @@ export function LogExplorer({
           keys: SHORTCUTS.toggleContext.keys,
           label: focusedIsAnchor ? "Hide" : "View",
           ariaLabel: focusedIsAnchor
-            ? "Hide context on focused line"
-            : "View context on focused line",
+            ? "Hide context on the focused line"
+            : "View context on the focused line",
           onClick: () => handleViewContext(focusedLineId),
         });
       }
@@ -341,7 +362,7 @@ export function LogExplorer({
       items.push({
         keys: SHORTCUTS.closeRecent.keys,
         label: "Clear",
-        ariaLabel: "Clear active filters",
+        ariaLabel: "Clear the filter",
         onClick: () => dispatch({ type: "clear" }),
       });
     }
@@ -389,11 +410,12 @@ export function LogExplorer({
   return (
     <div className={styles.root} data-logx-surface>
       <div className={styles.toolbar}>
-        {showLegend && <Legend items={legendItems} />}
         <ScenarioChips state={filterState} dispatch={dispatch} />
+        {showLegend && <Legend items={legendItems} />}
       </div>
       <LogList
         lines={visibleLines}
+        header={header}
         focusedLineId={focusedLineId}
         selectedContextLineIds={selectedContextLineIds}
         hasAnyFilter={hasAnyFilter(filterState)}
