@@ -86,9 +86,12 @@ describe("LogExplorer", () => {
   it("pressing Shift+Esc closes every open context", async () => {
     const user = userEvent.setup();
     render(<LogExplorer lines={lines} />);
-    await user.click(screen.getByRole("button", { name: /req=r4d8a2/i }));
+    // Two anchors must be open: with a single one this couldn't tell
+    // close-all apart from close-most-recent.
+    await user.click(screen.getByRole("button", { name: /@kc4qn/i }));
+    await user.click(screen.getByText("Healthcheck OK"));
     await user.click(screen.getByText("GET /api/users"));
-    expect(document.querySelector('[data-selected="true"]')).not.toBeNull();
+    expect(document.querySelectorAll('[data-selected="true"]')).toHaveLength(2);
 
     await user.keyboard("{Shift>}{Escape}{/Shift}");
     expect(document.querySelector('[data-selected="true"]')).toBeNull();

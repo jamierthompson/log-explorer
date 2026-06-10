@@ -1,9 +1,15 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { TableOfContents } from "@/site/features/story/table-of-contents";
 import { STORY_SECTIONS } from "@/site/features/story/story-sections";
+
+import { mockMatchMedia } from "../../../../helpers/match-media";
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe("TableOfContents", () => {
   it("lists every story section", () => {
@@ -18,7 +24,7 @@ describe("TableOfContents", () => {
   it("marks a clicked entry as the current section", async () => {
     const user = userEvent.setup();
     // Force the reduced-motion branch so the jump is synchronous in jsdom.
-    window.matchMedia = vi.fn().mockReturnValue({ matches: true });
+    mockMatchMedia(true);
     const first = STORY_SECTIONS[0];
     const target = document.createElement("section");
     target.id = first.id;
@@ -37,7 +43,7 @@ describe("TableOfContents", () => {
   it("moves focus to the section a jump lands on", async () => {
     const user = userEvent.setup();
     // Force the reduced-motion branch so the jump is synchronous in jsdom.
-    window.matchMedia = vi.fn().mockReturnValue({ matches: true });
+    mockMatchMedia(true);
     const first = STORY_SECTIONS[0];
     const target = document.createElement("section");
     target.id = first.id;

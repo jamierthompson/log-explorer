@@ -5,6 +5,11 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { LogLine } from "@/demo";
 import { Experience } from "@/site/features/experience/experience";
 
+import {
+  createAppScrollViewport,
+  removeAppScrollViewports,
+} from "../../../../helpers/app-scroll-viewport";
+
 const lines: readonly LogLine[] = [
   {
     id: "1",
@@ -24,17 +29,13 @@ const lines: readonly LogLine[] = [
 
 afterEach(() => {
   window.history.replaceState(null, "", window.location.pathname);
-  document
-    .querySelectorAll("[data-app-scroll-viewport]")
-    .forEach((el) => el.remove());
+  removeAppScrollViewports();
 });
 
 describe("Experience", () => {
   it("opens the next act from the top of the page", async () => {
     const user = userEvent.setup();
-    const viewport = document.createElement("div");
-    viewport.setAttribute("data-app-scroll-viewport", "");
-    document.body.appendChild(viewport);
+    const viewport = createAppScrollViewport();
     render(<Experience lines={lines} />);
 
     // On narrow viewports the advance control sits below the stage, so

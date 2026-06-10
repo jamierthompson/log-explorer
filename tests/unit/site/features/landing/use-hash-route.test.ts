@@ -6,12 +6,15 @@ import {
   viewFromHash,
 } from "@/site/features/landing/use-hash-route";
 
+import {
+  createAppScrollViewport,
+  removeAppScrollViewports,
+} from "../../../../helpers/app-scroll-viewport";
+
 describe("useHashRoute", () => {
   afterEach(() => {
     window.history.replaceState(null, "", window.location.pathname);
-    document
-      .querySelectorAll("[data-app-scroll-viewport]")
-      .forEach((el) => el.remove());
+    removeAppScrollViewports();
   });
 
   it("titles the document for the hero on load", () => {
@@ -43,9 +46,7 @@ describe("useHashRoute", () => {
   });
 
   it("resets the app scroll viewport when navigating to a view", () => {
-    const viewport = document.createElement("div");
-    viewport.setAttribute("data-app-scroll-viewport", "");
-    document.body.appendChild(viewport);
+    const viewport = createAppScrollViewport();
     viewport.scrollTop = 480;
 
     const { result } = renderHook(() => useHashRoute());

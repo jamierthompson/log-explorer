@@ -2,6 +2,8 @@
 import "@testing-library/jest-dom/vitest";
 import { vi } from "vitest";
 
+import { createMatchMediaStub } from "./helpers/match-media";
+
 /*
  * Font-loader factories only exist under the framework's compiler, not a
  * plain test transform — and the demo's public barrel exports its font,
@@ -28,3 +30,10 @@ class ResizeObserverStub {
 
 window.scrollTo = () => {};
 Element.prototype.scrollIntoView = () => {};
+
+/*
+ * jsdom also lacks matchMedia. Default to "no media query matches" so
+ * preference-sensitive code takes its baseline path; tests that need a
+ * match override through a restorable spy rather than reassigning this.
+ */
+window.matchMedia = createMatchMediaStub(false);

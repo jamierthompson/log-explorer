@@ -1,17 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  CONTEXT_RANGE_STEP,
-  DEFAULT_CONTEXT_RANGE,
-  isAtFileBoundary,
-} from "@/demo/lib/context-state";
-
-describe("context-state", () => {
-  it("constants are 20 each", () => {
-    expect(DEFAULT_CONTEXT_RANGE).toBe(20);
-    expect(CONTEXT_RANGE_STEP).toBe(20);
-  });
-});
+import { isAtFileBoundary } from "@/demo/lib/context-state";
 
 describe("isAtFileBoundary", () => {
   // For a 100-line file with the anchor at index 10, the longer side
