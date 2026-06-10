@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
-import { SiteNav } from "@/site/features/site-nav/site-nav";
+import { SiteNav } from "@/site/shell/site-nav/site-nav";
 
 describe("SiteNav", () => {
   it("navigates to the view when its link is pressed", async () => {
