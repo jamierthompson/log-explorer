@@ -92,9 +92,7 @@ describe("Legend", () => {
     expect(screen.getByRole("button", { name: "Expand context" })).toBe(button);
   });
 
-  it("restarts the entry's animations in place when pulseKey bumps", () => {
-    const cancel = vi.fn();
-    const play = vi.fn();
+  it("restarts the pulse animation in place when pulseKey bumps", () => {
     const makeItems = (pulseKey: number): LegendItem[] => [
       {
         keys: ["Esc"],
@@ -106,16 +104,21 @@ describe("Legend", () => {
     ];
     const { rerender } = render(<Legend items={makeItems(0)} />);
     const button = screen.getByRole("button", { name: "Close context" });
-    (button as unknown as { getAnimations: () => unknown[] }).getAnimations =
-      () => [{ cancel, play }];
+    // The restart detaches the animation, forces a style flush via a
+    // layout read, and reattaches — the layout read is the observable
+    // seam in jsdom.
+    const flush = vi.fn(() => 0);
+    Object.defineProperty(button, "offsetWidth", { get: flush });
 
     rerender(<Legend items={makeItems(1)} />);
-    expect(cancel).toHaveBeenCalledOnce();
-    expect(play).toHaveBeenCalledOnce();
+    expect(flush).toHaveBeenCalledOnce();
+    // Reattached: the inline override is cleared so the stylesheet's
+    // animation applies fresh.
+    expect(button.style.animation).toBe("");
 
     // Same pulseKey, no replay.
     rerender(<Legend items={makeItems(1)} />);
-    expect(cancel).toHaveBeenCalledOnce();
+    expect(flush).toHaveBeenCalledOnce();
   });
 
   it("renders a question-mark entry like any other (no special label-only path)", () => {

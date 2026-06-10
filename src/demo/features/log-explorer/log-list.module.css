@@ -55,6 +55,12 @@
   outline-offset: -1px;
 }
 
+/* The container above carries the ring on the list's behalf; without
+ * this the browser draws its default ring around the list as well. */
+.list:focus-visible {
+  outline: none;
+}
+
 .list > li {
   border-left: var(--logx-space-1) solid transparent;
   padding-left: var(--logx-space-2);

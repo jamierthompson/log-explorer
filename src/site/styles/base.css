@@ -49,6 +49,16 @@ a {
 }
 
 /*
+ * Elements focused only by script — view containers, scroll targets,
+ * announcement headings — exist to place the reading position, not to
+ * be operated. They can't be reached with Tab, so the browser's
+ * default ring around them reads as a stray box, not an affordance.
+ */
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
+/*
  * Honor a reduced-motion preference everywhere: collapse animations and
  * transitions to effectively-instant and disable smooth scrolling.
  * Components may still add their own finer-grained handling on top.

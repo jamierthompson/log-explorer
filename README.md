@@ -54,9 +54,15 @@ pnpm test           # single run
 pnpm test:watch     # watch mode
 ```
 
-Coverage spans the listbox keyboard handler, the context-window state
-machine, the filter reducer and its retention rule, the derived-line
-visibility logic, and the UI primitives.
+Coverage spans both domains. On the component side: the listbox
+keyboard handler, the context-window state machine, the filter reducer
+and its retention rule, the derived-line visibility logic, and the UI
+primitives — plus invariants of the incident's mock data, pinned as
+tests so the narrative can't drift from what the logs show. On the
+site side: the guided two-act flow, including one integration test
+that drives the whole journey (filter, open contexts, call the root
+cause, miss, recover, replay to a fresh start), along with view
+routing, focus management, and the live-region announcements.
 
 ## License
 
