@@ -56,6 +56,9 @@
   --logx-space-3: 0.75rem;
   --logx-space-4: 1rem;
   --logx-space-5: 1.5rem;
+  /* Floor for coarse-pointer hit areas; consumers apply it only under
+   * touch media queries so compact pointer-driven sizing survives. */
+  --logx-tap-target: 44px;
   --logx-duration: 120ms;
   --logx-ease: cubic-bezier(0.32, 0.72, 0, 1);
   --logx-focus-ring-width: 1px;

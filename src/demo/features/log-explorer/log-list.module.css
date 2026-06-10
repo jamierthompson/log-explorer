@@ -91,7 +91,7 @@
  * target on touch; multi-line rows already exceed this. */
 @media (pointer: coarse) {
   .list > li[data-clickable="true"] {
-    min-height: 44px;
+    min-height: var(--logx-tap-target);
   }
 }
 

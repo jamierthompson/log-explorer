@@ -88,6 +88,6 @@
 @media (pointer: coarse) {
   .button[data-variant="primary"],
   .button[data-variant="ghost"] {
-    min-height: 44px;
+    min-height: var(--tap-target);
   }
 }
