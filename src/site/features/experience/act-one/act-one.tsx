@@ -181,7 +181,6 @@ export function ActOne({
                     tabIndex={-1}
                     aria-hidden="true"
                     className={styles.tabClose}
-                    aria-label={`Close the ${formatLogTime(tab.line.timestamp)} slice`}
                     onClick={() => closeTab(tab.id)}
                   >
                     <X size={12} aria-hidden="true" />

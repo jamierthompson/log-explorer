@@ -99,7 +99,11 @@ describe("ActOne", () => {
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     await user.click(screen.getByText("request timeout"));
 
-    const close = document.querySelector('button[aria-label^="Close the"]');
+    // Hidden from AT, so it has no accessible name to query by — select
+    // it as the control beside the slice trigger.
+    const close = document.querySelector(
+      '[role="tab"][aria-label^="Context slice"] + button',
+    );
     expect(close).toHaveAttribute("tabindex", "-1");
     expect(close).toHaveAttribute("aria-hidden", "true");
     // Pointer users can still close with it.
