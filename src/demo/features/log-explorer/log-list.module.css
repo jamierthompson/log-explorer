@@ -30,7 +30,7 @@
 .list {
   list-style: none;
   margin: 0;
-  padding: 0 var(--logx-space-4) var(--logx-space-4);
+  padding: 0 var(--logx-space-4) var(--logx-space-1);
 }
 
 .dayMarker {
