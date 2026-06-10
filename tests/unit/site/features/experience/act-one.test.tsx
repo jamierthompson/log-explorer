@@ -78,6 +78,51 @@ describe("ActOne", () => {
     expect(openStep).toHaveAttribute("data-done");
   });
 
+  it("reopening an already-open line reuses its tab", async () => {
+    const user = userEvent.setup();
+    render(<ActOne lines={lines} onAdvance={() => {}} />);
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    await user.click(screen.getByText("request timeout"));
+    expect(screen.getAllByRole("tab", { name: /context slice/i })).toHaveLength(
+      1,
+    );
+
+    await user.click(screen.getByRole("tab", { name: "Live tail" }));
+    await user.click(screen.getByText("request timeout"));
+
+    // No duplicate tab — the existing slice takes the stage again.
+    expect(screen.getAllByRole("tab", { name: /context slice/i })).toHaveLength(
+      1,
+    );
+    expect(screen.getByRole("tab", { name: /context slice/i })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+  });
+
+  it("returns to the live tail when the active slice closes", async () => {
+    const user = userEvent.setup();
+    render(<ActOne lines={lines} onAdvance={() => {}} />);
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    await user.click(screen.getByText("request timeout"));
+    expect(screen.getByRole("tab", { name: /context slice/i })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+
+    const close = document.querySelector(
+      '[role="tab"][aria-label^="Context slice"] + button',
+    );
+    await user.click(close as HTMLElement);
+
+    expect(screen.getByRole("tab", { name: "Live tail" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    // The filtered tail is back on stage, not an empty panel.
+    expect(screen.getByText("request timeout")).toBeVisible();
+  });
+
   it("closes the active slice tab with the Delete key", async () => {
     const user = userEvent.setup();
     render(<ActOne lines={lines} onAdvance={() => {}} />);
