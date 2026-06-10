@@ -49,6 +49,21 @@ describe("RootCauseDialog", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("describes the dialog from its visible prose in both states", async () => {
+    const user = userEvent.setup();
+    render(<RootCauseDialog open onOpenChange={vi.fn()} />);
+
+    expect(screen.getByRole("dialog")).toHaveAccessibleDescription(
+      /make the call/i,
+    );
+
+    await user.click(screen.getByRole("button", { name: /config reload/i }));
+    // The verdict names the picked cause — that's its description.
+    expect(screen.getByRole("dialog")).toHaveAccessibleDescription(
+      /config reload/i,
+    );
+  });
+
   it("focuses the verdict heading so the outcome is read aloud", async () => {
     const user = userEvent.setup();
     render(<RootCauseDialog open onOpenChange={vi.fn()} />);

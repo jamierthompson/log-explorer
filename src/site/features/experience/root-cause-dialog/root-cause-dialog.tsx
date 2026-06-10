@@ -85,7 +85,7 @@ export function RootCauseDialog({
     <Dialog.Root open={open} onOpenChange={handleOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className={styles.overlay} />
-        <Dialog.Content className={styles.content} aria-describedby={undefined}>
+        <Dialog.Content className={styles.content}>
           {picked ? (
             <div
               className={styles.result}
@@ -98,7 +98,9 @@ export function RootCauseDialog({
               >
                 {picked.correct ? "Root cause found" : "Keep looking"}
               </Dialog.Title>
-              <p className={styles.resultName}>{picked.name}</p>
+              <Dialog.Description className={styles.resultName}>
+                {picked.name}
+              </Dialog.Description>
               {picked.outcome.map((paragraph, i) => (
                 <p key={i} className={styles.lesson}>
                   {paragraph}
@@ -139,10 +141,10 @@ export function RootCauseDialog({
               <Dialog.Title className={styles.title}>
                 What was the root cause?
               </Dialog.Title>
-              <p className={styles.description}>
+              <Dialog.Description className={styles.description}>
                 You’ve followed the failing request through its context. Make
                 the call.
-              </p>
+              </Dialog.Description>
               <div className={styles.choices}>
                 {CAUSES.map((cause) => (
                   <button
