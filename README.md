@@ -1,8 +1,10 @@
 # Log Explorer
 
 A log explorer prototype for investigating an incident **without losing
-your place** — where the keyboard and the mouse are equally first-class,
-and the interface quietly surfaces the shortcuts that matter as you work.
+your place**. In most log viewers, every look at a line's context opens
+another tab — your filter doesn't come along, and a few clicks in you're
+holding the timeline together in your head. Here, context opens in
+place, under the filter you set, so the investigation never scatters.
 
 It's built around a small idea: the parts of an interface that usually
 get deprioritized — the keyboard surface, the acknowledgement that a
@@ -11,10 +13,11 @@ are the work, not the decoration.
 
 **Live case study:** _Coming soon._
 
-The deployed page is a case study — a live, interactive prototype
-embedded in a short write-up of the problem and the reasoning behind each decision.
-Start there; it carries the full story. This README is just how to run
-it locally.
+The deployed page is a guided case study: a checkout incident
+investigated live in the prototype, first the old way (a tab for every
+click), then in place — followed by the build story and the reasoning
+behind each decision. Start there; it carries the full story. This
+README is just how to run it locally.
 
 ## What it does
 
