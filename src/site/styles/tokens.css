@@ -26,6 +26,16 @@
   --font-weight-medium: 500;
   --line-height-base: 1.4;
 
+  /*
+   * Tracking: kicker is the one wide setting for small uppercase mono
+   * labels (one optical role, one value); label is the lighter setting
+   * for uppercase labels at body size; tight reins in serif display
+   * type, which reads loose at large sizes if left untracked.
+   */
+  --tracking-kicker: 0.14em;
+  --tracking-label: 0.08em;
+  --tracking-tight: -0.01em;
+
   --radius-1: 0.25rem;
 
   --shadow-1:

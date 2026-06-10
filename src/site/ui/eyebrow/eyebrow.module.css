@@ -4,13 +4,16 @@
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--tracking-label);
   color: var(--color-text-muted);
 }
 
 .eyebrow[data-variant="accent"] {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-regular);
+  /* Deliberately wider than the shared kicker tracking: this variant
+   * stages display-scale type below it, and at that pairing the extra
+   * air reads as composition, not as a drifted label. */
   letter-spacing: 0.22em;
   color: var(--color-text-accent);
 }

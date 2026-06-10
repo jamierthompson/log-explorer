@@ -59,7 +59,7 @@
   font-size: var(--text-prose-hero);
   font-weight: 500;
   line-height: var(--line-height-prose-tight);
-  letter-spacing: -0.01em;
+  letter-spacing: var(--tracking-tight);
   text-wrap: balance;
   font-variation-settings: "opsz" 40;
   font-feature-settings: "ss01";
@@ -96,7 +96,7 @@
   font-size: var(--text-prose-h2);
   font-weight: 600;
   line-height: var(--line-height-prose-tight);
-  letter-spacing: -0.01em;
+  letter-spacing: var(--tracking-tight);
   font-variation-settings: "opsz" 28;
   font-feature-settings: "ss01";
 }
@@ -178,7 +178,7 @@
   font-family: var(--font-mono);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  letter-spacing: 0.14em;
+  letter-spacing: var(--tracking-kicker);
   text-transform: uppercase;
   color: var(--brand-accent);
 }
