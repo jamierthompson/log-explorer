@@ -53,6 +53,10 @@ export function useHashRoute(): {
         : `#${next}`;
     window.history.pushState({ view: next }, "", url);
     window.dispatchEvent(new Event(LOCATION_EVENT));
+    // The page scrolls inside the app-level scroll viewport, not the
+    // window, so a new view must reset that scroller to land at its top.
+    const viewport = document.querySelector("[data-app-scroll-viewport]");
+    if (viewport) viewport.scrollTop = 0;
     window.scrollTo(0, 0);
   }, []);
 
