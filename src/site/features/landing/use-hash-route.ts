@@ -59,6 +59,12 @@ export function useHashRoute(): {
     // window, so a new view must reset that scroller to land at its top.
     scrollAppViewportToTop();
     window.scrollTo(0, 0);
+    // The control that triggered the switch can unmount with the old
+    // view, which would strand focus on the body; landing it on the main
+    // region keeps keyboard and screen-reader users at the top of the
+    // new view. Only here, on user-initiated navigation — the initial
+    // load must not grab focus.
+    document.getElementById("main-content")?.focus({ preventScroll: true });
   }, []);
 
   return { view, navigate };

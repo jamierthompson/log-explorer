@@ -38,6 +38,21 @@ describe("Landing", () => {
     expect(screen.getByText("What’s happening")).toBeVisible();
   });
 
+  it("moves focus to the main region when the visitor switches views", async () => {
+    const user = userEvent.setup();
+    render(<Landing lines={lines} />);
+
+    // The hero CTA unmounts with the hero, so without an explicit focus
+    // target the switch would strand keyboard focus on the body.
+    await user.click(screen.getByRole("button", { name: /open the logs/i }));
+    expect(screen.getByRole("main")).toHaveFocus();
+  });
+
+  it("does not steal focus on initial load", () => {
+    render(<Landing lines={lines} />);
+    expect(screen.getByRole("main")).not.toHaveFocus();
+  });
+
   it("preserves demo progress across a trip to the story and back", async () => {
     window.history.replaceState(null, "", "#demo");
     const user = userEvent.setup();
