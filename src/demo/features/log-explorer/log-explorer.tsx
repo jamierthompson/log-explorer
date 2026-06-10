@@ -84,20 +84,6 @@ export function LogExplorer({
     scenarios: SCENARIOS,
   });
 
-  /*
-   * When onViewContext is provided, the explorer delegates the context
-   * action to the host instead of opening context in place — letting the
-   * host present it its own way. Without it, the action toggles context
-   * in place as usual.
-   */
-  const handleViewContext = useCallback(
-    (lineId: string) => {
-      if (onViewContext) onViewContext(lineId);
-      else toggleContext(lineId);
-    },
-    [onViewContext, toggleContext],
-  );
-
   const derivedLines = useMemo(
     () => deriveLines(lines, filterState, openContexts),
     [lines, filterState, openContexts],
@@ -133,6 +119,31 @@ export function LogExplorer({
   const navigableLines = useMemo(
     () => visibleLines.filter((l) => !l.isDimmed),
     [visibleLines],
+  );
+
+  /*
+   * When onViewContext is provided, the explorer delegates the context
+   * action to the host instead of opening context in place — letting the
+   * host present it its own way. Delegation carries the same gate as
+   * pointer activation — a filter must be active and the line must
+   * currently match it — so every input path agrees on when the action
+   * is available. Without onViewContext, the action toggles context in
+   * place as usual; that path applies the matching rule internally.
+   */
+  const handleViewContext = useCallback(
+    (lineId: string) => {
+      if (!onViewContext) {
+        toggleContext(lineId);
+        return;
+      }
+      if (
+        hasAnyFilter(filterState) &&
+        navigableLines.some((l) => l.id === lineId)
+      ) {
+        onViewContext(lineId);
+      }
+    },
+    [onViewContext, toggleContext, filterState, navigableLines],
   );
 
   /*

@@ -367,6 +367,37 @@ describe("LogExplorer context delegation and Legend visibility", () => {
     expect(document.querySelector('[data-selected="true"]')).toBeNull();
   });
 
+  it("does not delegate the keyboard context action when no filter is active", async () => {
+    const user = userEvent.setup();
+    const onViewContext = vi.fn();
+    render(<LogExplorer lines={lines} onViewContext={onViewContext} />);
+
+    // Without a filter the line isn't clickable, so this only moves
+    // focus (to the line, and DOM focus to the listbox).
+    await user.click(screen.getByText("GET /api/users"));
+    expect(onViewContext).not.toHaveBeenCalled();
+
+    await user.keyboard("e");
+    await user.keyboard("{Enter}");
+    expect(onViewContext).not.toHaveBeenCalled();
+  });
+
+  it("delegates the keyboard context action once a matching filter is active", async () => {
+    const user = userEvent.setup();
+    const onViewContext = vi.fn();
+    render(<LogExplorer lines={lines} onViewContext={onViewContext} />);
+
+    await user.click(screen.getByRole("button", { name: /req=r4d8a2/i }));
+    // The click both focuses the matching line and delegates once;
+    // clear that call so the assertion isolates the keyboard path.
+    await user.click(screen.getByText("GET /api/users"));
+    onViewContext.mockClear();
+
+    await user.keyboard("e");
+    expect(onViewContext).toHaveBeenCalledTimes(1);
+    expect(onViewContext).toHaveBeenCalledWith("3");
+  });
+
   it("hides the Legend when showLegend is false but keeps the filter chips", () => {
     render(<LogExplorer lines={lines} showLegend={false} />);
 
