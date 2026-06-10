@@ -99,9 +99,8 @@
   --text-prose-base: 1.0625rem;
   --text-prose-lead: 1.1875rem;
   --text-prose-h2: 1.5rem;
-  --text-prose-hero: 2.5rem;
+  --text-prose-title: 2.5rem;
   --text-prose-pullquote: 1.875rem;
-  --text-prose-caption: var(--font-size-sm);
   --line-height-prose: 1.6;
   --line-height-prose-tight: 1.25;
   --prose-measure: 70ch;
@@ -159,8 +158,11 @@
     --text-prose-base: 1.1875rem;
     --text-prose-lead: 1.3125rem;
     --text-prose-h2: 1.75rem;
-    --text-prose-pullquote: 2.375rem;
-    --text-prose-hero: 2.9375rem;
+    /* The pull quote steps up less than its mobile ratio so the
+     * display hierarchy (h2 below pull quote below title) holds at
+     * every breakpoint instead of the quote crowding the title. */
+    --text-prose-pullquote: 2.25rem;
+    --text-prose-title: 2.9375rem;
   }
 }
 
