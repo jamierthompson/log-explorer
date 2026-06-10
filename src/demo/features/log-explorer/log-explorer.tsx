@@ -50,7 +50,7 @@ export function LogExplorer({
   showLegend?: boolean;
 }) {
   const [filterState, dispatch] = useReducer(filterReducer, initialFilter);
-  const [focusedLineId, setFocusedLineId] = useState<string | null>(null);
+  const [focusTargetId, setFocusTargetId] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const viewportRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -147,29 +147,31 @@ export function LogExplorer({
   );
 
   /*
-   * Keep keyboard focus on a navigable line. When a filter change drops
-   * the focused line from the navigable set, remap to the nearest
-   * remaining line by original position so j/k resumes in place rather
-   * than snapping to an end. Reconciled during render so it lands in the
-   * same commit as the change that removed the line.
+   * Keyboard focus must always land on a navigable line, yet the line
+   * the user last chose can drop out of the navigable set when a filter
+   * changes. State holds only that chosen id; the effective focus is
+   * derived from it — the chosen line itself while it's navigable,
+   * otherwise the nearest navigable line by original position. So j/k
+   * resumes in place rather than snapping to an end, and the chosen
+   * line takes focus back if a later change restores it.
    */
-  if (focusedLineId && !navigableLines.some((l) => l.id === focusedLineId)) {
-    if (navigableLines.length === 0) {
-      setFocusedLineId(null);
-    } else {
-      const target = linesIndexById.get(focusedLineId) ?? 0;
-      let nearestId = navigableLines[0].id;
-      let nearestDist = Infinity;
-      for (const l of navigableLines) {
-        const dist = Math.abs((linesIndexById.get(l.id) ?? 0) - target);
-        if (dist < nearestDist) {
-          nearestDist = dist;
-          nearestId = l.id;
-        }
-      }
-      setFocusedLineId(nearestId);
+  const focusedLineId = useMemo(() => {
+    if (!focusTargetId || navigableLines.length === 0) return null;
+    if (navigableLines.some((l) => l.id === focusTargetId)) {
+      return focusTargetId;
     }
-  }
+    const targetIdx = linesIndexById.get(focusTargetId) ?? 0;
+    let nearestId = navigableLines[0].id;
+    let nearestDist = Infinity;
+    for (const l of navigableLines) {
+      const dist = Math.abs((linesIndexById.get(l.id) ?? 0) - targetIdx);
+      if (dist < nearestDist) {
+        nearestDist = dist;
+        nearestId = l.id;
+      }
+    }
+    return nearestId;
+  }, [focusTargetId, navigableLines, linesIndexById]);
 
   /*
    * Anchor-cycling: from the focused anchor, move to the next or
@@ -185,7 +187,7 @@ export function LogExplorer({
       : -1;
     const nextIdx =
       currentIdx === -1 ? 0 : (currentIdx + 1) % openContexts.length;
-    setFocusedLineId(openContexts[nextIdx].selectedLineId);
+    setFocusTargetId(openContexts[nextIdx].selectedLineId);
   }, [openContexts, focusedLineId]);
 
   const navigatePrevAnchor = useCallback(() => {
@@ -197,13 +199,13 @@ export function LogExplorer({
       currentIdx === -1
         ? openContexts.length - 1
         : (currentIdx - 1 + openContexts.length) % openContexts.length;
-    setFocusedLineId(openContexts[prevIdx].selectedLineId);
+    setFocusTargetId(openContexts[prevIdx].selectedLineId);
   }, [openContexts, focusedLineId]);
 
   const handleKeyDown = useListboxKeyboard({
     lines: navigableLines,
     focusedLineId,
-    setFocusedLineId,
+    setFocusedLineId: setFocusTargetId,
     onToggleContext: handleViewContext,
     onExpandContext: expandMostRecentContext,
     onNextAnchor: navigateNextAnchor,
@@ -448,7 +450,7 @@ export function LogExplorer({
         selectedContextLineIds={selectedContextLineIds}
         hasAnyFilter={hasAnyFilter(filterState)}
         onKeyDown={handleKeyDown}
-        onLineFocus={setFocusedLineId}
+        onLineFocus={setFocusTargetId}
         onToggleContext={handleViewContext}
         viewportRef={viewportRef}
       />

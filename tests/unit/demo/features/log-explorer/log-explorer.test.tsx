@@ -353,6 +353,34 @@ describe("LogExplorer anchor cycling", () => {
   });
 });
 
+describe("LogExplorer focus retention across filter changes", () => {
+  function focusedLineId(): string | null {
+    const list = document.querySelector('[role="listbox"]');
+    return (
+      list?.getAttribute("aria-activedescendant")?.replace("line_", "") ?? null
+    );
+  }
+
+  it("remaps focus to the nearest navigable line and restores the chosen line when it returns", async () => {
+    const user = userEvent.setup();
+    render(<LogExplorer lines={lines} />);
+
+    await user.click(screen.getByText("Healthcheck OK"));
+    expect(focusedLineId()).toBe("1");
+
+    // The errors filter hides the chosen line; focus lands on the
+    // nearest line that remains navigable.
+    const errorsChip = screen.getByRole("button", { name: /errors only/i });
+    await user.click(errorsChip);
+    expect(focusedLineId()).toBe("2");
+
+    // Loosening the filter brings the chosen line back, and focus
+    // returns to it.
+    await user.click(errorsChip);
+    expect(focusedLineId()).toBe("1");
+  });
+});
+
 describe("LogExplorer context delegation and Legend visibility", () => {
   it("delegates to onViewContext instead of opening context in place", async () => {
     const user = userEvent.setup();
