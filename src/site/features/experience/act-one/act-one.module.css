@@ -32,8 +32,13 @@
 }
 
 .tabstrip {
+  /* The close control is the tallest thing a tab can hold, so it sets
+   * the box height every tab shares — the bare live-tail box matches
+   * the slice boxes whether or not any slices are open. */
+  --tab-control-size: 1.5rem;
+
   display: flex;
-  align-items: flex-end;
+  align-items: stretch;
   gap: var(--space-1);
 }
 
@@ -45,6 +50,7 @@
   align-items: center;
   flex: 0 0 auto;
   max-width: 12.5rem;
+  min-height: calc(var(--tab-control-size) + 2 * var(--space-2) + 1px);
   padding: var(--space-2) var(--space-3);
   overflow: hidden;
   font-family: var(--font-mono);
@@ -107,8 +113,8 @@
   display: inline-grid;
   place-items: center;
   flex: 0 0 auto;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: var(--tab-control-size);
+  height: var(--tab-control-size);
   margin-left: var(--space-1);
   color: var(--color-text-subtle);
   background: none;
