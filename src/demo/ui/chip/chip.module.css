@@ -76,6 +76,6 @@
  * compact pointer-driven sizing on desktop. */
 @media (pointer: coarse) {
   .chip {
-    min-height: 44px;
+    min-height: var(--logx-tap-target);
   }
 }

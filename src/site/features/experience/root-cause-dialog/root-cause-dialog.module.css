@@ -1,8 +1,8 @@
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: 60;
-  background: light-dark(oklch(0.4 0 0 / 0.4), oklch(0 0 0 / 0.66));
+  z-index: var(--z-overlay);
+  background: var(--overlay-scrim);
   backdrop-filter: blur(3px);
 }
 
@@ -10,7 +10,7 @@
   position: fixed;
   top: 50%;
   left: 50%;
-  z-index: 60;
+  z-index: var(--z-overlay);
   width: min(34rem, calc(100vw - 2 * var(--content-padding-x)));
   padding: var(--space-6);
   background: var(--surface-raised);
@@ -80,7 +80,7 @@
   margin: 0 0 var(--space-3);
   font-family: var(--font-mono);
   font-size: var(--font-size-sm);
-  letter-spacing: 0.14em;
+  letter-spacing: var(--tracking-kicker);
   text-transform: uppercase;
   color: var(--color-text-subtle);
 }

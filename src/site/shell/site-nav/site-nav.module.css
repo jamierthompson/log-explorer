@@ -1,7 +1,7 @@
 .nav {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: var(--z-nav);
   display: flex;
   height: var(--topnav-height);
   background: var(--surface-page);

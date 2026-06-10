@@ -23,7 +23,7 @@
   font-size: clamp(2.4rem, 5.4vw, 3.9rem);
   font-weight: var(--font-weight-regular);
   line-height: 1.07;
-  letter-spacing: -0.015em;
+  letter-spacing: var(--tracking-tight);
   text-wrap: balance;
 }
 
@@ -61,7 +61,7 @@
 .coverMeta em {
   font-style: normal;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
+  letter-spacing: var(--tracking-kicker);
   font-size: var(--font-size-sm);
   color: var(--color-text-subtle);
 }

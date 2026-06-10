@@ -15,7 +15,7 @@
 .kicker {
   font-family: var(--font-mono);
   font-size: var(--font-size-sm);
-  letter-spacing: 0.18em;
+  letter-spacing: var(--tracking-kicker);
   text-transform: uppercase;
   color: var(--color-text-subtle);
 }

@@ -26,6 +26,16 @@
   --font-weight-medium: 500;
   --line-height-base: 1.4;
 
+  /*
+   * Tracking: kicker is the one wide setting for small uppercase mono
+   * labels (one optical role, one value); label is the lighter setting
+   * for uppercase labels at body size; tight reins in serif display
+   * type, which reads loose at large sizes if left untracked.
+   */
+  --tracking-kicker: 0.14em;
+  --tracking-label: 0.08em;
+  --tracking-tight: -0.01em;
+
   --radius-1: 0.25rem;
 
   --shadow-1:
@@ -45,8 +55,23 @@
   --duration-fast: 120ms;
   --ease-standard: cubic-bezier(0.32, 0.72, 0, 1);
 
+  /*
+   * Stacking order, lowest to highest: sticky nav, then the embedded
+   * demo's own overlay (it must cover the nav when it opens), then the
+   * site's modal overlay (it must cover anything the demo can raise),
+   * then the skip link above everything. The demo layer's overlay slot
+   * is set in its own contract; the gaps here exist so it can sit
+   * between the nav and the site overlay.
+   */
+  --z-nav: 20;
+  --z-overlay: 60;
+  --z-skip-link: 100;
+
   /* Layout */
   --content-padding-x: 1rem;
+  /* Floor for coarse-pointer hit areas; consumers apply it only under
+   * touch media queries so compact pointer-driven sizing survives. */
+  --tap-target: 44px;
   /* Max width of every view's content column; the nav and all pages align
    * to it. */
   --page-max: 74rem;
@@ -65,14 +90,17 @@
   --color-raised: light-dark(oklch(1 0 0), oklch(0.21 0 0));
   --color-accent: light-dark(oklch(0.485 0.18 349.8), oklch(0.725 0.175 349.8));
   --color-error: light-dark(oklch(0.5 0.2 27), oklch(0.73 0.2 27));
+  /* Dims the page behind modal layers. Light mode uses a lifted gray
+   * at lower opacity so the page recedes without going murky; dark
+   * mode needs denser black for the same perceived separation. */
+  --overlay-scrim: light-dark(oklch(0.4 0 0 / 0.4), oklch(0 0 0 / 0.66));
 
   /* Prose scale — mobile-first; the breakpoints below step it up. */
   --text-prose-base: 1.0625rem;
   --text-prose-lead: 1.1875rem;
   --text-prose-h2: 1.5rem;
-  --text-prose-hero: 2.5rem;
+  --text-prose-title: 2.5rem;
   --text-prose-pullquote: 1.875rem;
-  --text-prose-caption: var(--font-size-sm);
   --line-height-prose: 1.6;
   --line-height-prose-tight: 1.25;
   --prose-measure: 70ch;
@@ -82,7 +110,15 @@
    * the demo's color, falling back to the default brand when none is set.
    */
   --brand-accent: var(--logx-accent, var(--color-accent));
-  --brand-accent-hover: oklch(from var(--brand-accent) l calc(c + 0.06) h);
+  /* Hover shifts lightness toward the scheme's opposite pole — darker
+   * on light surfaces, lighter on dark — so the change stays visible
+   * even when the accent is saturated enough that a chroma bump would
+   * clip at the sRGB gamut edge and vanish. Mirrors the demo contract's
+   * hover formula so the seam between the two layers doesn't show. */
+  --brand-accent-hover: light-dark(
+    oklch(from var(--brand-accent) calc(l - 0.06) c h),
+    oklch(from var(--brand-accent) calc(l + 0.06) c h)
+  );
 
   /* Semantic roles — components reference these, never the palette above. */
   --color-text: var(--color-fg);
@@ -122,8 +158,11 @@
     --text-prose-base: 1.1875rem;
     --text-prose-lead: 1.3125rem;
     --text-prose-h2: 1.75rem;
-    --text-prose-pullquote: 2.375rem;
-    --text-prose-hero: 2.9375rem;
+    /* The pull quote steps up less than its mobile ratio so the
+     * display hierarchy (h2 below pull quote below title) holds at
+     * every breakpoint instead of the quote crowding the title. */
+    --text-prose-pullquote: 2.25rem;
+    --text-prose-title: 2.9375rem;
   }
 }
 

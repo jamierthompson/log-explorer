@@ -81,7 +81,8 @@ button.entry:focus-visible {
  * comfortable tap target on touch devices. */
 @media (pointer: coarse) {
   button.entry {
-    min-height: 44px;
+    /* Fallback keeps the folder portable outside the demo's tokens. */
+    min-height: var(--logx-tap-target, 44px);
   }
 }
 

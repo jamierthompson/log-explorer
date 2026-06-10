@@ -10,6 +10,11 @@
   --logx-color-text-muted: light-dark(oklch(0.47 0 0), oklch(0.68 0 0));
   --logx-color-text-subtle: light-dark(oklch(0.53 0 0), oklch(0.6 0 0));
   --logx-surface: light-dark(oklch(1 0 0), oklch(0.145 0 0));
+  /* In light mode the default surface already sits at the top of the
+   * lightness range, so a raised plane can only differentiate by
+   * nudging darker. Hosts that dim their page background solve the
+   * same role by lifting raised surfaces instead — the near-miss with
+   * look-alike host palettes is deliberate, not drift. */
   --logx-surface-raised: light-dark(oklch(0.99 0 0), oklch(0.205 0 0));
   --logx-border: light-dark(oklch(0.92 0 0), oklch(0.285 0 0));
   --logx-border-soft: light-dark(oklch(0.95 0 0), oklch(0.235 0 0));
@@ -19,6 +24,11 @@
   --logx-font:
     var(--logx-font-family, ui-monospace), "SF Mono", Menlo, Consolas, monospace;
   --logx-radius: 0.25rem;
+  /* Stacking slot for the component's modal overlay. Public so a host
+   * can slot it into its own stacking order; the panel above the
+   * overlay derives its level from this, so overriding the one token
+   * moves the whole layer. */
+  --logx-z-overlay: 50;
   /* The left-lit wash that marks an anchor row. Public because a host
    * composing rows outside the explorer needs the same treatment for
    * its own anchors; it derives from the accent so a single accent
@@ -30,7 +40,14 @@
   );
 
   /* ── Internals — derived or fixed; not part of the stable API ── */
-  --logx-accent-hover: oklch(from var(--logx-accent) l calc(c + 0.06) h);
+  /* Hover shifts lightness toward the scheme's opposite pole — darker
+   * on light surfaces, lighter on dark — so the change stays visible
+   * even when the accent is saturated enough that a chroma bump would
+   * clip at the sRGB gamut edge and vanish. */
+  --logx-accent-hover: light-dark(
+    oklch(from var(--logx-accent) calc(l - 0.06) c h),
+    oklch(from var(--logx-accent) calc(l + 0.06) c h)
+  );
   /* Soft and dimmed shades derive from the accent so a single override
    * re-tints every accent-tinted surface with it. */
   --logx-accent-soft: oklch(from var(--logx-accent) l c h / 0.12);
@@ -42,6 +59,10 @@
     oklch(from var(--logx-color-text) l c h / 0.07),
     transparent 72%
   );
+  /* Dims the page behind the component's modal layer. Solid black at
+   * partial opacity reads correctly over both color schemes, so one
+   * value serves both without a scheme switch. */
+  --logx-overlay-scrim: oklch(0 0 0 / 0.55);
   --logx-font-size-sm: 0.6875rem;
   --logx-font-size-base: 0.8125rem;
   --logx-font-weight-medium: 500;
@@ -51,6 +72,9 @@
   --logx-space-3: 0.75rem;
   --logx-space-4: 1rem;
   --logx-space-5: 1.5rem;
+  /* Floor for coarse-pointer hit areas; consumers apply it only under
+   * touch media queries so compact pointer-driven sizing survives. */
+  --logx-tap-target: 44px;
   --logx-duration: 120ms;
   --logx-ease: cubic-bezier(0.32, 0.72, 0, 1);
   --logx-focus-ring-width: 1px;

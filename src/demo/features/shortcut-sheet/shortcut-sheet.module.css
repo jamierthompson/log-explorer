@@ -1,9 +1,9 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--logx-overlay-scrim);
   backdrop-filter: blur(2px);
-  z-index: 50;
+  z-index: var(--logx-z-overlay);
   /*
    * `backwards` makes the first paint match the keyframe's 0% state
    * instead of the element's final CSS state, avoiding a one-frame
@@ -21,7 +21,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 51;
+  z-index: calc(var(--logx-z-overlay) + 1);
 
   width: calc(100vw - 2rem);
   max-width: 32rem;
@@ -40,7 +40,7 @@
 
   --legend-keycap-font: var(--logx-font);
   --legend-keycap-size: 1.625rem;
-  --legend-keycap-font-size: 0.8125rem;
+  --legend-keycap-font-size: var(--logx-font-size-base);
 
   animation: content-in var(--logx-duration) var(--logx-ease) backwards;
 }
