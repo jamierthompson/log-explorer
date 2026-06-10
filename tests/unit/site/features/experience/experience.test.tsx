@@ -67,7 +67,7 @@ describe("Experience", () => {
     });
 
     // The checked step survived the round trip — Act 1 was never unmounted.
-    expect(screen.getByText("What's happening")).toBeVisible();
+    expect(screen.getByText("What’s happening")).toBeVisible();
     expect(filterStep.closest("li")).toHaveAttribute("data-done");
   });
 });

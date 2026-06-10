@@ -22,7 +22,7 @@ const CAUSES: readonly Cause[] = [
     name: "The database is down",
     detail: "Postgres fell over and every instance is failing.",
     outcome: [
-      "Worth another look — @m7w3p and @t2x8r kept serving 200s through the whole incident, and checkout itself succeeded on @m7w3p at 13:31:55. A database that was truly down wouldn't spare two of three instances.",
+      "Worth another look — @m7w3p and @t2x8r kept serving 200s through the whole incident, and checkout itself succeeded on @m7w3p at 13:31:55. A database that was truly down wouldn’t spare two of three instances.",
     ],
   },
   {
@@ -30,12 +30,12 @@ const CAUSES: readonly Cause[] = [
     name: "A malformed checkout payload",
     detail: "Bad client input crashed the request.",
     outcome: [
-      "Follow the trace once more: the request was accepted, then sat waiting on a database connection until it timed out — it never even reached validation. And the same instance failed an unrelated add-to-cart the same way; bad input doesn't spread between requests.",
+      "Follow the trace once more: the request was accepted, then sat waiting on a database connection until it timed out — it never even reached validation. And the same instance failed an unrelated add-to-cart the same way; bad input doesn’t spread between requests.",
     ],
   },
   {
     id: "pool",
-    name: "A config reload shrank @kc4qn's DB pool",
+    name: "A config reload shrank @kc4qn’s DB pool",
     detail: "db.pool.max dropped 20 → 5, starving connections.",
     correct: true,
     outcome: [
@@ -125,8 +125,8 @@ export function RootCauseDialog({
                 What was the root cause?
               </Dialog.Title>
               <p className={styles.description}>
-                You&rsquo;ve followed the failing request through its context.
-                Make the call.
+                You’ve followed the failing request through its context. Make
+                the call.
               </p>
               <div className={styles.choices}>
                 {CAUSES.map((cause) => (

@@ -32,10 +32,10 @@ describe("Landing", () => {
     render(<Landing lines={lines} />);
 
     // Act 1's guide is in the document from first load, just concealed.
-    expect(screen.getByText("What's happening")).not.toBeVisible();
+    expect(screen.getByText("What’s happening")).not.toBeVisible();
 
     await user.click(screen.getByRole("button", { name: /open the logs/i }));
-    expect(screen.getByText("What's happening")).toBeVisible();
+    expect(screen.getByText("What’s happening")).toBeVisible();
   });
 
   it("preserves demo progress across a trip to the story and back", async () => {

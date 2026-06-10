@@ -78,7 +78,7 @@ export function ActTwo({
     {
       id: "triage",
       title: "Triage the symptom",
-      description: "Filter to errors to see what's actually failing.",
+      description: "Filter to errors to see what’s actually failing.",
       done: progress.triaged,
     },
     {

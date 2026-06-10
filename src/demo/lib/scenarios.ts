@@ -11,7 +11,7 @@ export const SCENARIOS = [
   {
     id: "errors",
     label: "Errors only",
-    hint: "Start with what's broken",
+    hint: "Start with what’s broken",
     scenario: { instances: [], requestIds: [], levels: ["ERROR"] },
   },
   {
