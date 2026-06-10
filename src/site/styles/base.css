@@ -1,3 +1,8 @@
+/*
+ * The site's document-level base: global reset, scroll architecture,
+ * and reduced-motion policy. The app entry imports this after the
+ * tokens so the rules below can read them.
+ */
 *,
 *::before,
 *::after {

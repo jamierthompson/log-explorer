@@ -3,8 +3,8 @@ import { JetBrains_Mono, Newsreader } from "next/font/google";
 
 import { demoFont } from "@/demo";
 import "@/site/styles/tokens.css";
-import "./globals.css";
-import styles from "./layout.module.css";
+import "@/site/styles/base.css";
+import { SkipLink } from "@/site/shell/skip-link/skip-link";
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -54,9 +54,7 @@ export default function RootLayout({
       className={`${jetbrainsMono.variable} ${newsreader.variable} ${demoFont.variable}`}
     >
       <body>
-        <a href="#main-content" className={styles.skipLink}>
-          Skip to main content
-        </a>
+        <SkipLink />
         {children}
       </body>
     </html>
