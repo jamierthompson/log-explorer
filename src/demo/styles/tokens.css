@@ -26,6 +26,18 @@
    * re-tints every accent-tinted surface with it. */
   --logx-accent-soft: oklch(from var(--logx-accent) l c h / 0.12);
   --logx-accent-dim: oklch(from var(--logx-accent) l c h / 0.85);
+  /* Row washes share one left-lit geometry: accent marks an anchor,
+   * neutral marks provisional attention (the keyboard cursor, hover). */
+  --logx-wash-accent: linear-gradient(
+    90deg,
+    var(--logx-accent-soft),
+    transparent 72%
+  );
+  --logx-wash-neutral: linear-gradient(
+    90deg,
+    oklch(from var(--logx-color-text) l c h / 0.07),
+    transparent 72%
+  );
   --logx-font-size-sm: 0.6875rem;
   --logx-font-size-base: 0.8125rem;
   --logx-font-weight-medium: 500;

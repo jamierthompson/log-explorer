@@ -60,23 +60,31 @@
   padding-left: var(--logx-space-2);
 }
 
-.list > li[data-selected="true"] {
-  border-left-color: var(--logx-accent);
-  /* The wash fades before the row's end so the anchor reads as lit
-   * from its accent edge rather than as a solid selection bar. */
-  background: linear-gradient(90deg, var(--logx-accent-soft), transparent 72%);
-}
-
+/* Row-state grammar: every state is lit from the row's left edge and
+ * fades before the row's end. Neutral marks provisional attention —
+ * the keyboard cursor and hover — while the accent marks an anchor. */
 .list > li[data-focused="true"] {
-  background: color-mix(in oklch, var(--logx-color-text-muted) 8%, transparent);
-}
-
-.list > li[data-dimmed="true"] {
-  opacity: 0.4;
+  background: var(--logx-wash-neutral);
 }
 
 .list > li[data-clickable="true"] {
   cursor: pointer;
+}
+
+.list > li[data-clickable="true"]:not([data-selected="true"]):hover {
+  background: var(--logx-wash-neutral);
+}
+
+/* Declared after the neutral washes so an anchor always shows the pure
+ * accent wash, focused or hovered or not — its accent edge carries the
+ * cue, and the cursor's own wash reappears one keypress away. */
+.list > li[data-selected="true"] {
+  border-left-color: var(--logx-accent);
+  background: var(--logx-wash-accent);
+}
+
+.list > li[data-dimmed="true"] {
+  opacity: 0.4;
 }
 
 /* Ensure a single-line clickable row still meets a comfortable tap
