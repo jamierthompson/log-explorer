@@ -85,6 +85,12 @@
   scroll-margin-top: calc(var(--topnav-height) + var(--space-4));
 }
 
+.sectionHead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
 .heading {
   margin: 0;
   font-size: var(--text-prose-h2);
@@ -148,88 +154,39 @@
   margin: 0;
 }
 
-/*
- * --figure-aspect is overridden here because the halves share the
- * column horizontally on tablet+; 4/3 keeps each one visually
- * substantial against neighboring text and figures.
- */
-.figurePair {
-  --figure-aspect: 4 / 3;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-@media (--tablet) {
-  .figurePair {
-    flex-direction: row;
-  }
-
-  .figurePair > * {
-    flex: 1;
-    min-width: 0;
-  }
-}
-
-/* === TWO-COLUMN BLOCKS === */
-
-/*
- * The mirrored variant reverses visual order via flex-direction;
- * DOM order stays text-then-figure for screen-reader reading order.
- */
-.twoColumn,
-.twoColumnMirrored {
-  --figure-aspect: 4 / 3;
+.storyCta {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-}
-
-.twoColumnText {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-}
-
-.twoColumnText p {
-  margin: 0;
-  font-size: var(--text-prose-base);
-  line-height: var(--line-height-prose);
-  font-variation-settings: "opsz" 17;
-  font-feature-settings: "ss01";
-  --legend-keycap-size: 1.375rem;
-  --legend-keycap-font-size: 0.8125rem;
-}
-
-.twoColumnText strong {
-  font-style: italic;
-  font-weight: inherit;
-}
-
-.twoColumnText code {
-  font-family: var(--font-mono);
-  font-size: 0.85em;
+  padding: var(--space-5);
+  background: var(--surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-1);
 }
 
 @media (--tablet) {
-  .twoColumn,
-  .twoColumnMirrored {
+  .storyCta {
     flex-direction: row;
     align-items: center;
-    gap: var(--space-5);
-  }
-
-  .twoColumnMirrored {
-    flex-direction: row-reverse;
-  }
-
-  .twoColumn > *,
-  .twoColumnMirrored > * {
-    flex: 1;
-    min-width: 0;
+    justify-content: space-between;
+    gap: var(--space-6);
   }
 }
 
-.storyCta {
-  display: flex;
+.ctaKicker {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-accent);
+}
+
+.ctaText {
+  margin: 0;
+  font-size: var(--text-prose-base);
+  line-height: var(--line-height-prose);
+  color: var(--color-text-muted);
+  font-variation-settings: "opsz" 17;
 }
