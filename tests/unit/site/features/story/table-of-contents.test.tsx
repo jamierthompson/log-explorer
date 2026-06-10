@@ -1,0 +1,35 @@
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+
+import { TableOfContents } from "@/site/features/story/table-of-contents";
+import { STORY_SECTIONS } from "@/site/features/story/story-sections";
+
+describe("TableOfContents", () => {
+  it("lists every story section", () => {
+    render(<TableOfContents />);
+    for (const section of STORY_SECTIONS) {
+      expect(
+        screen.getByRole("button", { name: section.label }),
+      ).toBeInTheDocument();
+    }
+  });
+
+  it("marks a clicked entry as the current section", async () => {
+    const user = userEvent.setup();
+    window.matchMedia = vi.fn().mockReturnValue({ matches: true });
+    const first = STORY_SECTIONS[0];
+    const target = document.createElement("section");
+    target.id = first.id;
+    document.body.appendChild(target);
+    render(<TableOfContents />);
+
+    const entry = screen.getByRole("button", { name: first.label });
+    expect(entry).not.toHaveAttribute("aria-current");
+
+    await user.click(entry);
+    expect(entry).toHaveAttribute("aria-current", "true");
+
+    target.remove();
+  });
+});
