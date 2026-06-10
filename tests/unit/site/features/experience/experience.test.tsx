@@ -24,9 +24,28 @@ const lines: readonly LogLine[] = [
 
 afterEach(() => {
   window.history.replaceState(null, "", window.location.pathname);
+  document
+    .querySelectorAll("[data-app-scroll-viewport]")
+    .forEach((el) => el.remove());
 });
 
 describe("Experience", () => {
+  it("opens the next act from the top of the page", async () => {
+    const user = userEvent.setup();
+    const viewport = document.createElement("div");
+    viewport.setAttribute("data-app-scroll-viewport", "");
+    document.body.appendChild(viewport);
+    render(<Experience lines={lines} />);
+
+    // On narrow viewports the advance control sits below the stage, so
+    // the visitor has scrolled down by the time they click it.
+    viewport.scrollTop = 600;
+    await user.click(screen.getByRole("button", { name: /better way/i }));
+
+    expect(screen.getByText("The Method")).toBeVisible();
+    expect(viewport.scrollTop).toBe(0);
+  });
+
   it("preserves an act's state when the visitor navigates away and back", async () => {
     const user = userEvent.setup();
     render(<Experience lines={lines} />);

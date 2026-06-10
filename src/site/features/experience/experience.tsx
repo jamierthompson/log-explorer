@@ -1,8 +1,10 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 
 import { type LogLine } from "@/demo";
+
+import { scrollAppViewportToTop } from "@/site/ui/scroll-area/app-scroll";
 
 import { ActOne } from "./act-one/act-one";
 import { ActTwo } from "./act-two/act-two";
@@ -30,6 +32,16 @@ export function Experience({
 }) {
   const { act, advance, reset } = useActs();
   const [runId, setRunId] = useState(0);
+
+  /*
+   * Each act enters from its top. On narrow viewports the advance and
+   * replay controls sit below the stage, so without this the next act
+   * would open scrolled to wherever the button was. Before paint, so
+   * the old position never flashes.
+   */
+  useLayoutEffect(() => {
+    scrollAppViewportToTop();
+  }, [act]);
 
   const replay = useCallback(() => {
     setRunId((n) => n + 1);

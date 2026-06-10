@@ -2,11 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import styles from "./scroll-to-top.module.css";
+import { getAppScrollViewport } from "@/site/ui/scroll-area/app-scroll";
 
-function appScroller(): Element | null {
-  return document.querySelector("[data-app-scroll-viewport]");
-}
+import styles from "./scroll-to-top.module.css";
 
 /**
  * Floating control that returns the reader to the top of the page.
@@ -22,7 +20,7 @@ export function ScrollToTop() {
   const [overlapsFooter, setOverlapsFooter] = useState(false);
 
   useEffect(() => {
-    const scroller = appScroller();
+    const scroller = getAppScrollViewport();
     if (!scroller) return;
     const update = () =>
       setPastTop(scroller.scrollTop > window.innerHeight * 0.75);
@@ -32,7 +30,7 @@ export function ScrollToTop() {
   }, []);
 
   useEffect(() => {
-    const scroller = appScroller();
+    const scroller = getAppScrollViewport();
     const button = buttonRef.current;
     const footer = document.querySelector("footer");
     if (!scroller || !button || !footer) return;
@@ -70,7 +68,7 @@ export function ScrollToTop() {
     const reduce = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    (appScroller() ?? window).scrollTo({
+    (getAppScrollViewport() ?? window).scrollTo({
       top: 0,
       behavior: reduce ? "auto" : "smooth",
     });
