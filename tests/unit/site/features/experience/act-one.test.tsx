@@ -42,6 +42,11 @@ describe("ActOne", () => {
     expect(screen.getByText(/slice of the live tail/i)).toBeInTheDocument();
     // Nothing expanded in place.
     expect(document.querySelector('[data-selected="true"]')).toBeNull();
+    // The line the slice centers on is conveyed to AT, not just by color.
+    expect(document.querySelector("[data-anchor]")).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
   });
 
   it("keeps the live tail filtered when the visitor returns to it", async () => {
@@ -69,6 +74,43 @@ describe("ActOne", () => {
 
     await user.click(screen.getByText("request timeout"));
     expect(openStep.closest("li")).toHaveAttribute("data-done");
+  });
+
+  it("closes the active slice tab with the Delete key", async () => {
+    const user = userEvent.setup();
+    render(<ActOne lines={lines} onAdvance={() => {}} />);
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    await user.click(screen.getByText("request timeout"));
+
+    const slice = screen.getByRole("tab", { name: /context slice/i });
+    slice.focus();
+    await user.keyboard("{Delete}");
+
+    expect(
+      screen.queryByRole("tab", { name: /context slice/i }),
+    ).not.toBeInTheDocument();
+    // Focus lands on the tab that takes over, not the body.
+    expect(screen.getByRole("tab", { name: "Live tail" })).toHaveFocus();
+  });
+
+  it("keeps the close affordance out of the tab order and the accessibility tree", async () => {
+    const user = userEvent.setup();
+    render(<ActOne lines={lines} onAdvance={() => {}} />);
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    await user.click(screen.getByText("request timeout"));
+
+    // Hidden from AT, so it has no accessible name to query by — select
+    // it as the control beside the slice trigger.
+    const close = document.querySelector(
+      '[role="tab"][aria-label^="Context slice"] + button',
+    );
+    expect(close).toHaveAttribute("tabindex", "-1");
+    expect(close).toHaveAttribute("aria-hidden", "true");
+    // Pointer users can still close with it.
+    await user.click(close as HTMLElement);
+    expect(
+      screen.queryByRole("tab", { name: /context slice/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("advances to Act 2 via an always-available 'There's a better way'", async () => {

@@ -14,6 +14,34 @@ describe("useHashRoute", () => {
       .forEach((el) => el.remove());
   });
 
+  it("titles the document for the hero on load", () => {
+    renderHook(() => useHashRoute());
+    expect(document.title).toBe(
+      "Log Explorer — an incident, investigated in place",
+    );
+  });
+
+  it("titles the document for the demo view", () => {
+    const { result } = renderHook(() => useHashRoute());
+    act(() => result.current.navigate("demo"));
+    expect(document.title).toBe("Demo — Log Explorer");
+  });
+
+  it("titles the document for the story view", () => {
+    const { result } = renderHook(() => useHashRoute());
+    act(() => result.current.navigate("story"));
+    expect(document.title).toBe("Story — Log Explorer");
+  });
+
+  it("restores the base title when returning to the hero", () => {
+    window.history.replaceState(null, "", "#story");
+    const { result } = renderHook(() => useHashRoute());
+    act(() => result.current.navigate("hero"));
+    expect(document.title).toBe(
+      "Log Explorer — an incident, investigated in place",
+    );
+  });
+
   it("resets the app scroll viewport when navigating to a view", () => {
     const viewport = document.createElement("div");
     viewport.setAttribute("data-app-scroll-viewport", "");

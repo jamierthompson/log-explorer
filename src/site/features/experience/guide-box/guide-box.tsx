@@ -1,5 +1,7 @@
+"use client";
+
 import { Circle, CircleCheck } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 import { Button } from "@/site/ui/button/button";
 
@@ -21,18 +23,40 @@ export type GuideAction = {
  * The act's side guide — a titled checklist whose items fill with the
  * accent as they complete, with an optional closing action and an
  * optional footer line beneath it for state-reactive narration.
+ * Completions are reported through onAnnounce so a live region elsewhere
+ * can voice them.
  */
 export function GuideBox({
   title,
   items,
   action,
   foot,
+  onAnnounce,
 }: {
   title: string;
   items: readonly GuideItem[];
   action?: GuideAction;
   foot?: ReactNode;
+  onAnnounce?: (message: string) => void;
 }) {
+  /*
+   * Announce only done-state transitions: the first render is a
+   * baseline, so steps that mount already-done stay silent instead of
+   * replaying their completion on every remount.
+   */
+  const prevDone = useRef<ReadonlyMap<string, boolean> | null>(null);
+  useEffect(() => {
+    const done = new Map(items.map((item) => [item.id, Boolean(item.done)]));
+    const prev = prevDone.current;
+    prevDone.current = done;
+    if (!prev || !onAnnounce) return;
+    for (const item of items) {
+      if (item.done && prev.get(item.id) === false) {
+        onAnnounce(`Step done: ${item.title}`);
+      }
+    }
+  }, [items, onAnnounce]);
+
   return (
     <aside className={styles.guide} aria-label={title}>
       <p className={styles.title}>{title}</p>

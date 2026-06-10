@@ -23,6 +23,11 @@ export function ShortcutSheet({
       <Dialog.Portal>
         <Dialog.Overlay className={styles.overlay} />
         <Dialog.Content className={styles.content} data-logx-surface>
+          {/* Esc still works; this gives pointer and AT users a visible,
+           * labeled way out. */}
+          <Dialog.Close className={styles.close} aria-label="Close">
+            <span aria-hidden="true">✕</span>
+          </Dialog.Close>
           <Dialog.Title className={styles.title}>
             Keyboard Shortcuts
           </Dialog.Title>

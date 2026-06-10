@@ -24,7 +24,7 @@ export function Landing({ lines }: { lines: readonly LogLine[] }) {
   return (
     <>
       <SiteNav view={view} onNavigate={navigate} />
-      <ScrollArea isPageScroll>
+      <ScrollArea isPageScroll focusLabel="Page content">
         <main id="main-content" tabIndex={-1} className={styles.main}>
           {/* The experience stays mounted across view switches, hidden
            * when another view is up, so leaving for the story (or hero)

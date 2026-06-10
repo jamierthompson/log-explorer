@@ -27,4 +27,24 @@ describe("Footer", () => {
       expect.objectContaining({ top: 0, behavior: "smooth" }),
     );
   });
+
+  it("moves focus to the main region along with the scroll", async () => {
+    const user = userEvent.setup();
+    window.matchMedia = vi.fn().mockReturnValue({ matches: true });
+    const viewport = document.createElement("div");
+    viewport.setAttribute("data-app-scroll-viewport", "");
+    (viewport as unknown as { scrollTo: () => void }).scrollTo = vi.fn();
+    document.body.appendChild(viewport);
+    const main = document.createElement("main");
+    main.id = "main-content";
+    main.tabIndex = -1;
+    document.body.appendChild(main);
+    render(<Footer />);
+
+    await user.click(screen.getByRole("button", { name: /back to the top/i }));
+
+    // The next Tab should continue from the top, not from the footer.
+    expect(main).toHaveFocus();
+    main.remove();
+  });
 });

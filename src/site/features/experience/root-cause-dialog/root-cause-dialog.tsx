@@ -1,7 +1,7 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { Button } from "@/site/ui/button/button";
 
@@ -64,6 +64,17 @@ export function RootCauseDialog({
 }) {
   const [picked, setPicked] = useState<Cause | null>(null);
 
+  /*
+   * When the verdict swaps in, focus its heading so assistive tech
+   * reads the outcome. A live region outside wouldn't work here — the
+   * modal hides everything outside the dialog from the accessibility
+   * tree while it's open.
+   */
+  const verdictRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (picked) verdictRef.current?.focus();
+  }, [picked]);
+
   // Clear the verdict on close so the next call starts fresh.
   const handleOpenChange = (next: boolean) => {
     if (!next) setPicked(null);
@@ -74,16 +85,22 @@ export function RootCauseDialog({
     <Dialog.Root open={open} onOpenChange={handleOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className={styles.overlay} />
-        <Dialog.Content className={styles.content} aria-describedby={undefined}>
+        <Dialog.Content className={styles.content}>
           {picked ? (
             <div
               className={styles.result}
               data-correct={picked.correct || undefined}
             >
-              <Dialog.Title className={styles.eyebrow}>
+              <Dialog.Title
+                ref={verdictRef}
+                tabIndex={-1}
+                className={styles.eyebrow}
+              >
                 {picked.correct ? "Root cause found" : "Keep looking"}
               </Dialog.Title>
-              <p className={styles.resultName}>{picked.name}</p>
+              <Dialog.Description className={styles.resultName}>
+                {picked.name}
+              </Dialog.Description>
               {picked.outcome.map((paragraph, i) => (
                 <p key={i} className={styles.lesson}>
                   {paragraph}
@@ -124,10 +141,10 @@ export function RootCauseDialog({
               <Dialog.Title className={styles.title}>
                 What was the root cause?
               </Dialog.Title>
-              <p className={styles.description}>
+              <Dialog.Description className={styles.description}>
                 You’ve followed the failing request through its context. Make
                 the call.
-              </p>
+              </Dialog.Description>
               <div className={styles.choices}>
                 {CAUSES.map((cause) => (
                   <button

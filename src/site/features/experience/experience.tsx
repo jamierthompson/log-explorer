@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useLayoutEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 import { type LogLine } from "@/demo";
 
@@ -32,6 +38,8 @@ export function Experience({
 }) {
   const { act, advance, reset } = useActs();
   const [runId, setRunId] = useState(0);
+  const act1Ref = useRef<HTMLDivElement>(null);
+  const act2Ref = useRef<HTMLDivElement>(null);
 
   /*
    * Each act enters from its top. On narrow viewports the advance and
@@ -43,22 +51,72 @@ export function Experience({
     scrollAppViewportToTop();
   }, [act]);
 
+  /*
+   * An act transition hides the container holding the focused control,
+   * and replay remounts both acts — either way focus would drop to the
+   * body. Land it on the entering act's container instead. A passive
+   * effect, because the dialog primitive restores focus in its own
+   * passive cleanup when replay unmounts it; cleanups run first, so
+   * this focus wins. Skipping the first run keeps the initial page
+   * load from grabbing focus.
+   */
+  const isFirstRun = useRef(true);
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
+    const entering = act === "act1" ? act1Ref.current : act2Ref.current;
+    entering?.focus({ preventScroll: true });
+  }, [act, runId]);
+
+  /*
+   * The experience's one polite live region. Guide steps and the
+   * root-cause verdict funnel their announcements here; last write wins,
+   * which is enough for a checklist that completes one step at a time.
+   */
+  const [announcement, setAnnouncement] = useState("");
+  const announce = useCallback((message: string) => {
+    setAnnouncement(message);
+  }, []);
+
   const replay = useCallback(() => {
     setRunId((n) => n + 1);
     reset();
+    // A fresh run starts silent; a stale "Root cause found" would lie.
+    setAnnouncement("");
   }, [reset]);
 
   return (
     <div className={styles.experience}>
-      <div className={styles.act} hidden={act !== "act1"}>
-        <ActOne key={runId} lines={lines} onAdvance={advance} />
+      <div role="status" className={styles.srOnly}>
+        {announcement}
       </div>
-      <div className={styles.act} hidden={act !== "act2"}>
+      <div
+        ref={act1Ref}
+        tabIndex={-1}
+        className={styles.act}
+        hidden={act !== "act1"}
+      >
+        <ActOne
+          key={runId}
+          lines={lines}
+          onAdvance={advance}
+          onAnnounce={announce}
+        />
+      </div>
+      <div
+        ref={act2Ref}
+        tabIndex={-1}
+        className={styles.act}
+        hidden={act !== "act2"}
+      >
         <ActTwo
           key={runId}
           lines={lines}
           onReplay={replay}
           onReadStory={onReadStory}
+          onAnnounce={announce}
         />
       </div>
     </div>
