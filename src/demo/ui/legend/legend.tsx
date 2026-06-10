@@ -46,19 +46,24 @@ function LegendEntry({ item }: { item: LegendItem }) {
   };
 
   /*
-   * Replay the entry's pulse by restarting its animations in place.
-   * Keying the element on pulseKey would remount it instead, tearing a
-   * clickable entry out from under keyboard focus mid-activation.
-   * Guarded because not every environment implements getAnimations.
+   * Replay the entry's pulse by detaching its animation, flushing
+   * styles, and reattaching — a CSS animation only runs again when it
+   * is newly applied, and once finished it is no longer reachable
+   * through the animations API to restart. Keying the element on
+   * pulseKey would remount it instead, tearing a clickable entry out
+   * from under keyboard focus mid-activation.
    */
   const prevPulse = useRef(item.pulseKey);
   useEffect(() => {
     if (item.pulseKey === prevPulse.current) return;
     prevPulse.current = item.pulseKey;
-    elementRef.current?.getAnimations?.().forEach((animation) => {
-      animation.cancel();
-      animation.play();
-    });
+    const element = elementRef.current;
+    if (!element) return;
+    element.style.animation = "none";
+    // Reading layout forces the detached state to commit before the
+    // reattach below; without it the two writes coalesce into a no-op.
+    void element.offsetWidth;
+    element.style.animation = "";
   }, [item.pulseKey]);
 
   const content = (
