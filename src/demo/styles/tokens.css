@@ -35,7 +35,14 @@
   );
 
   /* ── Internals — derived or fixed; not part of the stable API ── */
-  --logx-accent-hover: oklch(from var(--logx-accent) l calc(c + 0.06) h);
+  /* Hover shifts lightness toward the scheme's opposite pole — darker
+   * on light surfaces, lighter on dark — so the change stays visible
+   * even when the accent is saturated enough that a chroma bump would
+   * clip at the sRGB gamut edge and vanish. */
+  --logx-accent-hover: light-dark(
+    oklch(from var(--logx-accent) calc(l - 0.06) c h),
+    oklch(from var(--logx-accent) calc(l + 0.06) c h)
+  );
   /* Soft and dimmed shades derive from the accent so a single override
    * re-tints every accent-tinted surface with it. */
   --logx-accent-soft: oklch(from var(--logx-accent) l c h / 0.12);

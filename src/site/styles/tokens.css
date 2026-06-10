@@ -111,7 +111,15 @@
    * the demo's color, falling back to the default brand when none is set.
    */
   --brand-accent: var(--logx-accent, var(--color-accent));
-  --brand-accent-hover: oklch(from var(--brand-accent) l calc(c + 0.06) h);
+  /* Hover shifts lightness toward the scheme's opposite pole — darker
+   * on light surfaces, lighter on dark — so the change stays visible
+   * even when the accent is saturated enough that a chroma bump would
+   * clip at the sRGB gamut edge and vanish. Mirrors the demo contract's
+   * hover formula so the seam between the two layers doesn't show. */
+  --brand-accent-hover: light-dark(
+    oklch(from var(--brand-accent) calc(l - 0.06) c h),
+    oklch(from var(--brand-accent) calc(l + 0.06) c h)
+  );
 
   /* Semantic roles — components reference these, never the palette above. */
   --color-text: var(--color-fg);
