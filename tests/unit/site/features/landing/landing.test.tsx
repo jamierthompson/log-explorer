@@ -53,6 +53,25 @@ describe("Landing", () => {
     expect(screen.getByRole("main")).not.toHaveFocus();
   });
 
+  it("reopens the demo at Act 1 when the story call to action is used", async () => {
+    window.history.replaceState(null, "", "#demo");
+    const user = userEvent.setup();
+    render(<Landing lines={lines} />);
+
+    await user.click(screen.getByRole("button", { name: /better way/i }));
+    expect(screen.getByText("The Method")).toBeVisible();
+
+    await user.click(screen.getByRole("button", { name: "Story" }));
+    // The story repeats its call to action; any of them is a narrative
+    // entry that should land at the top of the incident.
+    await user.click(
+      screen.getAllByRole("button", { name: /open the logs/i })[0],
+    );
+
+    expect(screen.getByText("What’s happening")).toBeVisible();
+    expect(screen.getByText("The Method")).not.toBeVisible();
+  });
+
   it("preserves demo progress across a trip to the story and back", async () => {
     window.history.replaceState(null, "", "#demo");
     const user = userEvent.setup();

@@ -1,5 +1,7 @@
 "use client";
 
+import { useCallback, useState } from "react";
+
 import type { LogLine } from "@/demo";
 
 import { Experience } from "@/site/features/experience/experience";
@@ -21,6 +23,19 @@ import { useHashRoute } from "./use-hash-route";
 export function Landing({ lines }: { lines: readonly LogLine[] }) {
   const { view, navigate } = useHashRoute();
 
+  /*
+   * The hero and story calls to action are narrative entries: they
+   * promise the start of the incident, so each one rewinds the
+   * experience to Act 1 (progress intact). The nav's demo link is
+   * wayfinding and deliberately bypasses this, returning the visitor
+   * to whichever act they left.
+   */
+  const [demoEntryCount, setDemoEntryCount] = useState(0);
+  const openDemo = useCallback(() => {
+    setDemoEntryCount((n) => n + 1);
+    navigate("demo");
+  }, [navigate]);
+
   return (
     <>
       <SiteNav view={view} onNavigate={navigate} />
@@ -33,16 +48,17 @@ export function Landing({ lines }: { lines: readonly LogLine[] }) {
            * makes the concealed explorer ignore document-level keys. */}
           <div className={styles.demoView} hidden={view !== "demo"}>
             <div className={styles.demoInner}>
-              <Experience lines={lines} onReadStory={() => navigate("story")} />
+              <Experience
+                lines={lines}
+                entryCount={demoEntryCount}
+                onReadStory={() => navigate("story")}
+              />
             </div>
           </div>
           {view === "story" ? (
-            <Story onOpenDemo={() => navigate("demo")} />
+            <Story onOpenDemo={openDemo} />
           ) : view === "hero" ? (
-            <Hero
-              onOpenDemo={() => navigate("demo")}
-              onStory={() => navigate("story")}
-            />
+            <Hero onOpenDemo={openDemo} onStory={() => navigate("story")} />
           ) : null}
         </main>
         {/* The footer belongs to the long-form reading view only, and
