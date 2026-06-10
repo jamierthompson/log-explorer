@@ -32,7 +32,7 @@ type ContextTab = { readonly id: string; readonly line: LogLine };
  * back to the live tail that still holds the visitor's place. */
 function paneNote(tabCount: number): string {
   if (tabCount >= 3) {
-    return `${tabCount} slices of the live tail, each stranded in its own tab — you're rebuilding the timeline by flipping between them.`;
+    return `${tabCount} slices of the live tail, each stranded in its own tab — you’re rebuilding the timeline by flipping between them.`;
   }
   if (tabCount === 2) {
     return "Another slice of the live tail — two tabs now. Flip back to the live tail for your filtered place.";
@@ -101,7 +101,7 @@ export function ActOne({
       id: "pile",
       title: "Reassemble by hand",
       description:
-        "Two tabs, two slices — you're holding the timeline together in your head.",
+        "Two tabs, two slices — you’re holding the timeline together in your head.",
       done: tabCount >= 2,
     },
   ];
@@ -114,12 +114,12 @@ export function ActOne({
       lead="Filter the live tail to the failing request, then open a line for context. Every look opens another tab — and the investigation starts to scatter."
       aside={
         <GuideBox
-          title="What's happening"
+          title="What’s happening"
           items={items}
           action={{
             label: (
               <>
-                There&rsquo;s a better way
+                There’s a better way
                 <ArrowRight size={16} aria-hidden="true" />
               </>
             ),
@@ -127,7 +127,7 @@ export function ActOne({
           }}
           foot={
             tabCount >= 3
-              ? `${tabCount} tabs open. You're rebuilding the timeline by flipping between them.`
+              ? `${tabCount} tabs open. You’re rebuilding the timeline by flipping between them.`
               : "Every look at context buys one thin slice and opens one more tab."
           }
         />

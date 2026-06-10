@@ -55,12 +55,96 @@ describe("useActs", () => {
 
   it("starts on Act 1 on a reload that carried an Act 2 marker, and clears it", () => {
     // A reload preserves history state, so model landing with act: act2.
-    window.history.replaceState({ act: "act2" }, "", window.location.href);
+    // The unrelated key stands in for another party's bookkeeping (the
+    // routers also store theirs in history.state) and must survive.
+    window.history.replaceState(
+      { act: "act2", unrelated: "keep" },
+      "",
+      window.location.href,
+    );
 
     const { result } = renderHook(() => useActs());
 
     expect(result.current.act).toBe("act1");
     // The stale marker is wiped so forward nav can't resurrect Act 2.
+    expect(
+      (window.history.state as { act?: string } | null)?.act,
+    ).toBeUndefined();
+    expect(window.history.state).toMatchObject({ unrelated: "keep" });
+  });
+
+  it("reuses its history entry when advancing again after replays", () => {
+    const { result } = renderHook(() => useActs());
+    act(() => result.current.advance());
+    const length = window.history.length;
+
+    // Replay any number of times: reset clears the marker in place, and
+    // the next advance re-marks the same entry rather than pushing, so
+    // the way back out never grows.
+    for (let run = 0; run < 3; run++) {
+      act(() => result.current.reset());
+      expect(result.current.act).toBe("act1");
+      act(() => result.current.advance());
+      expect(result.current.act).toBe("act2");
+    }
+    expect(window.history.length).toBe(length);
+  });
+
+  it("restores Act 2 on forward navigation within the same session", () => {
+    const { result } = renderHook(() => useActs());
+    act(() => result.current.advance());
+    const marked = window.history.state;
+
+    // Back to the unmarked entry, then forward to the marked one.
+    act(() => {
+      window.history.replaceState(null, "", window.location.href);
+      window.dispatchEvent(new PopStateEvent("popstate", { state: null }));
+    });
+    expect(result.current.act).toBe("act1");
+
+    act(() => {
+      window.history.replaceState(marked, "", window.location.href);
+      window.dispatchEvent(new PopStateEvent("popstate", { state: marked }));
+    });
+    expect(result.current.act).toBe("act2");
+  });
+
+  it("ignores and scrubs a marker written by a previous page load on forward", () => {
+    const { result } = renderHook(() => useActs());
+
+    // Model advance → back → reload → forward: the forward entry still
+    // carries the prior load's marker, stamped with that load's id.
+    const stale = { act: "act2", actSession: "prior-load", unrelated: "keep" };
+    act(() => {
+      window.history.replaceState(stale, "", window.location.href);
+      window.dispatchEvent(new PopStateEvent("popstate", { state: stale }));
+    });
+
+    // A fresh session can't be fast-forwarded into Act 2...
+    expect(result.current.act).toBe("act1");
+    // ...and the stale marker is scrubbed, with other keys untouched.
+    const state = window.history.state as {
+      act?: string;
+      actSession?: string;
+    } | null;
+    expect(state?.act).toBeUndefined();
+    expect(state?.actSession).toBeUndefined();
+    expect(window.history.state).toMatchObject({ unrelated: "keep" });
+  });
+
+  it("carries unrelated history state keys through advance and reset", () => {
+    window.history.replaceState(
+      { unrelated: "keep" },
+      "",
+      window.location.href,
+    );
+    const { result } = renderHook(() => useActs());
+
+    act(() => result.current.advance());
+    expect(window.history.state).toMatchObject({ unrelated: "keep" });
+
+    act(() => result.current.reset());
+    expect(window.history.state).toMatchObject({ unrelated: "keep" });
     expect(
       (window.history.state as { act?: string } | null)?.act,
     ).toBeUndefined();

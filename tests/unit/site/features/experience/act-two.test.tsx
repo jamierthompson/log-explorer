@@ -28,6 +28,13 @@ const lines: readonly LogLine[] = [
     message: "GET /api/users",
     requestId: "r4d8a2",
   },
+  {
+    id: "4",
+    timestamp: 3,
+    instance: "t2x8r",
+    level: "ERROR",
+    message: "upstream timeout",
+  },
 ];
 
 describe("ActTwo", () => {
@@ -57,5 +64,24 @@ describe("ActTwo", () => {
 
     await user.click(screen.getByText("request timeout"));
     expect(context.closest("li")).toHaveAttribute("data-done");
+  });
+
+  it("latches the blast-radius step across contexts opened one at a time", async () => {
+    const user = userEvent.setup();
+    render(<ActTwo lines={lines} />);
+
+    const radius = screen.getByText("Check the blast radius");
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+
+    // Open a context, then close it the way the explorer teaches —
+    // one place examined isn't a blast radius yet.
+    await user.click(screen.getByText("request timeout"));
+    await user.click(screen.getByText("request timeout"));
+    expect(radius.closest("li")).not.toHaveAttribute("data-done");
+
+    // Opening another context elsewhere completes the comparison, even
+    // though the two were never open at the same time.
+    await user.click(screen.getByText("upstream timeout"));
+    expect(radius.closest("li")).toHaveAttribute("data-done");
   });
 });

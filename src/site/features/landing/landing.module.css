@@ -9,6 +9,12 @@
   background: var(--surface-page);
 }
 
+/* The explicit display would otherwise override the hidden attribute's
+ * user-agent display: none. */
+.demoView[hidden] {
+  display: none;
+}
+
 .demoInner {
   display: flex;
   flex: 1;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { LogExplorer, type LogExplorerSnapshot, type LogLine } from "@/demo";
 
@@ -44,7 +44,20 @@ export function ActTwo({
   const [rootCauseOpen, setRootCauseOpen] = useState(false);
   const [progress, setProgress] = useState<Progress>(INITIAL_PROGRESS);
 
+  /* The blast-radius step counts every context opened this run, not how
+   * many are open at once — the explorer teaches closing a context when
+   * done with it, so a visitor who opens one, closes it, then opens
+   * another has compared two places and earned the step. */
+  const contextsOpened = useRef(0);
+  const prevOpenCount = useRef(0);
+
   const handleState = useCallback((snapshot: LogExplorerSnapshot) => {
+    if (snapshot.openContextCount > prevOpenCount.current) {
+      contextsOpened.current +=
+        snapshot.openContextCount - prevOpenCount.current;
+    }
+    prevOpenCount.current = snapshot.openContextCount;
+
     const active = snapshot.activeScenarioIds;
     setProgress((prev) => ({
       triaged: prev.triaged || active.includes("errors"),
@@ -52,7 +65,7 @@ export function ActTwo({
       context: prev.context || snapshot.openContextCount >= 1,
       radius:
         prev.radius ||
-        snapshot.openContextCount >= 2 ||
+        contextsOpened.current >= 2 ||
         active.includes("instance"),
     }));
   }, []);
@@ -65,7 +78,7 @@ export function ActTwo({
     {
       id: "triage",
       title: "Triage the symptom",
-      description: "Filter to errors to see what's actually failing.",
+      description: "Filter to errors to see what’s actually failing.",
       done: progress.triaged,
     },
     {
@@ -79,7 +92,7 @@ export function ActTwo({
       id: "context",
       title: "Open context in place",
       description:
-        "The cause carries no request id — only the lines around the failure can show it.",
+        "The cause carries no request id — only the lines around the failure can show it. Not there yet? Shift+E widens the window.",
       done: progress.context,
     },
     {
