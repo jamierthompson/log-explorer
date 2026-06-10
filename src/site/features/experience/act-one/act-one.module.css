@@ -29,20 +29,30 @@
   font-size: var(--font-size-sm);
   color: var(--color-text-subtle);
   white-space: nowrap;
-  background: transparent;
-  border: 1px solid transparent;
+  background: var(--surface-raised);
+  border: 1px solid var(--logx-border-soft);
   border-bottom: none;
   border-radius: var(--radius-1) var(--radius-1) 0 0;
   cursor: pointer;
 }
 
 /* Active either as the bare trigger ("Live tail") or as the box wrapping
- * the active slice trigger. */
+ * the active slice trigger. The shadow paints one panel-colored line
+ * directly beneath the tab, covering the strip's bottom border there so
+ * the tab's fill merges into the panel — without the layout overflow a
+ * negative margin would cause inside the scrollable strip. */
 .tab[data-state="active"],
 .tab:has([data-state="active"]) {
   color: var(--color-text);
-  background: var(--surface);
-  border-color: var(--color-border);
+  background: var(--logx-surface);
+  box-shadow: 0 1px 0 0 var(--logx-surface);
+}
+
+/* The live tail never stops being live — its label keeps the accent in
+ * every state so the visitor always knows which tab still has the
+ * filtered stream. */
+.tab.tabLive {
+  color: var(--brand-accent);
 }
 
 /* A slice's clickable label, sitting inside the box next to the close
@@ -77,11 +87,12 @@
   background: var(--color-border);
 }
 
+/* The count is the act's pain meter, so it reads in the error color. */
 .tabCount {
   margin-left: auto;
   font-family: var(--font-mono);
   font-size: var(--font-size-sm);
-  color: var(--color-text-subtle);
+  color: var(--logx-color-error);
   white-space: nowrap;
 }
 

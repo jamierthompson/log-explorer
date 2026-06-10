@@ -144,7 +144,10 @@ export function ActOne({
         onValueChange={setActive}
       >
         <Tabs.List className={styles.tabstrip} aria-label="Open views">
-          <Tabs.Trigger value={LIVE} className={styles.tab}>
+          <Tabs.Trigger
+            value={LIVE}
+            className={`${styles.tab} ${styles.tabLive}`}
+          >
             Live tail
           </Tabs.Trigger>
 
