@@ -85,12 +85,28 @@
   cursor: pointer;
 }
 
+/* The tab box's padding leaves room for the ring, so the box's own
+ * overflow clipping can't cut it off. */
+.tabTrigger:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* The bare trigger is the tab box itself; the strip's scroller and its
+ * edge fade would clip an outset ring, so draw it just inside. */
+.tab:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: calc(-2 * var(--focus-ring-width));
+}
+
+/* Sized to the minimum comfortable pointer target — this control is
+ * pointer-only, so the hit area has to carry the interaction alone. */
 .tabClose {
   display: inline-grid;
   place-items: center;
   flex: 0 0 auto;
-  width: 1.25em;
-  height: 1.25em;
+  width: 1.5rem;
+  height: 1.5rem;
   margin-left: var(--space-1);
   color: var(--color-text-subtle);
   background: none;

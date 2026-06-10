@@ -2,7 +2,7 @@
 
 import * as Tabs from "@radix-ui/react-tabs";
 import { ArrowRight, X } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import {
   formatLogTime,
@@ -58,6 +58,7 @@ export function ActOne({
 }) {
   const [tabs, setTabs] = useState<readonly ContextTab[]>([]);
   const [active, setActive] = useState<string>(LIVE);
+  const liveTabRef = useRef<HTMLButtonElement>(null);
   // Sticky: once the visitor has filtered, the step stays checked even if
   // they later clear it — the guide tracks progress, not current state.
   const [everFiltered, setEverFiltered] = useState(false);
@@ -145,6 +146,7 @@ export function ActOne({
           <ScrollArea orientation="horizontal" className={styles.tabScroll}>
             <Tabs.List className={styles.tabstrip} aria-label="Open views">
               <Tabs.Trigger
+                ref={liveTabRef}
                 value={LIVE}
                 className={`${styles.tab} ${styles.tabLive}`}
               >
@@ -153,11 +155,31 @@ export function ActOne({
 
               {tabs.map((tab) => (
                 <span key={tab.id} className={styles.tab}>
-                  <Tabs.Trigger value={tab.id} className={styles.tabTrigger}>
+                  <Tabs.Trigger
+                    value={tab.id}
+                    className={styles.tabTrigger}
+                    aria-label={`Context slice ${formatLogTime(tab.line.timestamp)}`}
+                    onKeyDown={(event) => {
+                      if (event.key !== "Delete") return;
+                      closeTab(tab.id);
+                      // The focused trigger is about to unmount; land on
+                      // the tab that takes over rather than the body.
+                      liveTabRef.current?.focus();
+                    }}
+                  >
                     {formatLogTime(tab.line.timestamp)}
                   </Tabs.Trigger>
+                  {/*
+                   * A button inside a tablist breaks the tab content
+                   * model and adds stray tab stops, so the close control
+                   * is pointer-only — hidden from assistive tech and out
+                   * of the tab order. Keyboard users close a slice with
+                   * Delete on its trigger instead.
+                   */}
                   <button
                     type="button"
+                    tabIndex={-1}
+                    aria-hidden="true"
                     className={styles.tabClose}
                     aria-label={`Close the ${formatLogTime(tab.line.timestamp)} slice`}
                     onClick={() => closeTab(tab.id)}

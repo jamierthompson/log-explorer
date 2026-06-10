@@ -71,6 +71,39 @@ describe("ActOne", () => {
     expect(openStep.closest("li")).toHaveAttribute("data-done");
   });
 
+  it("closes the active slice tab with the Delete key", async () => {
+    const user = userEvent.setup();
+    render(<ActOne lines={lines} onAdvance={() => {}} />);
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    await user.click(screen.getByText("request timeout"));
+
+    const slice = screen.getByRole("tab", { name: /context slice/i });
+    slice.focus();
+    await user.keyboard("{Delete}");
+
+    expect(
+      screen.queryByRole("tab", { name: /context slice/i }),
+    ).not.toBeInTheDocument();
+    // Focus lands on the tab that takes over, not the body.
+    expect(screen.getByRole("tab", { name: "Live tail" })).toHaveFocus();
+  });
+
+  it("keeps the close affordance out of the tab order and the accessibility tree", async () => {
+    const user = userEvent.setup();
+    render(<ActOne lines={lines} onAdvance={() => {}} />);
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    await user.click(screen.getByText("request timeout"));
+
+    const close = document.querySelector('button[aria-label^="Close the"]');
+    expect(close).toHaveAttribute("tabindex", "-1");
+    expect(close).toHaveAttribute("aria-hidden", "true");
+    // Pointer users can still close with it.
+    await user.click(close as HTMLElement);
+    expect(
+      screen.queryByRole("tab", { name: /context slice/i }),
+    ).not.toBeInTheDocument();
+  });
+
   it("advances to Act 2 via an always-available 'There's a better way'", async () => {
     const user = userEvent.setup();
     const onAdvance = vi.fn();
