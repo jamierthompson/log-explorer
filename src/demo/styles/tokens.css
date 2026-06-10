@@ -19,6 +19,11 @@
   --logx-font:
     var(--logx-font-family, ui-monospace), "SF Mono", Menlo, Consolas, monospace;
   --logx-radius: 0.25rem;
+  /* Stacking slot for the component's modal overlay. Public so a host
+   * can slot it into its own stacking order; the panel above the
+   * overlay derives its level from this, so overriding the one token
+   * moves the whole layer. */
+  --logx-z-overlay: 50;
   /* The left-lit wash that marks an anchor row. Public because a host
    * composing rows outside the explorer needs the same treatment for
    * its own anchors; it derives from the accent so a single accent

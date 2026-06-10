@@ -45,6 +45,18 @@
   --duration-fast: 120ms;
   --ease-standard: cubic-bezier(0.32, 0.72, 0, 1);
 
+  /*
+   * Stacking order, lowest to highest: sticky nav, then the embedded
+   * demo's own overlay (it must cover the nav when it opens), then the
+   * site's modal overlay (it must cover anything the demo can raise),
+   * then the skip link above everything. The demo layer's overlay slot
+   * is set in its own contract; the gaps here exist so it can sit
+   * between the nav and the site overlay.
+   */
+  --z-nav: 20;
+  --z-overlay: 60;
+  --z-skip-link: 100;
+
   /* Layout */
   --content-padding-x: 1rem;
   /* Max width of every view's content column; the nav and all pages align
