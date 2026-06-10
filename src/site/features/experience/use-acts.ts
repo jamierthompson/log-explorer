@@ -46,12 +46,16 @@ export function useActs(): {
    */
   const clearMarker = useCallback(() => {
     const current = window.history.state as ActMarker | null;
-    if (current?.act === undefined && current?.actSession === undefined) {
-      return;
-    }
+    const foreignStamp =
+      current?.actSession !== undefined && current.actSession !== SESSION_ID;
+    if (current?.act === undefined && !foreignStamp) return;
     const state = { ...current };
     delete state.act;
-    delete state.actSession;
+    // This load's own session stamp survives the clear: it records that
+    // the entry was pushed by advance, so advancing again (a replayed
+    // Act 1) can re-mark it in place instead of stacking a new entry.
+    // Stamps from other loads carry no such meaning and are scrubbed.
+    if (foreignStamp) delete state.actSession;
     window.history.replaceState(state, "", window.location.href);
   }, []);
 
@@ -76,12 +80,16 @@ export function useActs(): {
   }, [clearMarker]);
 
   const advance = useCallback(() => {
-    const state = {
-      ...(window.history.state ?? {}),
-      act: "act2",
-      actSession: SESSION_ID,
-    };
-    window.history.pushState(state, "", window.location.href);
+    const current = window.history.state as ActMarker | null;
+    const state = { ...current, act: "act2", actSession: SESSION_ID };
+    // An entry this load already pushed (recognized by its own session
+    // stamp) is re-marked in place, so any number of replays still
+    // leaves only one act entry to back out through.
+    if (current?.actSession === SESSION_ID) {
+      window.history.replaceState(state, "", window.location.href);
+    } else {
+      window.history.pushState(state, "", window.location.href);
+    }
     setAct("act2");
   }, []);
 

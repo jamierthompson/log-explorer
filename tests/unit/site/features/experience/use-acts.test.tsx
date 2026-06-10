@@ -73,6 +73,23 @@ describe("useActs", () => {
     expect(window.history.state).toMatchObject({ unrelated: "keep" });
   });
 
+  it("reuses its history entry when advancing again after replays", () => {
+    const { result } = renderHook(() => useActs());
+    act(() => result.current.advance());
+    const length = window.history.length;
+
+    // Replay any number of times: reset clears the marker in place, and
+    // the next advance re-marks the same entry rather than pushing, so
+    // the way back out never grows.
+    for (let run = 0; run < 3; run++) {
+      act(() => result.current.reset());
+      expect(result.current.act).toBe("act1");
+      act(() => result.current.advance());
+      expect(result.current.act).toBe("act2");
+    }
+    expect(window.history.length).toBe(length);
+  });
+
   it("restores Act 2 on forward navigation within the same session", () => {
     const { result } = renderHook(() => useActs());
     act(() => result.current.advance());
