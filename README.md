@@ -34,7 +34,7 @@ README is just how to run it locally.
 
 - Next.js 16 (App Router) · React 19 · TypeScript
 - CSS Modules over a global design-token foundation
-- Radix UI (Dialog, ScrollArea)
+- Radix UI (Dialog, ScrollArea, Tabs)
 - Vitest + React Testing Library
 - pnpm
 

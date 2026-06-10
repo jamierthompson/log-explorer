@@ -112,6 +112,7 @@ export function Experience({
         ref={act1Ref}
         tabIndex={-1}
         className={styles.act}
+        data-act="act1"
         hidden={act !== "act1"}
       >
         <ActOne
@@ -125,6 +126,7 @@ export function Experience({
         ref={act2Ref}
         tabIndex={-1}
         className={styles.act}
+        data-act="act2"
         hidden={act !== "act2"}
       >
         <ActTwo

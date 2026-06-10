@@ -5,6 +5,8 @@ import { describe, expect, it, vi } from "vitest";
 import type { LogLine } from "@/demo";
 import { ActTwo } from "@/site/features/experience/act-two/act-two";
 
+import { getGuideStep } from "../../../../helpers/experience-dom";
+
 const lines: readonly LogLine[] = [
   {
     id: "1",
@@ -55,15 +57,15 @@ describe("ActTwo", () => {
     const user = userEvent.setup();
     render(<ActTwo lines={lines} />);
 
-    const triage = screen.getByText("Triage the symptom");
-    const context = screen.getByText("Open context in place");
-    expect(triage.closest("li")).not.toHaveAttribute("data-done");
+    const triage = getGuideStep("triage");
+    const context = getGuideStep("context");
+    expect(triage).not.toHaveAttribute("data-done");
 
     await user.click(screen.getByRole("button", { name: /errors only/i }));
-    expect(triage.closest("li")).toHaveAttribute("data-done");
+    expect(triage).toHaveAttribute("data-done");
 
     await user.click(screen.getByText("request timeout"));
-    expect(context.closest("li")).toHaveAttribute("data-done");
+    expect(context).toHaveAttribute("data-done");
   });
 
   it("closes the verdict dialog when leaving for the story", async () => {
@@ -91,18 +93,18 @@ describe("ActTwo", () => {
     const user = userEvent.setup();
     render(<ActTwo lines={lines} />);
 
-    const radius = screen.getByText("Check the blast radius");
+    const radius = getGuideStep("radius");
     await user.click(screen.getByRole("button", { name: /errors only/i }));
 
     // Open a context, then close it the way the explorer teaches —
     // one place examined isn't a blast radius yet.
     await user.click(screen.getByText("request timeout"));
     await user.click(screen.getByText("request timeout"));
-    expect(radius.closest("li")).not.toHaveAttribute("data-done");
+    expect(radius).not.toHaveAttribute("data-done");
 
     // Opening another context elsewhere completes the comparison, even
     // though the two were never open at the same time.
     await user.click(screen.getByText("upstream timeout"));
-    expect(radius.closest("li")).toHaveAttribute("data-done");
+    expect(radius).toHaveAttribute("data-done");
   });
 });

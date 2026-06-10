@@ -5,6 +5,8 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { LogLine } from "@/demo";
 import { Landing } from "@/site/features/landing/landing";
 
+import { getAct, getGuideStep } from "../../../../helpers/experience-dom";
+
 const lines: readonly LogLine[] = [
   {
     id: "1",
@@ -31,11 +33,11 @@ describe("Landing", () => {
     const user = userEvent.setup();
     render(<Landing lines={lines} />);
 
-    // Act 1's guide is in the document from first load, just concealed.
-    expect(screen.getByText("What’s happening")).not.toBeVisible();
+    // Act 1 is in the document from first load, just concealed.
+    expect(getAct("act1")).not.toBeVisible();
 
     await user.click(screen.getByRole("button", { name: /open the logs/i }));
-    expect(screen.getByText("What’s happening")).toBeVisible();
+    expect(getAct("act1")).toBeVisible();
   });
 
   it("moves focus to the main region when the visitor switches views", async () => {
@@ -59,7 +61,7 @@ describe("Landing", () => {
     render(<Landing lines={lines} />);
 
     await user.click(screen.getByRole("button", { name: /better way/i }));
-    expect(screen.getByText("The Method")).toBeVisible();
+    expect(getAct("act2")).toBeVisible();
 
     await user.click(screen.getByRole("button", { name: "Story" }));
     // The story repeats its call to action; any of them is a narrative
@@ -68,8 +70,8 @@ describe("Landing", () => {
       screen.getAllByRole("button", { name: /open the logs/i })[0],
     );
 
-    expect(screen.getByText("What’s happening")).toBeVisible();
-    expect(screen.getByText("The Method")).not.toBeVisible();
+    expect(getAct("act1")).toBeVisible();
+    expect(getAct("act2")).not.toBeVisible();
   });
 
   it("preserves demo progress across a trip to the story and back", async () => {
@@ -80,8 +82,8 @@ describe("Landing", () => {
     // Make progress the demo would lose if it were remounted: filter the
     // tail, which both narrows the stream and latches a guide step.
     await user.click(screen.getByRole("button", { name: /errors only/i }));
-    const filterStep = screen.getByText("Filter the live tail");
-    expect(filterStep.closest("li")).toHaveAttribute("data-done");
+    const filterStep = getGuideStep("filter");
+    expect(filterStep).toHaveAttribute("data-done");
 
     await user.click(screen.getByRole("button", { name: "Story" }));
     // The demo is concealed while the story is up, not unmounted.
@@ -94,7 +96,7 @@ describe("Landing", () => {
     });
 
     expect(filterStep).toBeVisible();
-    expect(filterStep.closest("li")).toHaveAttribute("data-done");
+    expect(filterStep).toHaveAttribute("data-done");
     // The filter itself survived too, not just the guide's memory of it.
     expect(
       screen.getByRole("button", { name: /errors only/i }),
