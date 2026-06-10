@@ -50,9 +50,11 @@ function paneNote(tabCount: number): string {
 export function ActOne({
   lines,
   onAdvance,
+  onAnnounce,
 }: {
   lines: readonly LogLine[];
   onAdvance: () => void;
+  onAnnounce?: (message: string) => void;
 }) {
   const [tabs, setTabs] = useState<readonly ContextTab[]>([]);
   const [active, setActive] = useState<string>(LIVE);
@@ -116,6 +118,7 @@ export function ActOne({
         <GuideBox
           title="What’s happening"
           items={items}
+          onAnnounce={onAnnounce}
           action={{
             label: (
               <>

@@ -85,6 +85,37 @@ describe("Experience", () => {
     );
   });
 
+  it("announces guide-step completions through the live region", async () => {
+    const user = userEvent.setup();
+    render(<Experience lines={lines} />);
+
+    const status = screen.getByRole("status");
+    expect(status).toHaveTextContent("");
+
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    expect(status).toHaveTextContent("Step done: Filter the live tail");
+  });
+
+  it("clears the live region when the visitor replays", async () => {
+    const user = userEvent.setup();
+    render(<Experience lines={lines} />);
+
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    expect(screen.getByRole("status")).not.toHaveTextContent("");
+
+    await user.click(screen.getByRole("button", { name: /better way/i }));
+    await user.click(
+      screen.getByRole("button", { name: /call the root cause/i }),
+    );
+    await user.click(screen.getByRole("button", { name: /config reload/i }));
+    await user.click(
+      screen.getByRole("button", { name: /replay the incident/i }),
+    );
+
+    // A fresh run starts silent — a stale announcement would lie.
+    expect(screen.getByRole("status")).toHaveTextContent("");
+  });
+
   it("preserves an act's state when the visitor navigates away and back", async () => {
     const user = userEvent.setup();
     render(<Experience lines={lines} />);

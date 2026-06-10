@@ -36,10 +36,12 @@ export function ActTwo({
   lines,
   onReplay,
   onReadStory,
+  onAnnounce,
 }: {
   lines: readonly LogLine[];
   onReplay?: () => void;
   onReadStory?: () => void;
+  onAnnounce?: (message: string) => void;
 }) {
   const [rootCauseOpen, setRootCauseOpen] = useState(false);
   const [progress, setProgress] = useState<Progress>(INITIAL_PROGRESS);
@@ -115,6 +117,7 @@ export function ActTwo({
           <GuideBox
             title="The Method"
             items={items}
+            onAnnounce={onAnnounce}
             action={{
               label: "Call the root cause",
               onClick: callRootCause,

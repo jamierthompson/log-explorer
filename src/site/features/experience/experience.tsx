@@ -70,20 +70,40 @@ export function Experience({
     entering?.focus({ preventScroll: true });
   }, [act, runId]);
 
+  /*
+   * The experience's one polite live region. Guide steps and the
+   * root-cause verdict funnel their announcements here; last write wins,
+   * which is enough for a checklist that completes one step at a time.
+   */
+  const [announcement, setAnnouncement] = useState("");
+  const announce = useCallback((message: string) => {
+    setAnnouncement(message);
+  }, []);
+
   const replay = useCallback(() => {
     setRunId((n) => n + 1);
     reset();
+    // A fresh run starts silent; a stale "Root cause found" would lie.
+    setAnnouncement("");
   }, [reset]);
 
   return (
     <div className={styles.experience}>
+      <div role="status" className={styles.srOnly}>
+        {announcement}
+      </div>
       <div
         ref={act1Ref}
         tabIndex={-1}
         className={styles.act}
         hidden={act !== "act1"}
       >
-        <ActOne key={runId} lines={lines} onAdvance={advance} />
+        <ActOne
+          key={runId}
+          lines={lines}
+          onAdvance={advance}
+          onAnnounce={announce}
+        />
       </div>
       <div
         ref={act2Ref}
@@ -96,6 +116,7 @@ export function Experience({
           lines={lines}
           onReplay={replay}
           onReadStory={onReadStory}
+          onAnnounce={announce}
         />
       </div>
     </div>

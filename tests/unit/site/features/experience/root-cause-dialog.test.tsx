@@ -49,6 +49,17 @@ describe("RootCauseDialog", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("focuses the verdict heading so the outcome is read aloud", async () => {
+    const user = userEvent.setup();
+    render(<RootCauseDialog open onOpenChange={vi.fn()} />);
+
+    await user.click(screen.getByRole("button", { name: /config reload/i }));
+
+    expect(
+      screen.getByRole("heading", { name: "Root cause found" }),
+    ).toHaveFocus();
+  });
+
   it("nudges gently on a wrong cause and lets the visitor reconsider", async () => {
     const user = userEvent.setup();
     render(<RootCauseDialog open onOpenChange={vi.fn()} />);

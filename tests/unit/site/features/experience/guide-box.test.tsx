@@ -24,6 +24,39 @@ describe("GuideBox", () => {
     expect(screen.getByText(/^To do:/)).toBeInTheDocument();
   });
 
+  it("announces a step the moment it completes", () => {
+    const onAnnounce = vi.fn();
+    const { rerender } = render(
+      <GuideBox
+        title="The Method"
+        items={[{ id: "a", title: "Filter the live tail" }]}
+        onAnnounce={onAnnounce}
+      />,
+    );
+    expect(onAnnounce).not.toHaveBeenCalled();
+
+    rerender(
+      <GuideBox
+        title="The Method"
+        items={[{ id: "a", title: "Filter the live tail", done: true }]}
+        onAnnounce={onAnnounce}
+      />,
+    );
+    expect(onAnnounce).toHaveBeenCalledWith("Step done: Filter the live tail");
+  });
+
+  it("stays silent for steps that mount already done", () => {
+    const onAnnounce = vi.fn();
+    render(
+      <GuideBox
+        title="The Method"
+        items={[{ id: "a", title: "First step", done: true }]}
+        onAnnounce={onAnnounce}
+      />,
+    );
+    expect(onAnnounce).not.toHaveBeenCalled();
+  });
+
   it("fires the action when its button is pressed", async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();
