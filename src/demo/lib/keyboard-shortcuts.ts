@@ -34,41 +34,41 @@ export const SHORTCUTS = {
   navigateNext: {
     keys: ["J"],
     aliases: [["↓"]],
-    description: "Next visible line",
+    description: "Next matching line",
   },
   navigatePrev: {
     keys: ["K"],
     aliases: [["↑"]],
-    description: "Previous visible line",
+    description: "Previous matching line",
   },
   navigateFirst: {
     keys: ["G"],
-    description: "Jump to first line",
+    description: "Jump to the first line",
   },
   navigateLast: {
     keys: ["Shift", "G"],
-    description: "Jump to last line",
+    description: "Jump to the last line",
   },
   navigateNextAnchor: {
     keys: ["]"],
-    description: "Next open context anchor",
+    description: "Jump to the next anchor",
   },
   navigatePrevAnchor: {
     keys: ["["],
-    description: "Previous open context anchor",
+    description: "Jump to the previous anchor",
   },
   toggleContext: {
     keys: ["E"],
     aliases: [["Enter"]],
-    description: "View or hide context on focused line",
+    description: "View or hide context on the focused line",
   },
   expandContext: {
     keys: ["Shift", "E"],
-    description: "Expand most-recent context",
+    description: "Expand the most recent context",
   },
   closeRecent: {
     keys: ["Esc"],
-    description: "Close most-recent context or clear filter",
+    description: "Close the most recent context, or clear the filter",
   },
   closeAll: {
     keys: ["Shift", "Esc"],
@@ -76,7 +76,7 @@ export const SHORTCUTS = {
   },
   openShortcuts: {
     keys: ["?"],
-    description: "Show keyboard shortcuts",
+    description: "Show this sheet",
   },
 } as const satisfies Record<ShortcutId, ShortcutDef>;
 

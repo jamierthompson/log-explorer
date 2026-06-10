@@ -322,7 +322,7 @@ export function LogExplorer({
         items.push({
           keys: SHORTCUTS.expandContext.keys,
           label: "Expand",
-          ariaLabel: "Expand the most recent context window",
+          ariaLabel: "Expand the most recent context",
           onClick: expandMostRecentContext,
           pulseKey: expandPulseKey,
         });
@@ -343,8 +343,8 @@ export function LogExplorer({
           keys: SHORTCUTS.toggleContext.keys,
           label: focusedIsAnchor ? "Hide" : "View",
           ariaLabel: focusedIsAnchor
-            ? "Hide context on focused line"
-            : "View context on focused line",
+            ? "Hide context on the focused line"
+            : "View context on the focused line",
           onClick: () => handleViewContext(focusedLineId),
         });
       }
@@ -362,7 +362,7 @@ export function LogExplorer({
       items.push({
         keys: SHORTCUTS.closeRecent.keys,
         label: "Clear",
-        ariaLabel: "Clear active filters",
+        ariaLabel: "Clear the filter",
         onClick: () => dispatch({ type: "clear" }),
       });
     }
