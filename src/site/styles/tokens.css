@@ -64,6 +64,7 @@
   --color-page-bg: light-dark(oklch(0.975 0 0), oklch(0.185 0 0));
   --color-raised: light-dark(oklch(1 0 0), oklch(0.21 0 0));
   --color-accent: light-dark(oklch(0.485 0.18 349.8), oklch(0.725 0.175 349.8));
+  --color-error: light-dark(oklch(0.5 0.2 27), oklch(0.73 0.2 27));
 
   /* Prose scale — mobile-first; the breakpoints below step it up. */
   --text-prose-base: 1.0625rem;
@@ -94,6 +95,25 @@
   --surface: var(--color-bg);
   --surface-raised: var(--color-raised);
   --color-prose-rule: var(--brand-accent);
+
+  /*
+   * Stage: site chrome that abuts the embedded demo (the stage frame,
+   * tab strip, slice panes) mirrors the demo's public tokens through
+   * these aliases so the seam between the two doesn't show. Site CSS
+   * reads only these — never `--logx-*` directly — and each alias falls
+   * back to a site token so the chrome still renders without the demo.
+   */
+  --stage-surface: var(--logx-surface, var(--surface));
+  --stage-border-soft: var(--logx-border-soft, var(--color-border));
+  --stage-color-error: var(--logx-color-error, var(--color-error));
+  --stage-wash-accent: var(
+    --logx-wash-accent,
+    linear-gradient(
+      90deg,
+      oklch(from var(--brand-accent) l c h / 0.12),
+      transparent 72%
+    )
+  );
 }
 
 @media (--tablet) {
