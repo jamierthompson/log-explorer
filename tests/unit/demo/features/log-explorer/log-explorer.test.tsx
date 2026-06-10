@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -168,6 +168,61 @@ describe("LogExplorer", () => {
   });
 });
 
+describe("LogExplorer document shortcut scoping", () => {
+  const errorsOnlyFilter = {
+    instances: [],
+    requestIds: [],
+    levels: ["ERROR" as const],
+  };
+
+  it("ignores ? and Esc while inside a hidden container", async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <div data-testid="shown-host">
+          <LogExplorer lines={lines} />
+        </div>
+        <div hidden data-testid="hidden-host">
+          <LogExplorer lines={lines} initialFilter={errorsOnlyFilter} />
+        </div>
+      </>,
+    );
+    const hiddenHost = within(screen.getByTestId("hidden-host"));
+
+    // Only the visible explorer answers `?`: a single sheet opens and a
+    // single Esc closes it.
+    await user.keyboard("?");
+    expect(screen.getAllByText("Keyboard Shortcuts")).toHaveLength(1);
+    await user.keyboard("{Escape}");
+    expect(screen.queryByText("Keyboard Shortcuts")).not.toBeInTheDocument();
+
+    // Esc on the page must not reach the hidden explorer's filter.
+    await user.keyboard("{Escape}");
+    expect(hiddenHost.getByText("request timeout")).toBeInTheDocument();
+    expect(hiddenHost.queryByText("Healthcheck OK")).not.toBeInTheDocument();
+  });
+
+  it("ignores Esc when focus sits inside a modal that does not contain it", async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <LogExplorer lines={lines} initialFilter={errorsOnlyFilter} />
+        <div role="dialog">
+          <button type="button">Confirm</button>
+        </div>
+      </>,
+    );
+    expect(screen.queryByText("Healthcheck OK")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Confirm" }));
+    await user.keyboard("{Escape}");
+
+    // The filter survives — the key belonged to the modal layer.
+    expect(screen.queryByText("Healthcheck OK")).not.toBeInTheDocument();
+    expect(screen.getByText("request timeout")).toBeInTheDocument();
+  });
+});
+
 describe("LogExplorer anchor cycling", () => {
   /*
    * Trace-filterable lines so multiple contexts can be opened at once,
@@ -298,6 +353,34 @@ describe("LogExplorer anchor cycling", () => {
   });
 });
 
+describe("LogExplorer focus retention across filter changes", () => {
+  function focusedLineId(): string | null {
+    const list = document.querySelector('[role="listbox"]');
+    return (
+      list?.getAttribute("aria-activedescendant")?.replace("line_", "") ?? null
+    );
+  }
+
+  it("remaps focus to the nearest navigable line and restores the chosen line when it returns", async () => {
+    const user = userEvent.setup();
+    render(<LogExplorer lines={lines} />);
+
+    await user.click(screen.getByText("Healthcheck OK"));
+    expect(focusedLineId()).toBe("1");
+
+    // The errors filter hides the chosen line; focus lands on the
+    // nearest line that remains navigable.
+    const errorsChip = screen.getByRole("button", { name: /errors only/i });
+    await user.click(errorsChip);
+    expect(focusedLineId()).toBe("2");
+
+    // Loosening the filter brings the chosen line back, and focus
+    // returns to it.
+    await user.click(errorsChip);
+    expect(focusedLineId()).toBe("1");
+  });
+});
+
 describe("LogExplorer context delegation and Legend visibility", () => {
   it("delegates to onViewContext instead of opening context in place", async () => {
     const user = userEvent.setup();
@@ -310,6 +393,37 @@ describe("LogExplorer context delegation and Legend visibility", () => {
     expect(onViewContext).toHaveBeenCalledWith("3");
     // Nothing opened in place.
     expect(document.querySelector('[data-selected="true"]')).toBeNull();
+  });
+
+  it("does not delegate the keyboard context action when no filter is active", async () => {
+    const user = userEvent.setup();
+    const onViewContext = vi.fn();
+    render(<LogExplorer lines={lines} onViewContext={onViewContext} />);
+
+    // Without a filter the line isn't clickable, so this only moves
+    // focus (to the line, and DOM focus to the listbox).
+    await user.click(screen.getByText("GET /api/users"));
+    expect(onViewContext).not.toHaveBeenCalled();
+
+    await user.keyboard("e");
+    await user.keyboard("{Enter}");
+    expect(onViewContext).not.toHaveBeenCalled();
+  });
+
+  it("delegates the keyboard context action once a matching filter is active", async () => {
+    const user = userEvent.setup();
+    const onViewContext = vi.fn();
+    render(<LogExplorer lines={lines} onViewContext={onViewContext} />);
+
+    await user.click(screen.getByRole("button", { name: /req=r4d8a2/i }));
+    // The click both focuses the matching line and delegates once;
+    // clear that call so the assertion isolates the keyboard path.
+    await user.click(screen.getByText("GET /api/users"));
+    onViewContext.mockClear();
+
+    await user.keyboard("e");
+    expect(onViewContext).toHaveBeenCalledTimes(1);
+    expect(onViewContext).toHaveBeenCalledWith("3");
   });
 
   it("hides the Legend when showLegend is false but keeps the filter chips", () => {

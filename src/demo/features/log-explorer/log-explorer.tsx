@@ -50,9 +50,10 @@ export function LogExplorer({
   showLegend?: boolean;
 }) {
   const [filterState, dispatch] = useReducer(filterReducer, initialFilter);
-  const [focusedLineId, setFocusedLineId] = useState<string | null>(null);
+  const [focusTargetId, setFocusTargetId] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const viewportRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   const linesById = useMemo(() => {
     const m = new Map<string, LogLine>();
@@ -82,20 +83,6 @@ export function LogExplorer({
     filterState,
     scenarios: SCENARIOS,
   });
-
-  /*
-   * When onViewContext is provided, the explorer delegates the context
-   * action to the host instead of opening context in place — letting the
-   * host present it its own way. Without it, the action toggles context
-   * in place as usual.
-   */
-  const handleViewContext = useCallback(
-    (lineId: string) => {
-      if (onViewContext) onViewContext(lineId);
-      else toggleContext(lineId);
-    },
-    [onViewContext, toggleContext],
-  );
 
   const derivedLines = useMemo(
     () => deriveLines(lines, filterState, openContexts),
@@ -135,29 +122,56 @@ export function LogExplorer({
   );
 
   /*
-   * Keep keyboard focus on a navigable line. When a filter change drops
-   * the focused line from the navigable set, remap to the nearest
-   * remaining line by original position so j/k resumes in place rather
-   * than snapping to an end. Reconciled during render so it lands in the
-   * same commit as the change that removed the line.
+   * When onViewContext is provided, the explorer delegates the context
+   * action to the host instead of opening context in place — letting the
+   * host present it its own way. Delegation carries the same gate as
+   * pointer activation — a filter must be active and the line must
+   * currently match it — so every input path agrees on when the action
+   * is available. Without onViewContext, the action toggles context in
+   * place as usual; that path applies the matching rule internally.
    */
-  if (focusedLineId && !navigableLines.some((l) => l.id === focusedLineId)) {
-    if (navigableLines.length === 0) {
-      setFocusedLineId(null);
-    } else {
-      const target = linesIndexById.get(focusedLineId) ?? 0;
-      let nearestId = navigableLines[0].id;
-      let nearestDist = Infinity;
-      for (const l of navigableLines) {
-        const dist = Math.abs((linesIndexById.get(l.id) ?? 0) - target);
-        if (dist < nearestDist) {
-          nearestDist = dist;
-          nearestId = l.id;
-        }
+  const handleViewContext = useCallback(
+    (lineId: string) => {
+      if (!onViewContext) {
+        toggleContext(lineId);
+        return;
       }
-      setFocusedLineId(nearestId);
+      if (
+        hasAnyFilter(filterState) &&
+        navigableLines.some((l) => l.id === lineId)
+      ) {
+        onViewContext(lineId);
+      }
+    },
+    [onViewContext, toggleContext, filterState, navigableLines],
+  );
+
+  /*
+   * Keyboard focus must always land on a navigable line, yet the line
+   * the user last chose can drop out of the navigable set when a filter
+   * changes. State holds only that chosen id; the effective focus is
+   * derived from it — the chosen line itself while it's navigable,
+   * otherwise the nearest navigable line by original position. So j/k
+   * resumes in place rather than snapping to an end, and the chosen
+   * line takes focus back if a later change restores it.
+   */
+  const focusedLineId = useMemo(() => {
+    if (!focusTargetId || navigableLines.length === 0) return null;
+    if (navigableLines.some((l) => l.id === focusTargetId)) {
+      return focusTargetId;
     }
-  }
+    const targetIdx = linesIndexById.get(focusTargetId) ?? 0;
+    let nearestId = navigableLines[0].id;
+    let nearestDist = Infinity;
+    for (const l of navigableLines) {
+      const dist = Math.abs((linesIndexById.get(l.id) ?? 0) - targetIdx);
+      if (dist < nearestDist) {
+        nearestDist = dist;
+        nearestId = l.id;
+      }
+    }
+    return nearestId;
+  }, [focusTargetId, navigableLines, linesIndexById]);
 
   /*
    * Anchor-cycling: from the focused anchor, move to the next or
@@ -173,7 +187,7 @@ export function LogExplorer({
       : -1;
     const nextIdx =
       currentIdx === -1 ? 0 : (currentIdx + 1) % openContexts.length;
-    setFocusedLineId(openContexts[nextIdx].selectedLineId);
+    setFocusTargetId(openContexts[nextIdx].selectedLineId);
   }, [openContexts, focusedLineId]);
 
   const navigatePrevAnchor = useCallback(() => {
@@ -185,13 +199,13 @@ export function LogExplorer({
       currentIdx === -1
         ? openContexts.length - 1
         : (currentIdx - 1 + openContexts.length) % openContexts.length;
-    setFocusedLineId(openContexts[prevIdx].selectedLineId);
+    setFocusTargetId(openContexts[prevIdx].selectedLineId);
   }, [openContexts, focusedLineId]);
 
   const handleKeyDown = useListboxKeyboard({
     lines: navigableLines,
     focusedLineId,
-    setFocusedLineId,
+    setFocusedLineId: setFocusTargetId,
     onToggleContext: handleViewContext,
     onExpandContext: expandMostRecentContext,
     onNextAnchor: navigateNextAnchor,
@@ -245,12 +259,20 @@ export function LogExplorer({
    * Document-level keyboard handler, registered in the capture phase so
    * it runs before an enclosing dialog's Esc-to-dismiss — pressing Esc
    * closes an open context or clears a filter before it can close a
-   * surrounding overlay. Defers to the shortcut sheet, which owns Esc
-   * while it's open, and ignores editable targets so inputs keep their
-   * own key semantics.
+   * surrounding overlay. Being global, it must also know when keys
+   * aren't meant for this explorer: while a hidden ancestor conceals it
+   * (a host may keep several explorers mounted and reveal one at a
+   * time), while a modal that doesn't contain it holds focus (those
+   * keys belong to that layer — Esc must dismiss it, not mutate state
+   * behind it), while the shortcut sheet is open (the sheet owns Esc),
+   * and when the target is editable (inputs keep their own key
+   * semantics).
    */
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
+      const root = rootRef.current;
+      if (!root || root.closest("[hidden]")) return;
+
       if (sheetOpen) return;
       if (event.metaKey || event.ctrlKey || event.altKey) return;
 
@@ -263,6 +285,14 @@ export function LogExplorer({
       ) {
         return;
       }
+
+      /*
+       * The explorer's own sheet was ruled out above, so any dialog
+       * enclosing the target that doesn't also enclose this explorer
+       * is a foreign modal layer.
+       */
+      const dialog = target?.closest('[role="dialog"]');
+      if (dialog && !dialog.contains(root)) return;
 
       // `?` is Shift+/ on most layouts; match the produced character.
       if (event.key === "?") {
@@ -408,7 +438,7 @@ export function LogExplorer({
   }, [snapshot, onStateChange]);
 
   return (
-    <div className={styles.root} data-logx-surface>
+    <div ref={rootRef} className={styles.root} data-logx-surface>
       <div className={styles.toolbar}>
         <ScenarioChips state={filterState} dispatch={dispatch} />
         {showLegend && <Legend items={legendItems} />}
@@ -420,7 +450,7 @@ export function LogExplorer({
         selectedContextLineIds={selectedContextLineIds}
         hasAnyFilter={hasAnyFilter(filterState)}
         onKeyDown={handleKeyDown}
-        onLineFocus={setFocusedLineId}
+        onLineFocus={setFocusTargetId}
         onToggleContext={handleViewContext}
         viewportRef={viewportRef}
       />
