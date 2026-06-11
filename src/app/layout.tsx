@@ -22,20 +22,22 @@ const newsreader = Newsreader({
   display: "swap",
 });
 
-// TODO: The Open Graph card has no URL or preview image until the site is
-// deployed. Add `metadataBase` (or absolute URLs), `openGraph.url`, and a
-// 1200×630 `openGraph.images` entry once the live URL and image exist —
-// relative image paths fail the build unless `metadataBase` is set. A
-// `twitter` block (card: "summary_large_image") can reuse the same image.
 export const metadata: Metadata = {
+  metadataBase: new URL("https://log-explorer.onrender.com"),
   title: SITE_TITLE,
   description: SITE_DESCRIPTION,
   openGraph: {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     siteName: SITE_NAME,
+    url: "/",
     type: "website",
     locale: "en_US",
+  },
+  // The preview image itself is the file-convention sibling of this
+  // layout; the card type is all that needs declaring here.
+  twitter: {
+    card: "summary_large_image",
   },
 };
 
