@@ -1,0 +1,1 @@
+Log Explorer — Chasing an ID without losing your place. A dark landing page for an incident-investigation demo: checkout returns 503s on api-gateway while the logs tail live.

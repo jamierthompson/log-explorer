@@ -11,7 +11,7 @@ get deprioritized — the keyboard surface, the acknowledgement that a
 press landed, the few pixels of motion that make an action feel real —
 are the work, not the decoration.
 
-**Live case study:** _Coming soon._
+**Live case study:** [log-explorer.onrender.com](https://log-explorer.onrender.com)
 
 The deployed page is a guided case study: a checkout incident
 investigated live in the prototype, first the old way (a tab for every
