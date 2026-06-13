@@ -1,6 +1,6 @@
 "use client";
 
-import { Circle, CircleCheck } from "lucide-react";
+import { Circle, CircleCheck, RotateCcw } from "lucide-react";
 import { useEffect, useRef, type ReactNode } from "react";
 
 import { Button } from "@/site/ui/button/button";
@@ -32,12 +32,15 @@ export function GuideBox({
   action,
   foot,
   onAnnounce,
+  onReset,
 }: {
   title: string;
   items: readonly GuideItem[];
   action?: GuideAction;
   foot?: ReactNode;
   onAnnounce?: (message: string) => void;
+  /** Resets the current act — clears its progress and starts its run over. */
+  onReset?: () => void;
 }) {
   /*
    * Announce only done-state transitions: the first render is a
@@ -59,7 +62,21 @@ export function GuideBox({
 
   return (
     <aside className={styles.guide} aria-label={title}>
-      <p className={styles.title}>{title}</p>
+      <div className={styles.head}>
+        <p className={styles.title}>{title}</p>
+        {onReset && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className={styles.reset}
+            aria-label="Reset this act"
+            title="Reset this act"
+            onClick={onReset}
+          >
+            <RotateCcw size={16} aria-hidden="true" />
+          </Button>
+        )}
+      </div>
       <ul className={styles.steps}>
         {items.map((item) => (
           <li

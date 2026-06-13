@@ -1,4 +1,9 @@
-import type { ScenarioPreset } from "@/demo/lib/filter-state";
+import {
+  filterReducer,
+  initialFilterState,
+  type FilterState,
+  type ScenarioPreset,
+} from "@/demo/lib/filter-state";
 
 /* Lives outside the chips component (which is `"use client"`) so that
  * Server Components can import the data directly. Importing data
@@ -27,3 +32,21 @@ export const SCENARIOS = [
     scenario: { instances: ["kc4qn"], requestIds: [], levels: [] },
   },
 ] as const satisfies readonly ScenarioPreset[];
+
+/**
+ * Rebuild a filter from the ids of the scenarios it satisfies — the
+ * inverse of a snapshot's `activeScenarioIds`. Lets a host persist the
+ * chip selection as ids and seed `initialFilter` back from them. Unknown
+ * ids are ignored.
+ */
+export function filterFromScenarioIds(ids: readonly string[]): FilterState {
+  return ids.reduce<FilterState>((state, id) => {
+    const preset = SCENARIOS.find((s) => s.id === id);
+    return preset
+      ? filterReducer(state, {
+          type: "toggleScenario",
+          scenario: preset.scenario,
+        })
+      : state;
+  }, initialFilterState);
+}

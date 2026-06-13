@@ -37,10 +37,6 @@
   background: var(--brand-accent-hover);
 }
 
-.button[data-size="lg"] {
-  padding: var(--space-3) var(--space-6);
-}
-
 .button[data-variant="ghost"] {
   padding: var(--space-1) var(--space-3);
   background: transparent;
@@ -80,6 +76,18 @@
   color: var(--color-text);
 }
 
+/* Size overrides follow the variants: both set padding at the same
+ * specificity, so the size has to win on source order to resize any
+ * variant (the icon size squares off the ghost reset control). */
+.button[data-size="lg"] {
+  padding: var(--space-3) var(--space-6);
+}
+
+.button[data-size="icon"] {
+  position: relative;
+  padding: var(--space-2);
+}
+
 /*
  * Comfortable tap targets on touch devices for the substantial
  * variants, matching the chip primitive. The inline link variant lives
@@ -87,7 +95,22 @@
  */
 @media (pointer: coarse) {
   .button[data-variant="primary"],
-  .button[data-variant="ghost"] {
+  .button[data-variant="ghost"]:not([data-size="icon"]) {
     min-height: var(--tap-target);
+  }
+
+  /*
+   * The icon button keeps its compact box and grows only its hit area, so
+   * a comfortable touch target doesn't enlarge the control or shift the
+   * layout it sits in.
+   */
+  .button[data-size="icon"]::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--tap-target);
+    height: var(--tap-target);
+    transform: translate(-50%, -50%);
   }
 }

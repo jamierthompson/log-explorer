@@ -5,14 +5,30 @@
   border-radius: var(--radius-1);
 }
 
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
 .title {
-  margin: 0 0 var(--space-4);
+  margin: 0;
   font-family: var(--font-mono);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   letter-spacing: var(--tracking-kicker);
   text-transform: uppercase;
   color: var(--brand-accent);
+}
+
+/* Tuck the icon control into the guide's top-right corner so it doesn't
+ * add height to the title row. */
+.reset {
+  margin-top: calc(var(--space-2) * -1);
+  margin-right: calc(var(--space-2) * -1);
+  color: var(--color-text-subtle);
 }
 
 .steps {

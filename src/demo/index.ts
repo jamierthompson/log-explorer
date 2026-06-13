@@ -4,6 +4,9 @@
  */
 export { LogExplorer } from "./features/log-explorer/log-explorer";
 export type { LogExplorerSnapshot } from "./features/log-explorer/log-explorer-state";
+/** Filter seeding for hosts that persist a chip selection across mounts. */
+export type { FilterState } from "./lib/filter-state";
+export { filterFromScenarioIds } from "./lib/scenarios";
 /**
  * The bare, read-only log row — for composing slices outside the explorer.
  * Self-contained: it carries the demo's surface marker, scoped reset,
