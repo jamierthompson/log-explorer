@@ -1,18 +1,8 @@
-.main {
-  outline: none;
-}
-
 .demoView {
   display: flex;
   flex-direction: column;
   min-height: calc(100dvh - var(--topnav-height));
   background: var(--surface-page);
-}
-
-/* The explicit display would otherwise override the hidden attribute's
- * user-agent display: none. */
-.demoView[hidden] {
-  display: none;
 }
 
 .demoInner {
@@ -24,4 +14,18 @@
   max-width: var(--page-max);
   margin-inline: auto;
   padding: var(--space-5) var(--content-padding-x);
+}
+
+/* Visually hidden but still read by assistive tech — the live region
+ * announces without taking space or paint. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

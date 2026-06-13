@@ -4,7 +4,9 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { LogLine } from "@/demo";
 import { ActOne } from "@/site/features/experience/act-one/act-one";
+import { useDemoState } from "@/site/features/experience/demo-state";
 
+import { DemoProviders } from "../../../../helpers/demo-providers";
 import { getGuideStep } from "../../../../helpers/experience-dom";
 
 const lines: readonly LogLine[] = [
@@ -32,10 +34,27 @@ const lines: readonly LogLine[] = [
   },
 ];
 
+/* Mirrors how the route view drives Act 1: keyed on the act's run id so a
+ * reset remounts it, which is the only way the explorer's internal filter
+ * gets cleared. */
+function ResettableActOne() {
+  const { state, resetAct1 } = useDemoState();
+  return (
+    <ActOne
+      key={state.act1.runId}
+      lines={lines}
+      onAdvance={() => {}}
+      onReset={resetAct1}
+    />
+  );
+}
+
 describe("ActOne", () => {
   it("opens a context view in a new tab instead of expanding in place", async () => {
     const user = userEvent.setup();
-    render(<ActOne lines={lines} onAdvance={() => {}} />);
+    render(<ActOne lines={lines} onAdvance={() => {}} onReset={() => {}} />, {
+      wrapper: DemoProviders,
+    });
 
     // Act 1 opens unfiltered; narrow first so a line is clickable.
     await user.click(screen.getByRole("button", { name: /errors only/i }));
@@ -53,7 +72,9 @@ describe("ActOne", () => {
 
   it("keeps the live tail filtered when the visitor returns to it", async () => {
     const user = userEvent.setup();
-    render(<ActOne lines={lines} onAdvance={() => {}} />);
+    render(<ActOne lines={lines} onAdvance={() => {}} onReset={() => {}} />, {
+      wrapper: DemoProviders,
+    });
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     await user.click(screen.getByText("request timeout"));
 
@@ -64,7 +85,9 @@ describe("ActOne", () => {
 
   it("checks off the guide as the visitor filters and opens tabs", async () => {
     const user = userEvent.setup();
-    render(<ActOne lines={lines} onAdvance={() => {}} />);
+    render(<ActOne lines={lines} onAdvance={() => {}} onReset={() => {}} />, {
+      wrapper: DemoProviders,
+    });
 
     const filterStep = getGuideStep("filter");
     const openStep = getGuideStep("open");
@@ -80,7 +103,9 @@ describe("ActOne", () => {
 
   it("reopening an already-open line reuses its tab", async () => {
     const user = userEvent.setup();
-    render(<ActOne lines={lines} onAdvance={() => {}} />);
+    render(<ActOne lines={lines} onAdvance={() => {}} onReset={() => {}} />, {
+      wrapper: DemoProviders,
+    });
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     await user.click(screen.getByText("request timeout"));
     expect(screen.getAllByRole("tab", { name: /context slice/i })).toHaveLength(
@@ -102,7 +127,9 @@ describe("ActOne", () => {
 
   it("returns to the live tail when the active slice closes", async () => {
     const user = userEvent.setup();
-    render(<ActOne lines={lines} onAdvance={() => {}} />);
+    render(<ActOne lines={lines} onAdvance={() => {}} onReset={() => {}} />, {
+      wrapper: DemoProviders,
+    });
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     await user.click(screen.getByText("request timeout"));
     expect(screen.getByRole("tab", { name: /context slice/i })).toHaveAttribute(
@@ -125,7 +152,9 @@ describe("ActOne", () => {
 
   it("closes the active slice tab with the Delete key", async () => {
     const user = userEvent.setup();
-    render(<ActOne lines={lines} onAdvance={() => {}} />);
+    render(<ActOne lines={lines} onAdvance={() => {}} onReset={() => {}} />, {
+      wrapper: DemoProviders,
+    });
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     await user.click(screen.getByText("request timeout"));
 
@@ -142,7 +171,9 @@ describe("ActOne", () => {
 
   it("keeps the close affordance out of the tab order and the accessibility tree", async () => {
     const user = userEvent.setup();
-    render(<ActOne lines={lines} onAdvance={() => {}} />);
+    render(<ActOne lines={lines} onAdvance={() => {}} onReset={() => {}} />, {
+      wrapper: DemoProviders,
+    });
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     await user.click(screen.getByText("request timeout"));
 
@@ -163,7 +194,9 @@ describe("ActOne", () => {
   it("advances to Act 2 via an always-available 'There's a better way'", async () => {
     const user = userEvent.setup();
     const onAdvance = vi.fn();
-    render(<ActOne lines={lines} onAdvance={onAdvance} />);
+    render(<ActOne lines={lines} onAdvance={onAdvance} onReset={() => {}} />, {
+      wrapper: DemoProviders,
+    });
 
     const better = screen.getByRole("button", { name: /better way/i });
     expect(better).toBeEnabled();
@@ -173,5 +206,21 @@ describe("ActOne", () => {
 
     await user.click(better);
     expect(onAdvance).toHaveBeenCalledOnce();
+  });
+
+  it("clears the filtered tail and the guide when the act resets", async () => {
+    const user = userEvent.setup();
+    render(<ResettableActOne />, { wrapper: DemoProviders });
+
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    // Filtered: the non-matching line drops out, and the step latches.
+    expect(screen.queryByText("Healthcheck OK")).not.toBeInTheDocument();
+    expect(getGuideStep("filter")).toHaveAttribute("data-done");
+
+    await user.click(screen.getByRole("button", { name: /reset this act/i }));
+
+    // The reset remounts the act fresh: filter gone, guide back to start.
+    expect(screen.getByText("Healthcheck OK")).toBeInTheDocument();
+    expect(getGuideStep("filter")).not.toHaveAttribute("data-done");
   });
 });

@@ -2,9 +2,10 @@
 
 import * as Tabs from "@radix-ui/react-tabs";
 import { ArrowRight, X } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef } from "react";
 
 import {
+  filterFromScenarioIds,
   formatLogTime,
   LogExplorer,
   type LogExplorerSnapshot,
@@ -15,6 +16,8 @@ import {
 import { ScrollArea } from "@/site/ui/scroll-area/scroll-area";
 
 import { ActLayout } from "../act-layout/act-layout";
+import { useDemoAnnounce } from "../demo-shell";
+import { useDemoState } from "../demo-state";
 import { GuideBox, type GuideItem } from "../guide-box/guide-box";
 import styles from "./act-one.module.css";
 
@@ -46,43 +49,66 @@ function paneNote(tabCount: number): string {
  * so opening a line's context spawns a browser-style tab here instead of
  * expanding in place. The live tail's panel is force-mounted, so it stays
  * filtered behind the tabs and returning to it keeps the visitor's place.
+ *
+ * Its filter, open tabs, and progress are held in the demo store above the
+ * route, so leaving for Act 2 (or the story) and returning restores them.
+ * A reset clears that state and remounts the act, so the explorer comes
+ * back with a cleared filter — which it can't otherwise expose.
  */
 export function ActOne({
   lines,
   onAdvance,
-  onAnnounce,
+  onReset,
 }: {
   lines: readonly LogLine[];
   onAdvance: () => void;
-  onAnnounce?: (message: string) => void;
+  onReset: () => void;
 }) {
-  const [tabs, setTabs] = useState<readonly ContextTab[]>([]);
-  const [active, setActive] = useState<string>(LIVE);
-  const liveTabRef = useRef<HTMLButtonElement>(null);
-  // Sticky: once the visitor has filtered, the step stays checked even if
-  // they later clear it — the guide tracks progress, not current state.
-  const [everFiltered, setEverFiltered] = useState(false);
+  const {
+    state,
+    setAct1Scenarios,
+    openAct1Tab,
+    closeAct1Tab,
+    activateAct1Tab,
+    markAct1Filtered,
+  } = useDemoState();
+  const announce = useDemoAnnounce();
 
-  const handleState = useCallback((snapshot: LogExplorerSnapshot) => {
-    if (snapshot.hasFilter) setEverFiltered(true);
-  }, []);
+  const { scenarioIds, tabs: storedTabs, everFiltered } = state.act1;
+  const liveTabRef = useRef<HTMLButtonElement>(null);
+
+  const tabs = useMemo<readonly ContextTab[]>(
+    () =>
+      storedTabs.ids
+        .map((id) => {
+          const line = lines.find((l) => l.id === id);
+          return line ? { id, line } : null;
+        })
+        .filter((t): t is ContextTab => t !== null),
+    [storedTabs.ids, lines],
+  );
+  const active = storedTabs.active ?? LIVE;
+
+  const setActive = useCallback(
+    (next: string) => activateAct1Tab(next === LIVE ? null : next),
+    [activateAct1Tab],
+  );
+
+  const handleState = useCallback(
+    (snapshot: LogExplorerSnapshot) => {
+      if (snapshot.hasFilter) markAct1Filtered();
+      setAct1Scenarios(snapshot.activeScenarioIds);
+    },
+    [markAct1Filtered, setAct1Scenarios],
+  );
 
   const openContext = useCallback(
     (lineId: string) => {
-      setTabs((current) => {
-        if (current.some((t) => t.id === lineId)) return current;
-        const line = lines.find((l) => l.id === lineId);
-        return line ? [...current, { id: lineId, line }] : current;
-      });
-      setActive(lineId);
+      if (!lines.some((l) => l.id === lineId)) return;
+      openAct1Tab(lineId);
     },
-    [lines],
+    [lines, openAct1Tab],
   );
-
-  const closeTab = useCallback((lineId: string) => {
-    setTabs((current) => current.filter((t) => t.id !== lineId));
-    setActive((current) => (current === lineId ? LIVE : current));
-  }, []);
 
   const tabCount = tabs.length;
   const items: readonly GuideItem[] = [
@@ -119,7 +145,8 @@ export function ActOne({
         <GuideBox
           title="What’s happening"
           items={items}
-          onAnnounce={onAnnounce}
+          onAnnounce={announce}
+          onReset={onReset}
           action={{
             label: (
               <>
@@ -161,7 +188,7 @@ export function ActOne({
                     aria-label={`Context slice ${formatLogTime(tab.line.timestamp)}`}
                     onKeyDown={(event) => {
                       if (event.key !== "Delete") return;
-                      closeTab(tab.id);
+                      closeAct1Tab(tab.id);
                       // The focused trigger is about to unmount; land on
                       // the tab that takes over rather than the body.
                       liveTabRef.current?.focus();
@@ -181,7 +208,7 @@ export function ActOne({
                     tabIndex={-1}
                     aria-hidden="true"
                     className={styles.tabClose}
-                    onClick={() => closeTab(tab.id)}
+                    onClick={() => closeAct1Tab(tab.id)}
                   >
                     <X size={12} aria-hidden="true" />
                   </button>
@@ -211,6 +238,7 @@ export function ActOne({
             lines={lines}
             service="api-gateway"
             showLegend={false}
+            initialFilter={filterFromScenarioIds(scenarioIds)}
             onViewContext={openContext}
             onStateChange={handleState}
           />

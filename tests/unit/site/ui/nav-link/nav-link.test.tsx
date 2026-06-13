@@ -1,34 +1,45 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import type { AnchorHTMLAttributes } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { NavLink } from "@/site/ui/nav-link/nav-link";
 
-describe("NavLink", () => {
-  it("fires onClick when it renders as a button", async () => {
-    const user = userEvent.setup();
-    const onClick = vi.fn();
-    render(<NavLink onClick={onClick}>Demo</NavLink>);
+vi.mock("next/link", () => ({
+  default: ({
+    href,
+    children,
+    ...rest
+  }: AnchorHTMLAttributes<HTMLAnchorElement>) => (
+    <a href={href} {...rest}>
+      {children}
+    </a>
+  ),
+}));
 
-    await user.click(screen.getByRole("button", { name: "Demo" }));
-    expect(onClick).toHaveBeenCalledOnce();
+describe("NavLink", () => {
+  it("links an internal item to its route", () => {
+    render(<NavLink href="/demo">Demo</NavLink>);
+    expect(screen.getByRole("link", { name: "Demo" })).toHaveAttribute(
+      "href",
+      "/demo",
+    );
   });
 
   it("marks the active item as the current page for assistive tech", () => {
     render(
-      <NavLink active onClick={() => {}}>
+      <NavLink href="/demo" active>
         Demo
       </NavLink>,
     );
-    expect(screen.getByRole("button", { name: "Demo" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Demo" })).toHaveAttribute(
       "aria-current",
       "page",
     );
   });
 
   it("omits aria-current when the item is not active", () => {
-    render(<NavLink onClick={() => {}}>Demo</NavLink>);
-    expect(screen.getByRole("button", { name: "Demo" })).not.toHaveAttribute(
+    render(<NavLink href="/demo">Demo</NavLink>);
+    expect(screen.getByRole("link", { name: "Demo" })).not.toHaveAttribute(
       "aria-current",
     );
   });

@@ -1,39 +1,32 @@
-import type { View } from "@/site/features/landing/use-hash-route";
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
 import { NavLink } from "@/site/ui/nav-link/nav-link";
 
 import styles from "./site-nav.module.css";
 
 const REPO_URL = "https://github.com/jamierthompson/log-explorer";
 
-/** The site's persistent header: the brand returns to the intro; the
- * links navigate the single-page views, with Code opening the repo. */
-export function SiteNav({
-  view,
-  onNavigate,
-}: {
-  view: View;
-  onNavigate: (view: View) => void;
-}) {
+/** The site's persistent header: the brand returns to the intro; the links
+ * navigate the sections, with Code opening the repo. */
+export function SiteNav() {
+  const pathname = usePathname();
+
   return (
     <header className={styles.nav}>
       <div className={styles.navInner}>
-        <button
-          type="button"
-          className={styles.brand}
-          onClick={() => onNavigate("hero")}
-        >
+        <Link href="/" className={styles.brand}>
           <LogoMark />
           <span className={styles.brandText}>Log Explorer</span>
-        </button>
+        </Link>
 
         <nav className={styles.links} aria-label="Primary">
-          <NavLink active={view === "demo"} onClick={() => onNavigate("demo")}>
+          <NavLink href="/demo" active={pathname.startsWith("/demo")}>
             Demo
           </NavLink>
-          <NavLink
-            active={view === "story"}
-            onClick={() => onNavigate("story")}
-          >
+          <NavLink href="/story" active={pathname.startsWith("/story")}>
             Story
           </NavLink>
           <NavLink href={REPO_URL} external>

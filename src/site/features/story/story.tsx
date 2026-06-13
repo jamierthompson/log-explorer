@@ -52,7 +52,7 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
           </h1>
           <p className={styles.proseLead}>
             A working prototype, and the story of building it. I went looking
-            for a paper cut worth fixing — a small, real, unglamorous problem —
+            for a papercut worth fixing — a small, real, unglamorous problem —
             and built the fix one decision at a time. The demo is the argument;
             this is the reasoning behind it.
           </p>

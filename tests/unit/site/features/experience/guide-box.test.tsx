@@ -73,4 +73,26 @@ describe("GuideBox", () => {
     );
     expect(onClick).toHaveBeenCalledOnce();
   });
+
+  it("offers a labeled reset control only when a handler is given", async () => {
+    const user = userEvent.setup();
+    const onReset = vi.fn();
+    const { rerender } = render(
+      <GuideBox title="The Method" items={[{ id: "a", title: "Step" }]} />,
+    );
+    // No reset affordance without a handler.
+    expect(
+      screen.queryByRole("button", { name: /reset this act/i }),
+    ).toBeNull();
+
+    rerender(
+      <GuideBox
+        title="The Method"
+        items={[{ id: "a", title: "Step" }]}
+        onReset={onReset}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: /reset this act/i }));
+    expect(onReset).toHaveBeenCalledOnce();
+  });
 });

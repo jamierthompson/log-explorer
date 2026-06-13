@@ -25,14 +25,18 @@ export function useContextWindows({
   linesIndexById,
   filterState,
   scenarios,
+  initialContexts,
 }: {
   lines: readonly LogLine[];
   linesById: ReadonlyMap<string, LogLine>;
   linesIndexById: ReadonlyMap<string, number>;
   filterState: FilterState;
   scenarios: readonly ScenarioPreset[];
+  initialContexts?: readonly OpenContext[];
 }) {
-  const [openContexts, setOpenContexts] = useState<readonly OpenContext[]>([]);
+  const [openContexts, setOpenContexts] = useState<readonly OpenContext[]>(
+    initialContexts ?? [],
+  );
   /*
    * Counter bumped on every successful expand. Threaded into the
    * Legend's `pulseKey` for the Expand entry so the mount animation

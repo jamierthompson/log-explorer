@@ -2,7 +2,7 @@ import styles from "./button.module.css";
 
 export type ButtonVariant = "primary" | "ghost" | "link" | "quiet";
 
-export type ButtonSize = "md" | "lg";
+export type ButtonSize = "md" | "lg" | "icon";
 
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
@@ -27,7 +27,7 @@ export function Button({
       type={type}
       className={[styles.button, className].filter(Boolean).join(" ")}
       data-variant={variant}
-      data-size={size === "lg" ? "lg" : undefined}
+      data-size={size === "md" ? undefined : size}
       {...rest}
     >
       {children}

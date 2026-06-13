@@ -20,6 +20,9 @@ export type LogExplorerSnapshot = {
   readonly activeScenarioIds: readonly string[];
   /** Number of open context windows. */
   readonly openContextCount: number;
+  /** The open context windows themselves, for a host that persists and
+   * restores them across mounts via `initialContexts`. */
+  readonly openContexts: readonly OpenContext[];
   /** Whether any open window has been grown past its default range. */
   readonly hasExpandedContext: boolean;
 };
@@ -36,6 +39,7 @@ export function deriveSnapshot(
       .filter((s) => scenarioIsActive(filterState, s.scenario))
       .map((s) => s.id),
     openContextCount: openContexts.length,
+    openContexts,
     hasExpandedContext: openContexts.some(
       (c) => c.range > DEFAULT_CONTEXT_RANGE,
     ),

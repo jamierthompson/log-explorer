@@ -1,90 +1,81 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 
-import { LogExplorer, type LogExplorerSnapshot, type LogLine } from "@/demo";
+import {
+  filterFromScenarioIds,
+  LogExplorer,
+  type LogExplorerSnapshot,
+  type LogLine,
+} from "@/demo";
 
 import { ActLayout } from "../act-layout/act-layout";
+import { useDemoAnnounce } from "../demo-shell";
+import { useDemoState } from "../demo-state";
 import { GuideBox, type GuideItem } from "../guide-box/guide-box";
-import { RootCauseDialog } from "../root-cause-dialog/root-cause-dialog";
-
-/* Progress is sticky: each step latches the first time the explorer
- * reports it, so the checklist tracks how far the investigation got rather
- * than the explorer's current state — closing a context can't un-check a
- * step the visitor already reached. */
-type Progress = {
-  readonly triaged: boolean;
-  readonly traced: boolean;
-  readonly context: boolean;
-  readonly radius: boolean;
-};
-
-const INITIAL_PROGRESS: Progress = {
-  triaged: false,
-  traced: false,
-  context: false,
-  radius: false,
-};
 
 /**
  * Act 2 — the method. The real explorer with context-in-place, paired
- * with a guide whose closing action opens the root-cause call. The dialog
- * lives here, with the explorer it concludes, rather than up in the
- * sequencer.
+ * with a guide whose closing action opens the root-cause call — its own
+ * route, presented as a modal over this evidence.
+ *
+ * Its checklist, filter, and open contexts are held in the demo store
+ * above the route, so leaving for Act 1 (or the story) and returning
+ * restores them. A reset clears that state and remounts the act, so the
+ * checklist and explorer come back fresh.
  */
 export function ActTwo({
   lines,
-  onReplay,
-  onReadStory,
-  onAnnounce,
+  onReset,
+  onCallRootCause,
 }: {
   lines: readonly LogLine[];
-  onReplay?: () => void;
-  onReadStory?: () => void;
-  onAnnounce?: (message: string) => void;
+  /** Resets this act in place — the guide's per-act control. */
+  onReset: () => void;
+  /** Opens the root-cause call. */
+  onCallRootCause: () => void;
 }) {
-  const [rootCauseOpen, setRootCauseOpen] = useState(false);
-  const [progress, setProgress] = useState<Progress>(INITIAL_PROGRESS);
+  const { state, setAct2Scenarios, setAct2Contexts, observeAct2 } =
+    useDemoState();
+  const announce = useDemoAnnounce();
+
+  // Read straight from the store — the single source of truth — so the
+  // checklist always reflects persisted progress with no local copy to
+  // drift out of sync across navigation.
+  const { scenarioIds, openContexts, progress } = state.act2;
 
   /* The blast-radius step counts every context opened this run, not how
    * many are open at once — the explorer teaches closing a context when
    * done with it, so a visitor who opens one, closes it, then opens
-   * another has compared two places and earned the step. */
+   * another has compared two places and earned the step.
+   *
+   * These counters are local and restart at zero on every remount (a
+   * reset or a return visit). That's safe only because the step is sticky
+   * in the store: a fresh counter can re-observe the step but never
+   * un-observe it. A non-sticky checklist would need this count persisted. */
   const contextsOpened = useRef(0);
   const prevOpenCount = useRef(0);
 
-  const handleState = useCallback((snapshot: LogExplorerSnapshot) => {
-    if (snapshot.openContextCount > prevOpenCount.current) {
-      contextsOpened.current +=
-        snapshot.openContextCount - prevOpenCount.current;
-    }
-    prevOpenCount.current = snapshot.openContextCount;
+  const handleState = useCallback(
+    (snapshot: LogExplorerSnapshot) => {
+      if (snapshot.openContextCount > prevOpenCount.current) {
+        contextsOpened.current +=
+          snapshot.openContextCount - prevOpenCount.current;
+      }
+      prevOpenCount.current = snapshot.openContextCount;
 
-    const active = snapshot.activeScenarioIds;
-    setProgress((prev) => ({
-      triaged: prev.triaged || active.includes("errors"),
-      traced: prev.traced || active.includes("trace"),
-      context: prev.context || snapshot.openContextCount >= 1,
-      radius:
-        prev.radius ||
-        contextsOpened.current >= 2 ||
-        active.includes("instance"),
-    }));
-  }, []);
-
-  const callRootCause = useCallback(() => {
-    setRootCauseOpen(true);
-  }, []);
-
-  /*
-   * The dialog portals to the document body, so it outlives this act
-   * when the visitor leaves for the story — the experience is only
-   * hidden, never unmounted. Close it as part of the handoff.
-   */
-  const readStoryAndClose = useCallback(() => {
-    setRootCauseOpen(false);
-    onReadStory?.();
-  }, [onReadStory]);
+      const active = snapshot.activeScenarioIds;
+      setAct2Scenarios(active);
+      setAct2Contexts(snapshot.openContexts);
+      observeAct2({
+        triaged: active.includes("errors"),
+        traced: active.includes("trace"),
+        context: snapshot.openContextCount >= 1,
+        radius: contextsOpened.current >= 2 || active.includes("instance"),
+      });
+    },
+    [setAct2Scenarios, setAct2Contexts, observeAct2],
+  );
 
   const items: readonly GuideItem[] = [
     {
@@ -117,42 +108,37 @@ export function ActTwo({
   ];
 
   return (
-    <>
-      <ActLayout
-        step="Act 2"
-        kicker="In place"
-        title="Open context where the line lives"
-        lead="The same investigation, kept in one view. The trace can show you where checkout broke — opening context in place shows you why."
-        aside={
-          <GuideBox
-            title="The Method"
-            items={items}
-            onAnnounce={onAnnounce}
-            action={{
-              label: "Call the root cause",
-              onClick: callRootCause,
-            }}
-            foot={
-              <>
-                Checkout times out at <strong>13:31:58</strong>. What put it
-                there?
-              </>
-            }
-          />
-        }
-      >
-        <LogExplorer
-          lines={lines}
-          service="api-gateway"
-          onStateChange={handleState}
+    <ActLayout
+      step="Act 2"
+      kicker="In place"
+      title="Open context where the line lives"
+      lead="The same investigation, kept in one view. The trace can show you where checkout broke — opening context in place shows you why."
+      aside={
+        <GuideBox
+          title="The Method"
+          items={items}
+          onAnnounce={announce}
+          onReset={onReset}
+          action={{
+            label: "Call the root cause",
+            onClick: onCallRootCause,
+          }}
+          foot={
+            <>
+              Checkout times out at <strong>13:31:58</strong>. What put it
+              there?
+            </>
+          }
         />
-      </ActLayout>
-      <RootCauseDialog
-        open={rootCauseOpen}
-        onOpenChange={setRootCauseOpen}
-        onReplay={onReplay}
-        onReadStory={onReadStory && readStoryAndClose}
+      }
+    >
+      <LogExplorer
+        lines={lines}
+        service="api-gateway"
+        initialFilter={filterFromScenarioIds(scenarioIds)}
+        initialContexts={openContexts}
+        onStateChange={handleState}
       />
-    </>
+    </ActLayout>
   );
 }

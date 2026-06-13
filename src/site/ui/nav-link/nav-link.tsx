@@ -1,4 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 import type { ReactNode } from "react";
 
 import styles from "./nav-link.module.css";
@@ -6,42 +7,37 @@ import styles from "./nav-link.module.css";
 type CommonProps = { children: ReactNode; active?: boolean };
 
 export type NavLinkProps =
-  | (CommonProps & { onClick: () => void })
-  | (CommonProps & { href: string; external?: boolean });
+  | (CommonProps & { href: string; external: true })
+  | (CommonProps & { href: string; external?: false });
 
 /**
- * A nav item that renders as a button (in-app navigation) or an anchor
- * (external — opens in a new tab with an indicator icon), sharing one
- * style so every item reads the same.
+ * A nav item. Internal targets route client-side; external ones open in a
+ * new tab with an indicator icon. Both share one style so every item reads
+ * the same.
  */
 export function NavLink(props: NavLinkProps) {
-  if ("href" in props) {
+  if (props.external) {
     return (
       <a
         className={styles.link}
-        data-active={props.active || undefined}
-        aria-current={props.active ? "page" : undefined}
         href={props.href}
-        target={props.external ? "_blank" : undefined}
-        rel={props.external ? "noreferrer" : undefined}
+        target="_blank"
+        rel="noreferrer"
       >
         {props.children}
-        {props.external && (
-          <ArrowUpRight className={styles.icon} aria-hidden="true" />
-        )}
+        <ArrowUpRight className={styles.icon} aria-hidden="true" />
       </a>
     );
   }
 
   return (
-    <button
-      type="button"
+    <Link
       className={styles.link}
       data-active={props.active || undefined}
       aria-current={props.active ? "page" : undefined}
-      onClick={props.onClick}
+      href={props.href}
     >
       {props.children}
-    </button>
+    </Link>
   );
 }

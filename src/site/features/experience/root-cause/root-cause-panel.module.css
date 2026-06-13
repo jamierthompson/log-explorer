@@ -1,25 +1,3 @@
-.overlay {
-  position: fixed;
-  inset: 0;
-  z-index: var(--z-overlay);
-  background: var(--overlay-scrim);
-  backdrop-filter: blur(3px);
-}
-
-.content {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  z-index: var(--z-overlay);
-  width: min(34rem, calc(100vw - 2 * var(--content-padding-x)));
-  padding: var(--space-6);
-  background: var(--surface-raised);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-1);
-  outline: none;
-  transform: translate(-50%, -50%);
-}
-
 .title {
   margin: 0 0 var(--space-2);
   font-family: var(--font-sans);
@@ -120,8 +98,8 @@
   color: var(--color-text);
 }
 
-/* A lone centered action at natural width floats oddly in the dialog;
- * give it enough width to read as the verdict's footer. */
+/* A lone centered action at natural width floats oddly; give it enough
+ * width to read as the verdict's footer. */
 .wide {
   min-width: min(10rem, 100%);
 }

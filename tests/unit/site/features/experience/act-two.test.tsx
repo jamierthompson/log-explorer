@@ -4,7 +4,9 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { LogLine } from "@/demo";
 import { ActTwo } from "@/site/features/experience/act-two/act-two";
+import { useDemoState } from "@/site/features/experience/demo-state";
 
+import { DemoProviders } from "../../../../helpers/demo-providers";
 import { getGuideStep } from "../../../../helpers/experience-dom";
 
 const lines: readonly LogLine[] = [
@@ -39,23 +41,43 @@ const lines: readonly LogLine[] = [
   },
 ];
 
+const noop = () => {};
+
+/* Mirrors how the route view drives Act 2: keyed on the act's run id so a
+ * reset remounts it, re-seeding the explorer from the cleared store. */
+function ResettableActTwo() {
+  const { state, resetAct2 } = useDemoState();
+  return (
+    <ActTwo
+      key={state.act2.runId}
+      lines={lines}
+      onReset={resetAct2}
+      onCallRootCause={noop}
+    />
+  );
+}
+
 describe("ActTwo", () => {
   it("opens the root-cause call, which is always available", async () => {
     const user = userEvent.setup();
-    render(<ActTwo lines={lines} />);
+    const onCallRootCause = vi.fn();
+    render(
+      <ActTwo lines={lines} onReset={noop} onCallRootCause={onCallRootCause} />,
+      { wrapper: DemoProviders },
+    );
 
     const call = screen.getByRole("button", { name: /call the root cause/i });
     expect(call).toBeEnabled();
 
     await user.click(call);
-    expect(
-      screen.getByRole("dialog", { name: /what was the root cause/i }),
-    ).toBeInTheDocument();
+    expect(onCallRootCause).toHaveBeenCalledOnce();
   });
 
   it("checks off the guide as the visitor filters and opens context", async () => {
     const user = userEvent.setup();
-    render(<ActTwo lines={lines} />);
+    render(<ActTwo lines={lines} onReset={noop} onCallRootCause={noop} />, {
+      wrapper: DemoProviders,
+    });
 
     const triage = getGuideStep("triage");
     const context = getGuideStep("context");
@@ -68,30 +90,11 @@ describe("ActTwo", () => {
     expect(context).toHaveAttribute("data-done");
   });
 
-  it("closes the verdict dialog when leaving for the story", async () => {
-    const user = userEvent.setup();
-    const onReadStory = vi.fn();
-    render(<ActTwo lines={lines} onReadStory={onReadStory} />);
-
-    await user.click(
-      screen.getByRole("button", { name: /call the root cause/i }),
-    );
-    await user.click(
-      screen.getByRole("button", { name: /config reload shrank/i }),
-    );
-    await user.click(
-      screen.getByRole("button", { name: /read how it was built/i }),
-    );
-
-    expect(onReadStory).toHaveBeenCalledOnce();
-    // The act is only hidden on navigation, so a dialog left open would
-    // float over the story view.
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-  });
-
   it("latches the blast-radius step across contexts opened one at a time", async () => {
     const user = userEvent.setup();
-    render(<ActTwo lines={lines} />);
+    render(<ActTwo lines={lines} onReset={noop} onCallRootCause={noop} />, {
+      wrapper: DemoProviders,
+    });
 
     const radius = getGuideStep("radius");
     await user.click(screen.getByRole("button", { name: /errors only/i }));
@@ -106,5 +109,44 @@ describe("ActTwo", () => {
     // though the two were never open at the same time.
     await user.click(screen.getByText("upstream timeout"));
     expect(radius).toHaveAttribute("data-done");
+  });
+
+  it("seeds the explorer from a persisted filter on mount", async () => {
+    const user = userEvent.setup();
+
+    // Stamp a filter into the store, then mount the act against it.
+    function Harness() {
+      const { state, setAct2Scenarios } = useDemoState();
+      return state.act2.scenarioIds.length === 0 ? (
+        <button onClick={() => setAct2Scenarios(["errors"])}>seed</button>
+      ) : (
+        <ActTwo
+          key={state.act2.runId}
+          lines={lines}
+          onReset={noop}
+          onCallRootCause={noop}
+        />
+      );
+    }
+    render(<Harness />, { wrapper: DemoProviders });
+    await user.click(screen.getByRole("button", { name: "seed" }));
+
+    // The act comes up already filtered — the non-matching line never shows.
+    expect(screen.queryByText("Healthcheck OK")).not.toBeInTheDocument();
+  });
+
+  it("clears the filter and the guide when the act resets", async () => {
+    const user = userEvent.setup();
+    render(<ResettableActTwo />, { wrapper: DemoProviders });
+
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    expect(screen.queryByText("Healthcheck OK")).not.toBeInTheDocument();
+    expect(getGuideStep("triage")).toHaveAttribute("data-done");
+
+    await user.click(screen.getByRole("button", { name: /reset this act/i }));
+
+    // Remounted fresh: filter re-seeded empty, checklist back to start.
+    expect(screen.getByText("Healthcheck OK")).toBeInTheDocument();
+    expect(getGuideStep("triage")).not.toHaveAttribute("data-done");
   });
 });
