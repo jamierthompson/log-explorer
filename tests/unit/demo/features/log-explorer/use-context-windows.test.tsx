@@ -64,6 +64,23 @@ describe("useContextWindows", () => {
     expect(result.current.openContexts).toHaveLength(0);
   });
 
+  it("seeds open contexts from initialContexts, for a restored session", () => {
+    const seed = [{ selectedLineId: "1", range: 40 }];
+    const { result } = renderHook(() =>
+      useContextWindows({
+        lines,
+        linesById,
+        linesIndexById,
+        filterState: traceFilter,
+        scenarios: SCENARIOS,
+        initialContexts: seed,
+      }),
+    );
+    expect(result.current.openContexts).toEqual(seed);
+    // The seeded anchor still matches the seeded filter, so its accent shows.
+    expect(result.current.selectedContextLineIds.has("1")).toBe(true);
+  });
+
   it("toggleContext on a filter-matched line opens a context", () => {
     const { result } = setup();
     act(() => result.current.toggleContext("31"));

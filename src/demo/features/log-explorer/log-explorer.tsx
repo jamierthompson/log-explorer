@@ -15,7 +15,7 @@ import { formatStreamStart } from "@/demo/lib/format-timestamp";
 import { SCENARIOS } from "@/demo/lib/scenarios";
 import { ShortcutSheet } from "@/demo/features/shortcut-sheet/shortcut-sheet";
 import { Legend, type LegendItem } from "@/demo/ui/legend";
-import { isAtFileBoundary } from "@/demo/lib/context-state";
+import { isAtFileBoundary, type OpenContext } from "@/demo/lib/context-state";
 import { deriveLines } from "@/demo/lib/derive-lines";
 import {
   filterReducer,
@@ -38,6 +38,7 @@ export function LogExplorer({
   lines,
   service,
   initialFilter = initialFilterState,
+  initialContexts,
   onStateChange,
   onViewContext,
   showLegend = true,
@@ -46,6 +47,8 @@ export function LogExplorer({
   /** Name of the service emitting the stream, shown in the list header. */
   service?: string;
   initialFilter?: FilterState;
+  /** Context windows to open at mount, for restoring a persisted session. */
+  initialContexts?: readonly OpenContext[];
   onStateChange?: (snapshot: LogExplorerSnapshot) => void;
   onViewContext?: (lineId: string) => void;
   showLegend?: boolean;
@@ -83,6 +86,7 @@ export function LogExplorer({
     linesIndexById,
     filterState,
     scenarios: SCENARIOS,
+    initialContexts,
   });
 
   const derivedLines = useMemo(

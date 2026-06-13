@@ -9,6 +9,8 @@ import {
   type ReactNode,
 } from "react";
 
+import type { OpenContext } from "@/demo";
+
 /** The open context slices in Act 1: which lines are open (by id) and
  * which tab is showing (null means the live tail). */
 type Act1Tabs = {
@@ -44,6 +46,7 @@ type DemoState = {
   readonly act2: {
     readonly runId: number;
     readonly scenarioIds: readonly string[];
+    readonly openContexts: readonly OpenContext[];
     readonly progress: Act2Progress;
   };
 };
@@ -58,6 +61,7 @@ const INITIAL_ACT1: DemoState["act1"] = {
 const INITIAL_ACT2: DemoState["act2"] = {
   runId: 0,
   scenarioIds: [],
+  openContexts: [],
   progress: { triaged: false, traced: false, context: false, radius: false },
 };
 
@@ -70,6 +74,7 @@ type Action =
   | { type: "act1/activateTab"; active: string | null }
   | { type: "act1/markFiltered" }
   | { type: "act2/filter"; scenarioIds: readonly string[] }
+  | { type: "act2/contexts"; openContexts: readonly OpenContext[] }
   | { type: "act2/observe"; observed: Act2Signals }
   | { type: "act1/reset" }
   | { type: "act2/reset" };
@@ -122,6 +127,11 @@ function reducer(state: DemoState, action: Action): DemoState {
         ...state,
         act2: { ...state.act2, scenarioIds: action.scenarioIds },
       };
+    case "act2/contexts":
+      return {
+        ...state,
+        act2: { ...state.act2, openContexts: action.openContexts },
+      };
     case "act2/observe": {
       // The checklist is sticky: a step latches the first time it's
       // observed and never un-latches, so the store only ever gains steps.
@@ -164,6 +174,7 @@ type DemoStateValue = {
   readonly activateAct1Tab: (active: string | null) => void;
   readonly markAct1Filtered: () => void;
   readonly setAct2Scenarios: (ids: readonly string[]) => void;
+  readonly setAct2Contexts: (openContexts: readonly OpenContext[]) => void;
   readonly observeAct2: (observed: Act2Signals) => void;
   readonly resetAct1: () => void;
   readonly resetAct2: () => void;
@@ -217,6 +228,11 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
       dispatch({ type: "act2/filter", scenarioIds }),
     [],
   );
+  const setAct2Contexts = useCallback(
+    (openContexts: readonly OpenContext[]) =>
+      dispatch({ type: "act2/contexts", openContexts }),
+    [],
+  );
   const observeAct2 = useCallback(
     (observed: Act2Signals) => dispatch({ type: "act2/observe", observed }),
     [],
@@ -233,6 +249,7 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
       activateAct1Tab,
       markAct1Filtered,
       setAct2Scenarios,
+      setAct2Contexts,
       observeAct2,
       resetAct1,
       resetAct2,
@@ -245,6 +262,7 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
       activateAct1Tab,
       markAct1Filtered,
       setAct2Scenarios,
+      setAct2Contexts,
       observeAct2,
       resetAct1,
       resetAct2,

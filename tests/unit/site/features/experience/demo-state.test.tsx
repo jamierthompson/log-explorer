@@ -94,6 +94,7 @@ describe("demo state", () => {
       result.current.openAct1Tab("a");
       result.current.markAct1Filtered();
       result.current.setAct2Scenarios(["errors"]);
+      result.current.setAct2Contexts([{ selectedLineId: "x", range: 20 }]);
       result.current.observeAct2({
         triaged: true,
         traced: true,
@@ -122,5 +123,6 @@ describe("demo state", () => {
     expect(result.current.state.act2.runId).toBe(act2RunBefore + 1);
     expect(result.current.state.act2.progress.triaged).toBe(false);
     expect(result.current.state.act2.scenarioIds).toEqual([]);
+    expect(result.current.state.act2.openContexts).toEqual([]);
   });
 });

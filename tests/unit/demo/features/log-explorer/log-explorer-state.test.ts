@@ -28,6 +28,7 @@ describe("deriveSnapshot", () => {
       hasFilter: false,
       activeScenarioIds: [],
       openContextCount: 0,
+      openContexts: [],
       hasExpandedContext: false,
     });
   });
@@ -53,6 +54,11 @@ describe("deriveSnapshot", () => {
       SCENARIOS,
     );
     expect(snapshot.openContextCount).toBe(2);
+    // The windows themselves are carried for a host to persist and restore.
+    expect(snapshot.openContexts).toEqual([
+      { selectedLineId: "a", range: DEFAULT_CONTEXT_RANGE },
+      { selectedLineId: "b", range: DEFAULT_CONTEXT_RANGE },
+    ]);
   });
 
   it("marks hasExpandedContext only once a window grows past the default range", () => {

@@ -38,14 +38,15 @@ export function ActTwo({
   /** Restarts the whole incident from Act 1 — the dialog's closing choice. */
   onReplay?: () => void;
 }) {
-  const { state, setAct2Scenarios, observeAct2 } = useDemoState();
+  const { state, setAct2Scenarios, setAct2Contexts, observeAct2 } =
+    useDemoState();
   const announce = useDemoAnnounce();
 
   const [rootCauseOpen, setRootCauseOpen] = useState(false);
   // Read straight from the store — the single source of truth — so the
   // checklist always reflects persisted progress with no local copy to
   // drift out of sync across navigation.
-  const { scenarioIds, progress } = state.act2;
+  const { scenarioIds, openContexts, progress } = state.act2;
 
   /* The blast-radius step counts every context opened this run, not how
    * many are open at once — the explorer teaches closing a context when
@@ -69,6 +70,7 @@ export function ActTwo({
 
       const active = snapshot.activeScenarioIds;
       setAct2Scenarios(active);
+      setAct2Contexts(snapshot.openContexts);
       observeAct2({
         triaged: active.includes("errors"),
         traced: active.includes("trace"),
@@ -76,7 +78,7 @@ export function ActTwo({
         radius: contextsOpened.current >= 2 || active.includes("instance"),
       });
     },
-    [setAct2Scenarios, observeAct2],
+    [setAct2Scenarios, setAct2Contexts, observeAct2],
   );
 
   const callRootCause = useCallback(() => {
@@ -152,6 +154,7 @@ export function ActTwo({
           lines={lines}
           service="api-gateway"
           initialFilter={filterFromScenarioIds(scenarioIds)}
+          initialContexts={openContexts}
           onStateChange={handleState}
         />
       </ActLayout>
