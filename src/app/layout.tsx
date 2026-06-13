@@ -5,6 +5,7 @@ import { demoFont } from "@/demo";
 import "@/site/styles/tokens.css";
 import "@/site/styles/base.css";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE } from "@/site/lib/site-meta";
+import { SiteShell } from "@/site/shell/site-shell/site-shell";
 import { SkipLink } from "@/site/shell/skip-link/skip-link";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -53,7 +54,7 @@ export default function RootLayout({
     >
       <body>
         <SkipLink />
-        {children}
+        <SiteShell>{children}</SiteShell>
       </body>
     </html>
   );

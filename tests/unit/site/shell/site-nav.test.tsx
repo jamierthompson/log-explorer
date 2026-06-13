@@ -1,22 +1,53 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import type { AnchorHTMLAttributes } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { usePathname } from "next/navigation";
 
 import { SiteNav } from "@/site/shell/site-nav/site-nav";
 
-describe("SiteNav", () => {
-  it("navigates to the view when its link is pressed", async () => {
-    const user = userEvent.setup();
-    const onNavigate = vi.fn();
-    render(<SiteNav view="hero" onNavigate={onNavigate} />);
+vi.mock("next/navigation", () => ({ usePathname: vi.fn() }));
+vi.mock("next/link", () => ({
+  default: ({
+    href,
+    children,
+    ...rest
+  }: AnchorHTMLAttributes<HTMLAnchorElement>) => (
+    <a href={href} {...rest}>
+      {children}
+    </a>
+  ),
+}));
 
-    await user.click(screen.getByRole("button", { name: "Demo" }));
-    expect(onNavigate).toHaveBeenCalledWith("demo");
+describe("SiteNav", () => {
+  beforeEach(() => {
+    vi.mocked(usePathname).mockReturnValue("/");
   });
 
-  it("marks the current view's link active", () => {
-    render(<SiteNav view="story" onNavigate={vi.fn()} />);
-    expect(screen.getByRole("button", { name: "Story" })).toHaveAttribute(
+  it("links each item to its route", () => {
+    render(<SiteNav />);
+    expect(screen.getByRole("link", { name: "Demo" })).toHaveAttribute(
+      "href",
+      "/demo",
+    );
+    expect(screen.getByRole("link", { name: "Story" })).toHaveAttribute(
+      "href",
+      "/story",
+    );
+  });
+
+  it("marks the active section from the current path", () => {
+    vi.mocked(usePathname).mockReturnValue("/story");
+    render(<SiteNav />);
+    expect(screen.getByRole("link", { name: "Story" })).toHaveAttribute(
+      "data-active",
+    );
+  });
+
+  it("treats a demo sub-route as the demo section", () => {
+    vi.mocked(usePathname).mockReturnValue("/demo/in-context");
+    render(<SiteNav />);
+    expect(screen.getByRole("link", { name: "Demo" })).toHaveAttribute(
       "data-active",
     );
   });

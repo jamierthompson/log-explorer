@@ -1,18 +1,8 @@
-.main {
-  outline: none;
-}
-
 .demoView {
   display: flex;
   flex-direction: column;
   min-height: calc(100dvh - var(--topnav-height));
   background: var(--surface-page);
-}
-
-/* The explicit display would otherwise override the hidden attribute's
- * user-agent display: none. */
-.demoView[hidden] {
-  display: none;
 }
 
 .demoInner {

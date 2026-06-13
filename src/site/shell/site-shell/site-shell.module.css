@@ -1,0 +1,6 @@
+/* The route container is a programmatic focus target (skip link, route
+ * changes), not a tabbable control, so it carries no visible ring of its
+ * own — interactive controls keep their :focus-visible styles. */
+.main {
+  outline: none;
+}
