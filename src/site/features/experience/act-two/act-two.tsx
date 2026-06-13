@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 
 import {
   filterFromScenarioIds,
@@ -13,36 +13,32 @@ import { ActLayout } from "../act-layout/act-layout";
 import { useDemoAnnounce } from "../demo-shell";
 import { useDemoState } from "../demo-state";
 import { GuideBox, type GuideItem } from "../guide-box/guide-box";
-import { RootCauseDialog } from "../root-cause-dialog/root-cause-dialog";
 
 /**
  * Act 2 — the method. The real explorer with context-in-place, paired
- * with a guide whose closing action opens the root-cause call. The dialog
- * lives here, with the explorer it concludes.
+ * with a guide whose closing action opens the root-cause call — its own
+ * route, presented as a modal over this evidence.
  *
- * Its checklist is held in the demo store above the route, so leaving for
- * Act 1 (or the story) and returning restores it. A reset clears that
- * state and remounts the act, so the checklist and explorer come back
- * fresh.
+ * Its checklist, filter, and open contexts are held in the demo store
+ * above the route, so leaving for Act 1 (or the story) and returning
+ * restores them. A reset clears that state and remounts the act, so the
+ * checklist and explorer come back fresh.
  */
 export function ActTwo({
   lines,
-  onReadStory,
   onReset,
-  onReplay,
+  onCallRootCause,
 }: {
   lines: readonly LogLine[];
-  onReadStory?: () => void;
   /** Resets this act in place — the guide's per-act control. */
   onReset: () => void;
-  /** Restarts the whole incident from Act 1 — the dialog's closing choice. */
-  onReplay?: () => void;
+  /** Opens the root-cause call. */
+  onCallRootCause: () => void;
 }) {
   const { state, setAct2Scenarios, setAct2Contexts, observeAct2 } =
     useDemoState();
   const announce = useDemoAnnounce();
 
-  const [rootCauseOpen, setRootCauseOpen] = useState(false);
   // Read straight from the store — the single source of truth — so the
   // checklist always reflects persisted progress with no local copy to
   // drift out of sync across navigation.
@@ -81,19 +77,6 @@ export function ActTwo({
     [setAct2Scenarios, setAct2Contexts, observeAct2],
   );
 
-  const callRootCause = useCallback(() => {
-    setRootCauseOpen(true);
-  }, []);
-
-  /*
-   * The dialog portals to the document body; close it as part of the
-   * handoff to the story so it doesn't outlive the act.
-   */
-  const readStoryAndClose = useCallback(() => {
-    setRootCauseOpen(false);
-    onReadStory?.();
-  }, [onReadStory]);
-
   const items: readonly GuideItem[] = [
     {
       id: "triage",
@@ -125,45 +108,37 @@ export function ActTwo({
   ];
 
   return (
-    <>
-      <ActLayout
-        step="Act 2"
-        kicker="In place"
-        title="Open context where the line lives"
-        lead="The same investigation, kept in one view. The trace can show you where checkout broke — opening context in place shows you why."
-        aside={
-          <GuideBox
-            title="The Method"
-            items={items}
-            onAnnounce={announce}
-            onReset={onReset}
-            action={{
-              label: "Call the root cause",
-              onClick: callRootCause,
-            }}
-            foot={
-              <>
-                Checkout times out at <strong>13:31:58</strong>. What put it
-                there?
-              </>
-            }
-          />
-        }
-      >
-        <LogExplorer
-          lines={lines}
-          service="api-gateway"
-          initialFilter={filterFromScenarioIds(scenarioIds)}
-          initialContexts={openContexts}
-          onStateChange={handleState}
+    <ActLayout
+      step="Act 2"
+      kicker="In place"
+      title="Open context where the line lives"
+      lead="The same investigation, kept in one view. The trace can show you where checkout broke — opening context in place shows you why."
+      aside={
+        <GuideBox
+          title="The Method"
+          items={items}
+          onAnnounce={announce}
+          onReset={onReset}
+          action={{
+            label: "Call the root cause",
+            onClick: onCallRootCause,
+          }}
+          foot={
+            <>
+              Checkout times out at <strong>13:31:58</strong>. What put it
+              there?
+            </>
+          }
         />
-      </ActLayout>
-      <RootCauseDialog
-        open={rootCauseOpen}
-        onOpenChange={setRootCauseOpen}
-        onReplay={onReplay}
-        onReadStory={onReadStory && readStoryAndClose}
+      }
+    >
+      <LogExplorer
+        lines={lines}
+        service="api-gateway"
+        initialFilter={filterFromScenarioIds(scenarioIds)}
+        initialContexts={openContexts}
+        onStateChange={handleState}
       />
-    </>
+    </ActLayout>
   );
 }

@@ -2,90 +2,42 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
-import { RootCauseDialog } from "@/site/features/experience/root-cause-dialog/root-cause-dialog";
+import { RootCauseDialog } from "@/site/features/experience/root-cause/root-cause-dialog";
 
 describe("RootCauseDialog", () => {
-  it("celebrates the correct cause and offers the story and a replay", async () => {
+  it("names and describes itself from the live question, then the verdict", async () => {
     const user = userEvent.setup();
-    const onReplay = vi.fn();
-    const onReadStory = vi.fn();
-    render(
-      <RootCauseDialog
-        open
-        onOpenChange={vi.fn()}
-        onReplay={onReplay}
-        onReadStory={onReadStory}
-      />,
-    );
+    render(<RootCauseDialog onClose={vi.fn()} />);
 
-    expect(screen.getByText("What was the root cause?")).toBeInTheDocument();
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toHaveAccessibleName(/what was the root cause/i);
+    expect(dialog).toHaveAccessibleDescription(/make the call/i);
 
     await user.click(screen.getByRole("button", { name: /config reload/i }));
-
-    expect(screen.getByText("Root cause found")).toBeInTheDocument();
-    await user.click(
-      screen.getByRole("button", { name: /read how it was built/i }),
-    );
-    expect(onReadStory).toHaveBeenCalledOnce();
-
-    await user.click(
-      screen.getByRole("button", { name: /replay the incident/i }),
-    );
-    expect(onReplay).toHaveBeenCalledOnce();
+    // The verdict relabels the dialog and names the picked cause.
+    const verdict = screen.getByRole("dialog");
+    expect(verdict).toHaveAccessibleName(/root cause found/i);
+    expect(verdict).toHaveAccessibleDescription(/config reload/i);
   });
 
-  it("omits the onward actions when no callbacks are provided", async () => {
+  it("closes when dismissed", async () => {
     const user = userEvent.setup();
-    render(<RootCauseDialog open onOpenChange={vi.fn()} />);
+    const onClose = vi.fn();
+    render(<RootCauseDialog onClose={onClose} />);
 
-    await user.click(screen.getByRole("button", { name: /config reload/i }));
-
-    expect(screen.getByText("Root cause found")).toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: /read how it was built/i }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: /replay the incident/i }),
-    ).not.toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    expect(onClose).toHaveBeenCalled();
   });
 
-  it("describes the dialog from its visible prose in both states", async () => {
+  it("focuses the verdict heading through the injected dialog title", async () => {
     const user = userEvent.setup();
-    render(<RootCauseDialog open onOpenChange={vi.fn()} />);
-
-    expect(screen.getByRole("dialog")).toHaveAccessibleDescription(
-      /make the call/i,
-    );
+    render(<RootCauseDialog onClose={vi.fn()} />);
 
     await user.click(screen.getByRole("button", { name: /config reload/i }));
-    // The verdict names the picked cause — that's its description.
-    expect(screen.getByRole("dialog")).toHaveAccessibleDescription(
-      /config reload/i,
-    );
-  });
-
-  it("focuses the verdict heading so the outcome is read aloud", async () => {
-    const user = userEvent.setup();
-    render(<RootCauseDialog open onOpenChange={vi.fn()} />);
-
-    await user.click(screen.getByRole("button", { name: /config reload/i }));
-
+    // The panel's focus ref has to forward through Radix's Dialog.Title here,
+    // not just a plain heading, for the outcome to be announced.
     expect(
       screen.getByRole("heading", { name: "Root cause found" }),
     ).toHaveFocus();
-  });
-
-  it("nudges gently on a wrong cause and lets the visitor reconsider", async () => {
-    const user = userEvent.setup();
-    render(<RootCauseDialog open onOpenChange={vi.fn()} />);
-
-    await user.click(screen.getByRole("button", { name: /database is down/i }));
-
-    // Encouraging, not a verdict of failure.
-    expect(screen.getByText("Keep looking")).toBeInTheDocument();
-
-    await user.click(screen.getByRole("button", { name: /reconsider/i }));
-    // Back to the full slate of suspects.
-    expect(screen.getByText("What was the root cause?")).toBeInTheDocument();
   });
 });

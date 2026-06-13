@@ -41,32 +41,41 @@ const lines: readonly LogLine[] = [
   },
 ];
 
+const noop = () => {};
+
 /* Mirrors how the route view drives Act 2: keyed on the act's run id so a
  * reset remounts it, re-seeding the explorer from the cleared store. */
 function ResettableActTwo() {
   const { state, resetAct2 } = useDemoState();
-  return <ActTwo key={state.act2.runId} lines={lines} onReset={resetAct2} />;
+  return (
+    <ActTwo
+      key={state.act2.runId}
+      lines={lines}
+      onReset={resetAct2}
+      onCallRootCause={noop}
+    />
+  );
 }
 
 describe("ActTwo", () => {
   it("opens the root-cause call, which is always available", async () => {
     const user = userEvent.setup();
-    render(<ActTwo lines={lines} onReset={() => {}} />, {
-      wrapper: DemoProviders,
-    });
+    const onCallRootCause = vi.fn();
+    render(
+      <ActTwo lines={lines} onReset={noop} onCallRootCause={onCallRootCause} />,
+      { wrapper: DemoProviders },
+    );
 
     const call = screen.getByRole("button", { name: /call the root cause/i });
     expect(call).toBeEnabled();
 
     await user.click(call);
-    expect(
-      screen.getByRole("dialog", { name: /what was the root cause/i }),
-    ).toBeInTheDocument();
+    expect(onCallRootCause).toHaveBeenCalledOnce();
   });
 
   it("checks off the guide as the visitor filters and opens context", async () => {
     const user = userEvent.setup();
-    render(<ActTwo lines={lines} onReset={() => {}} />, {
+    render(<ActTwo lines={lines} onReset={noop} onCallRootCause={noop} />, {
       wrapper: DemoProviders,
     });
 
@@ -81,35 +90,9 @@ describe("ActTwo", () => {
     expect(context).toHaveAttribute("data-done");
   });
 
-  it("closes the verdict dialog when leaving for the story", async () => {
-    const user = userEvent.setup();
-    const onReadStory = vi.fn();
-    render(
-      <ActTwo lines={lines} onReadStory={onReadStory} onReset={() => {}} />,
-      {
-        wrapper: DemoProviders,
-      },
-    );
-
-    await user.click(
-      screen.getByRole("button", { name: /call the root cause/i }),
-    );
-    await user.click(
-      screen.getByRole("button", { name: /config reload shrank/i }),
-    );
-    await user.click(
-      screen.getByRole("button", { name: /read how it was built/i }),
-    );
-
-    expect(onReadStory).toHaveBeenCalledOnce();
-    // The act is only hidden on navigation, so a dialog left open would
-    // float over the story view.
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-  });
-
   it("latches the blast-radius step across contexts opened one at a time", async () => {
     const user = userEvent.setup();
-    render(<ActTwo lines={lines} onReset={() => {}} />, {
+    render(<ActTwo lines={lines} onReset={noop} onCallRootCause={noop} />, {
       wrapper: DemoProviders,
     });
 
@@ -137,7 +120,12 @@ describe("ActTwo", () => {
       return state.act2.scenarioIds.length === 0 ? (
         <button onClick={() => setAct2Scenarios(["errors"])}>seed</button>
       ) : (
-        <ActTwo key={state.act2.runId} lines={lines} onReset={() => {}} />
+        <ActTwo
+          key={state.act2.runId}
+          lines={lines}
+          onReset={noop}
+          onCallRootCause={noop}
+        />
       );
     }
     render(<Harness />, { wrapper: DemoProviders });
