@@ -16,8 +16,8 @@ import { GuideBox, type GuideItem } from "../guide-box/guide-box";
 
 /**
  * Act 2 — the method. The real explorer with context-in-place, paired
- * with a guide whose closing action opens the root-cause call — its own
- * route, presented as a modal over this evidence.
+ * with a guide whose closing action navigates to the root-cause call on
+ * its own route.
  *
  * Its checklist, filter, and open contexts are held in the demo store
  * above the route, so leaving for Act 1 (or the story) and returning

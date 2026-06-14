@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, type ElementType } from "react";
+import { useCallback, useState } from "react";
 
 import { Button } from "@/site/ui/button/button";
 
@@ -8,11 +8,9 @@ import { CAUSES, CORRECT_CAUSE_ID, type Cause } from "./causes";
 import styles from "./root-cause-panel.module.css";
 
 /**
- * The root-cause call's content, free of any modal or page chrome so it can
- * render both as the intercepting-route dialog and as the standalone page.
- * The heading and description elements are injected — the modal passes the
- * dialog primitives that name and describe it, the page passes plain
- * semantics — so the live question/verdict labels the surface either way.
+ * The root-cause call's content, free of page chrome so the route can frame
+ * it. The live heading swaps between the question and the verdict, so the
+ * heading element is what names the surface as the outcome changes.
  *
  * Choices render from CAUSES and selection routes through one handler, so
  * per-choice behavior stays local to this component.
@@ -20,13 +18,9 @@ import styles from "./root-cause-panel.module.css";
 export function RootCausePanel({
   onReplay,
   onReadStory,
-  Title = "h2",
-  Description = "p",
 }: {
   onReplay?: () => void;
   onReadStory?: () => void;
-  Title?: ElementType;
-  Description?: ElementType;
 }) {
   const [picked, setPicked] = useState<Cause | null>(null);
 
@@ -42,10 +36,10 @@ export function RootCausePanel({
     const isCorrect = picked.id === CORRECT_CAUSE_ID;
     return (
       <div className={styles.result} data-correct={isCorrect || undefined}>
-        <Title ref={focusVerdict} tabIndex={-1} className={styles.eyebrow}>
+        <h2 ref={focusVerdict} tabIndex={-1} className={styles.eyebrow}>
           {isCorrect ? "Root cause found" : "Keep looking"}
-        </Title>
-        <Description className={styles.resultName}>{picked.name}</Description>
+        </h2>
+        <p className={styles.resultName}>{picked.name}</p>
         {picked.outcome.map((paragraph, i) => (
           <p key={i} className={styles.lesson}>
             {paragraph}
@@ -84,10 +78,10 @@ export function RootCausePanel({
 
   return (
     <>
-      <Title className={styles.title}>What was the root cause?</Title>
-      <Description className={styles.description}>
+      <h2 className={styles.title}>What was the root cause?</h2>
+      <p className={styles.description}>
         You’ve followed the failing request through its context. Make the call.
-      </Description>
+      </p>
       <div className={styles.choices}>
         {CAUSES.map((cause) => (
           <button
