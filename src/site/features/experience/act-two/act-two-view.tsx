@@ -9,8 +9,8 @@ import { ROOT_CAUSE_PATH } from "../root-cause/route";
 import { ActTwo } from "./act-two";
 
 /** Act 2 wired into the demo segment: the guide's reset clears this act in
- * place, and the closing action opens the root-cause call (its own route,
- * shown as a modal over this act). */
+ * place, and the closing action navigates to the root-cause call's own
+ * route. */
 export function ActTwoView() {
   const router = useRouter();
   const { state, resetAct2 } = useDemoState();
