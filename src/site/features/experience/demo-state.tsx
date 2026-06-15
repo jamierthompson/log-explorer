@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 
-import type { OpenContext } from "@/demo";
+import { DEFAULT_CONTEXT_RANGE, type OpenContext } from "@/demo";
 
 /** The scattered context slices of the old way: which lines are open (by
  * id) and which tab is showing (null means the live tail). */
@@ -32,14 +32,20 @@ type Progress = {
  * Progress, so a false reading here can't clear a latched step. */
 type ProgressSignals = Progress;
 
+/** Which way the investigation is being run: the old way scatters context
+ * into tabs; the cut switches the same explorer to expanding context in
+ * place. */
+export type Phase = "old-way" | "in-place";
+
 /* One investigation, shared across the whole demo. `runId` bumps on reset
  * so the view remounts and the explorer's internal filter — which can't be
- * cleared any other way — starts over. The filter (scenarioIds), the
- * scattered tabs of the old way, the stacked in-place contexts, and the
- * checklist all live here, so they survive in-app navigation and reset
+ * cleared any other way — starts over. The phase, filter (scenarioIds),
+ * the scattered tabs of the old way, the stacked in-place contexts, and
+ * the checklist all live here, so they survive in-app navigation and reset
  * together as one investigation. */
 type DemoState = {
   readonly runId: number;
+  readonly phase: Phase;
   readonly scenarioIds: readonly string[];
   readonly everFiltered: boolean;
   readonly tabs: Tabs;
@@ -49,6 +55,7 @@ type DemoState = {
 
 const INITIAL_STATE: DemoState = {
   runId: 0,
+  phase: "old-way",
   scenarioIds: [],
   everFiltered: false,
   tabs: { ids: [], active: null },
@@ -64,6 +71,7 @@ type Action =
   | { type: "markFiltered" }
   | { type: "contexts"; openContexts: readonly OpenContext[] }
   | { type: "observe"; observed: ProgressSignals }
+  | { type: "cut" }
   | { type: "reset" };
 
 function reducer(state: DemoState, action: Action): DemoState {
@@ -113,6 +121,22 @@ function reducer(state: DemoState, action: Action): DemoState {
       }
       return { ...state, progress: next };
     }
+    case "cut": {
+      // The cut migrates the scattered slices into stacked in-place
+      // contexts: each open tab becomes a context window on the same
+      // anchor, so the visitor's work carries across the switch instead of
+      // restarting. Idempotent — the demo only ever moves toward in place.
+      if (state.phase === "in-place") return state;
+      const existing = new Set(state.openContexts.map((c) => c.selectedLineId));
+      const migrated = state.tabs.ids
+        .filter((id) => !existing.has(id))
+        .map((id) => ({ selectedLineId: id, range: DEFAULT_CONTEXT_RANGE }));
+      return {
+        ...state,
+        phase: "in-place",
+        openContexts: [...state.openContexts, ...migrated],
+      };
+    }
     case "reset":
       return { ...INITIAL_STATE, runId: state.runId + 1 };
   }
@@ -127,6 +151,8 @@ type DemoStateValue = {
   readonly markFiltered: () => void;
   readonly setContexts: (openContexts: readonly OpenContext[]) => void;
   readonly observe: (observed: ProgressSignals) => void;
+  /** Switches to in place, folding the open tabs into stacked contexts. */
+  readonly cut: () => void;
   /** Clears the whole investigation and starts its run over. */
   readonly reset: () => void;
 };
@@ -183,6 +209,7 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
     (observed: ProgressSignals) => dispatch({ type: "observe", observed }),
     [],
   );
+  const cut = useCallback(() => dispatch({ type: "cut" }), []);
   const reset = useCallback(() => dispatch({ type: "reset" }), []);
 
   const value = useMemo<DemoStateValue>(
@@ -195,6 +222,7 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
       markFiltered,
       setContexts,
       observe,
+      cut,
       reset,
     }),
     [
@@ -206,6 +234,7 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
       markFiltered,
       setContexts,
       observe,
+      cut,
       reset,
     ],
   );

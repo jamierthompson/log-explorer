@@ -81,6 +81,27 @@ describe("demo state", () => {
     expect(result.current.state).toBe(latched);
   });
 
+  it("cuts to in place, folding open tabs into stacked contexts", () => {
+    const { result } = setup();
+    act(() => {
+      result.current.openTab("a");
+      result.current.openTab("b");
+    });
+
+    act(() => result.current.cut());
+    expect(result.current.state.phase).toBe("in-place");
+    expect(result.current.state.openContexts).toEqual([
+      { selectedLineId: "a", range: 20 },
+      { selectedLineId: "b", range: 20 },
+    ]);
+
+    // The cut only ever moves toward in place — a second one is a no-op, so
+    // no new state object is produced and the contexts don't duplicate.
+    const after = result.current.state;
+    act(() => result.current.cut());
+    expect(result.current.state).toBe(after);
+  });
+
   it("resets the whole investigation as one, bumping the run id", () => {
     const { result } = setup();
     act(() => {
@@ -94,15 +115,17 @@ describe("demo state", () => {
         context: true,
         radius: true,
       });
+      result.current.cut();
     });
 
     const runBefore = result.current.state.runId;
     act(() => result.current.reset());
 
-    // Filter, tabs, contexts, and checklist all clear at once, and the run
-    // id advances so the view remounts with a cleared explorer filter.
+    // Phase, filter, tabs, contexts, and checklist all clear at once, and
+    // the run id advances so the view remounts with a cleared explorer.
     expect(result.current.state).toEqual({
       runId: runBefore + 1,
+      phase: "old-way",
       scenarioIds: [],
       everFiltered: false,
       tabs: { ids: [], active: null },
