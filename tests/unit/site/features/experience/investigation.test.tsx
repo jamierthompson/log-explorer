@@ -106,7 +106,7 @@ describe("Investigation — the old way", () => {
     expect(screen.queryByText("Healthcheck OK")).not.toBeInTheDocument();
   });
 
-  it("checks off triage but gates the in-place steps behind the cut", async () => {
+  it("checks off triage but gates the in-place payoff behind the cut", async () => {
     const user = userEvent.setup();
     renderInvestigation();
 
@@ -115,10 +115,10 @@ describe("Investigation — the old way", () => {
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     expect(getGuideStep("triage")).toHaveAttribute("data-done");
 
-    // Opening a tab is not opening context in place — that step can't be
-    // earned the old way.
+    // Opening a tab is not holding it in one view — the payoff step can't
+    // be earned the old way.
     await user.click(screen.getByText("request timeout"));
-    expect(getGuideStep("context")).not.toHaveAttribute("data-done");
+    expect(getGuideStep("together")).not.toHaveAttribute("data-done");
   });
 
   it("reopening an already-open line reuses its tab", async () => {
@@ -211,11 +211,11 @@ describe("Investigation — the cut", () => {
     await cut(user);
 
     // The tab chrome is gone — the explorer now expands context in place —
-    // and the scattered slices carried across as the in-place context step.
+    // and the fold completes the in-place payoff step.
     expect(
       screen.queryByRole("tab", { name: "Live tail" }),
     ).not.toBeInTheDocument();
-    expect(getGuideStep("context")).toHaveAttribute("data-done");
+    expect(getGuideStep("together")).toHaveAttribute("data-done");
     // The forward action is now the closing call, not another cut.
     expect(
       screen.getByRole("button", { name: /call the root cause/i }),
@@ -239,34 +239,16 @@ describe("Investigation — in place", () => {
     expect(onCallRootCause).toHaveBeenCalledOnce();
   });
 
-  it("checks off triage and context as the visitor works in place", async () => {
+  it("completes the payoff on the cut and still tracks triage in place", async () => {
     const user = userEvent.setup();
     renderInvestigation();
     await cut(user);
+
+    // Landing in place is itself the payoff — it completes as the fold lands.
+    expect(getGuideStep("together")).toHaveAttribute("data-done");
 
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     expect(getGuideStep("triage")).toHaveAttribute("data-done");
-
-    await user.click(screen.getByText("request timeout"));
-    expect(getGuideStep("context")).toHaveAttribute("data-done");
-  });
-
-  it("latches the blast-radius step across contexts opened one at a time", async () => {
-    const user = userEvent.setup();
-    renderInvestigation();
-    await cut(user);
-
-    const radius = getGuideStep("radius");
-    await user.click(screen.getByRole("button", { name: /errors only/i }));
-
-    // One place examined isn't a blast radius yet.
-    await user.click(screen.getByText("request timeout"));
-    await user.click(screen.getByText("request timeout"));
-    expect(radius).not.toHaveAttribute("data-done");
-
-    // A second place, even though the two were never open together.
-    await user.click(screen.getByText("upstream timeout"));
-    expect(radius).toHaveAttribute("data-done");
   });
 
   it("clears the filter, the guide, and the phase when reset", async () => {

@@ -35,7 +35,7 @@ function StateProbe() {
       <button
         onClick={() => {
           setScenarios(["errors"]);
-          observe({ triaged: true, traced: true, context: true, radius: true });
+          observe({ triaged: true, traced: true });
         }}
       >
         seed

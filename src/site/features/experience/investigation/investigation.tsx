@@ -85,13 +85,6 @@ export function Investigation({
   const inPlace = phase === "in-place";
   const liveTabRef = useRef<HTMLButtonElement>(null);
 
-  /* Cumulative in-place context opens this run, for the blast-radius step.
-   * Local refs that restart at zero on remount (a reset or return visit);
-   * safe only because the step is sticky in the store — a fresh counter can
-   * re-observe the step but never un-observe it. */
-  const contextsOpened = useRef(0);
-  const prevOpenCount = useRef(0);
-
   const tabs = useMemo<readonly ContextTab[]>(
     () =>
       storedTabs.ids
@@ -114,24 +107,14 @@ export function Investigation({
       if (snapshot.hasFilter) markFiltered();
       setScenarios(snapshot.activeScenarioIds);
 
-      // Context only opens in place; in the old way it's delegated to tabs,
-      // so these readings are meaningful only after the cut.
-      if (inPlace) {
-        if (snapshot.openContextCount > prevOpenCount.current) {
-          contextsOpened.current +=
-            snapshot.openContextCount - prevOpenCount.current;
-        }
-        prevOpenCount.current = snapshot.openContextCount;
-        setContexts(snapshot.openContexts);
-      }
+      // Context only opens in place; in the old way it's delegated to tabs.
+      // Persist it so it survives navigation and re-seeds the explorer back.
+      if (inPlace) setContexts(snapshot.openContexts);
 
       const a = snapshot.activeScenarioIds;
       observe({
         triaged: a.includes("errors"),
         traced: a.includes("trace"),
-        context: inPlace && snapshot.openContextCount >= 1,
-        radius:
-          a.includes("instance") || (inPlace && contextsOpened.current >= 2),
       });
     },
     [inPlace, markFiltered, setScenarios, setContexts, observe],
@@ -161,18 +144,12 @@ export function Investigation({
       done: progress.traced,
     },
     {
-      id: "context",
-      title: "Open context where the line lives",
-      description:
-        "The cause carries no request id — only the lines around the failure show it.",
-      done: progress.context,
-    },
-    {
-      id: "radius",
-      title: "Check the blast radius",
-      description:
-        "One instance, or all three? Open another context — or narrow to @kc4qn — and see.",
-      done: progress.radius,
+      id: "together",
+      title: "Hold the whole investigation in one view",
+      description: inPlace
+        ? "Your scattered slices are stacked here — filter and place intact."
+        : "The old way can’t — each look strands another slice in its own tab.",
+      done: inPlace,
     },
   ];
 

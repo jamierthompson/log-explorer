@@ -56,27 +56,13 @@ describe("demo state", () => {
   it("latches checklist steps stickily and ignores redundant observations", () => {
     const { result } = setup();
 
-    act(() =>
-      result.current.observe({
-        triaged: true,
-        traced: false,
-        context: false,
-        radius: false,
-      }),
-    );
+    act(() => result.current.observe({ triaged: true, traced: false }));
     expect(result.current.state.progress.triaged).toBe(true);
     const latched = result.current.state;
 
     // Observing the step as false again doesn't un-latch it, and a round
     // that adds nothing new produces no new state object.
-    act(() =>
-      result.current.observe({
-        triaged: false,
-        traced: false,
-        context: false,
-        radius: false,
-      }),
-    );
+    act(() => result.current.observe({ triaged: false, traced: false }));
     expect(result.current.state.progress.triaged).toBe(true);
     expect(result.current.state).toBe(latched);
   });
@@ -109,12 +95,7 @@ describe("demo state", () => {
       result.current.openTab("a");
       result.current.markFiltered();
       result.current.setContexts([{ selectedLineId: "x", range: 20 }]);
-      result.current.observe({
-        triaged: true,
-        traced: true,
-        context: true,
-        radius: true,
-      });
+      result.current.observe({ triaged: true, traced: true });
       result.current.cut();
     });
 
@@ -130,12 +111,7 @@ describe("demo state", () => {
       everFiltered: false,
       tabs: { ids: [], active: null },
       openContexts: [],
-      progress: {
-        triaged: false,
-        traced: false,
-        context: false,
-        radius: false,
-      },
+      progress: { triaged: false, traced: false },
     });
   });
 });

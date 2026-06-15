@@ -19,12 +19,12 @@ type Tabs = {
 };
 
 /** The investigation's sticky checklist — each step latches the first
- * time the explorer reports it and never un-latches. */
+ * time the explorer reports it and never un-latches. The in-place payoff
+ * step isn't tracked here; it derives from the phase (the cut is what
+ * earns it) so it can't be observed false back to undone. */
 type Progress = {
   readonly triaged: boolean;
   readonly traced: boolean;
-  readonly context: boolean;
-  readonly radius: boolean;
 };
 
 /** The steps seen true in a single snapshot — transient readings, not
@@ -60,7 +60,7 @@ const INITIAL_STATE: DemoState = {
   everFiltered: false,
   tabs: { ids: [], active: null },
   openContexts: [],
-  progress: { triaged: false, traced: false, context: false, radius: false },
+  progress: { triaged: false, traced: false },
 };
 
 type Action =
@@ -108,15 +108,8 @@ function reducer(state: DemoState, action: Action): DemoState {
       const next: Progress = {
         triaged: p.triaged || o.triaged,
         traced: p.traced || o.traced,
-        context: p.context || o.context,
-        radius: p.radius || o.radius,
       };
-      if (
-        next.triaged === p.triaged &&
-        next.traced === p.traced &&
-        next.context === p.context &&
-        next.radius === p.radius
-      ) {
+      if (next.triaged === p.triaged && next.traced === p.traced) {
         return state;
       }
       return { ...state, progress: next };
