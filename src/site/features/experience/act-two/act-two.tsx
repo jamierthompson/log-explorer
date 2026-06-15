@@ -35,14 +35,13 @@ export function ActTwo({
   /** Opens the root-cause call. */
   onCallRootCause: () => void;
 }) {
-  const { state, setAct2Scenarios, setAct2Contexts, observeAct2 } =
-    useDemoState();
+  const { state, setScenarios, setContexts, observe } = useDemoState();
   const announce = useDemoAnnounce();
 
   // Read straight from the store — the single source of truth — so the
   // checklist always reflects persisted progress with no local copy to
   // drift out of sync across navigation.
-  const { scenarioIds, openContexts, progress } = state.act2;
+  const { scenarioIds, openContexts, progress } = state;
 
   /* The blast-radius step counts every context opened this run, not how
    * many are open at once — the explorer teaches closing a context when
@@ -65,16 +64,16 @@ export function ActTwo({
       prevOpenCount.current = snapshot.openContextCount;
 
       const active = snapshot.activeScenarioIds;
-      setAct2Scenarios(active);
-      setAct2Contexts(snapshot.openContexts);
-      observeAct2({
+      setScenarios(active);
+      setContexts(snapshot.openContexts);
+      observe({
         triaged: active.includes("errors"),
         traced: active.includes("trace"),
         context: snapshot.openContextCount >= 1,
         radius: contextsOpened.current >= 2 || active.includes("instance"),
       });
     },
-    [setAct2Scenarios, setAct2Contexts, observeAct2],
+    [setScenarios, setContexts, observe],
   );
 
   const items: readonly GuideItem[] = [

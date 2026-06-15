@@ -14,88 +14,81 @@ describe("demo state", () => {
   it("opens a tab and activates it, without duplicating an open id", () => {
     const { result } = setup();
 
-    act(() => result.current.openAct1Tab("a"));
-    expect(result.current.state.act1.tabs).toEqual({ ids: ["a"], active: "a" });
+    act(() => result.current.openTab("a"));
+    expect(result.current.state.tabs).toEqual({ ids: ["a"], active: "a" });
 
-    act(() => result.current.openAct1Tab("b"));
-    expect(result.current.state.act1.tabs).toEqual({
-      ids: ["a", "b"],
-      active: "b",
-    });
+    act(() => result.current.openTab("b"));
+    expect(result.current.state.tabs).toEqual({ ids: ["a", "b"], active: "b" });
 
     // Reopening an open id re-activates it rather than adding a second tab.
-    act(() => result.current.activateAct1Tab(null));
-    act(() => result.current.openAct1Tab("a"));
-    expect(result.current.state.act1.tabs).toEqual({
-      ids: ["a", "b"],
-      active: "a",
-    });
+    act(() => result.current.activateTab(null));
+    act(() => result.current.openTab("a"));
+    expect(result.current.state.tabs).toEqual({ ids: ["a", "b"], active: "a" });
   });
 
   it("falls back to the live tail only when the active tab closes", () => {
     const { result } = setup();
-    act(() => result.current.openAct1Tab("a"));
-    act(() => result.current.openAct1Tab("b"));
+    act(() => result.current.openTab("a"));
+    act(() => result.current.openTab("b"));
 
     // Closing a non-active tab leaves the active one in place.
-    act(() => result.current.closeAct1Tab("a"));
-    expect(result.current.state.act1.tabs).toEqual({ ids: ["b"], active: "b" });
+    act(() => result.current.closeTab("a"));
+    expect(result.current.state.tabs).toEqual({ ids: ["b"], active: "b" });
 
     // Closing the active tab returns to the live tail.
-    act(() => result.current.closeAct1Tab("b"));
-    expect(result.current.state.act1.tabs).toEqual({ ids: [], active: null });
+    act(() => result.current.closeTab("b"));
+    expect(result.current.state.tabs).toEqual({ ids: [], active: null });
   });
 
   it("latches everFiltered idempotently", () => {
     const { result } = setup();
-    expect(result.current.state.act1.everFiltered).toBe(false);
+    expect(result.current.state.everFiltered).toBe(false);
 
-    act(() => result.current.markAct1Filtered());
+    act(() => result.current.markFiltered());
     const latched = result.current.state;
-    expect(latched.act1.everFiltered).toBe(true);
+    expect(latched.everFiltered).toBe(true);
 
     // A second mark is a no-op, so no new state object is produced.
-    act(() => result.current.markAct1Filtered());
+    act(() => result.current.markFiltered());
     expect(result.current.state).toBe(latched);
   });
 
-  it("latches Act 2 steps stickily and ignores redundant observations", () => {
+  it("latches checklist steps stickily and ignores redundant observations", () => {
     const { result } = setup();
 
     act(() =>
-      result.current.observeAct2({
+      result.current.observe({
         triaged: true,
         traced: false,
         context: false,
         radius: false,
       }),
     );
-    expect(result.current.state.act2.progress.triaged).toBe(true);
+    expect(result.current.state.progress.triaged).toBe(true);
     const latched = result.current.state;
 
     // Observing the step as false again doesn't un-latch it, and a round
     // that adds nothing new produces no new state object.
     act(() =>
-      result.current.observeAct2({
+      result.current.observe({
         triaged: false,
         traced: false,
         context: false,
         radius: false,
       }),
     );
-    expect(result.current.state.act2.progress.triaged).toBe(true);
+    expect(result.current.state.progress.triaged).toBe(true);
     expect(result.current.state).toBe(latched);
   });
 
-  it("resets one act without touching the other, bumping only its run id", () => {
+  it("resets the whole investigation as one, bumping the run id", () => {
     const { result } = setup();
     act(() => {
-      result.current.setAct1Scenarios(["errors"]);
-      result.current.openAct1Tab("a");
-      result.current.markAct1Filtered();
-      result.current.setAct2Scenarios(["errors"]);
-      result.current.setAct2Contexts([{ selectedLineId: "x", range: 20 }]);
-      result.current.observeAct2({
+      result.current.setScenarios(["errors"]);
+      result.current.openTab("a");
+      result.current.markFiltered();
+      result.current.setContexts([{ selectedLineId: "x", range: 20 }]);
+      result.current.observe({
         triaged: true,
         traced: true,
         context: true,
@@ -103,26 +96,23 @@ describe("demo state", () => {
       });
     });
 
-    const act2Before = result.current.state.act2;
-    const act1RunBefore = result.current.state.act1.runId;
+    const runBefore = result.current.state.runId;
+    act(() => result.current.reset());
 
-    act(() => result.current.resetAct1());
-
-    // Act 1 is cleared and its run id advances...
-    expect(result.current.state.act1).toEqual({
-      runId: act1RunBefore + 1,
+    // Filter, tabs, contexts, and checklist all clear at once, and the run
+    // id advances so the view remounts with a cleared explorer filter.
+    expect(result.current.state).toEqual({
+      runId: runBefore + 1,
       scenarioIds: [],
-      tabs: { ids: [], active: null },
       everFiltered: false,
+      tabs: { ids: [], active: null },
+      openContexts: [],
+      progress: {
+        triaged: false,
+        traced: false,
+        context: false,
+        radius: false,
+      },
     });
-    // ...while Act 2 is left exactly as it was.
-    expect(result.current.state.act2).toBe(act2Before);
-
-    const act2RunBefore = result.current.state.act2.runId;
-    act(() => result.current.resetAct2());
-    expect(result.current.state.act2.runId).toBe(act2RunBefore + 1);
-    expect(result.current.state.act2.progress.triaged).toBe(false);
-    expect(result.current.state.act2.scenarioIds).toEqual([]);
-    expect(result.current.state.act2.openContexts).toEqual([]);
   });
 });

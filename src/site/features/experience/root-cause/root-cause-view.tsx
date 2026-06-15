@@ -11,7 +11,7 @@ import styles from "./root-cause-view.module.css";
  * reached from Act 2's "Call the root cause" action. */
 export function RootCauseView() {
   const router = useRouter();
-  const { resetAct1, resetAct2 } = useDemoState();
+  const { reset } = useDemoState();
 
   return (
     <div className={styles.page}>
@@ -19,8 +19,7 @@ export function RootCauseView() {
         <RootCausePanel
           onReadStory={() => router.push("/story")}
           onReplay={() => {
-            resetAct1();
-            resetAct2();
+            reset();
             router.push("/demo");
           }}
         />

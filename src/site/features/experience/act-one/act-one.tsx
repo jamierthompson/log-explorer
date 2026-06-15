@@ -64,17 +64,11 @@ export function ActOne({
   onAdvance: () => void;
   onReset: () => void;
 }) {
-  const {
-    state,
-    setAct1Scenarios,
-    openAct1Tab,
-    closeAct1Tab,
-    activateAct1Tab,
-    markAct1Filtered,
-  } = useDemoState();
+  const { state, setScenarios, openTab, closeTab, activateTab, markFiltered } =
+    useDemoState();
   const announce = useDemoAnnounce();
 
-  const { scenarioIds, tabs: storedTabs, everFiltered } = state.act1;
+  const { scenarioIds, tabs: storedTabs, everFiltered } = state;
   const liveTabRef = useRef<HTMLButtonElement>(null);
 
   const tabs = useMemo<readonly ContextTab[]>(
@@ -90,24 +84,24 @@ export function ActOne({
   const active = storedTabs.active ?? LIVE;
 
   const setActive = useCallback(
-    (next: string) => activateAct1Tab(next === LIVE ? null : next),
-    [activateAct1Tab],
+    (next: string) => activateTab(next === LIVE ? null : next),
+    [activateTab],
   );
 
   const handleState = useCallback(
     (snapshot: LogExplorerSnapshot) => {
-      if (snapshot.hasFilter) markAct1Filtered();
-      setAct1Scenarios(snapshot.activeScenarioIds);
+      if (snapshot.hasFilter) markFiltered();
+      setScenarios(snapshot.activeScenarioIds);
     },
-    [markAct1Filtered, setAct1Scenarios],
+    [markFiltered, setScenarios],
   );
 
   const openContext = useCallback(
     (lineId: string) => {
       if (!lines.some((l) => l.id === lineId)) return;
-      openAct1Tab(lineId);
+      openTab(lineId);
     },
-    [lines, openAct1Tab],
+    [lines, openTab],
   );
 
   const tabCount = tabs.length;
@@ -188,7 +182,7 @@ export function ActOne({
                     aria-label={`Context slice ${formatLogTime(tab.line.timestamp)}`}
                     onKeyDown={(event) => {
                       if (event.key !== "Delete") return;
-                      closeAct1Tab(tab.id);
+                      closeTab(tab.id);
                       // The focused trigger is about to unmount; land on
                       // the tab that takes over rather than the body.
                       liveTabRef.current?.focus();
@@ -208,7 +202,7 @@ export function ActOne({
                     tabIndex={-1}
                     aria-hidden="true"
                     className={styles.tabClose}
-                    onClick={() => closeAct1Tab(tab.id)}
+                    onClick={() => closeTab(tab.id)}
                   >
                     <X size={12} aria-hidden="true" />
                   </button>

@@ -34,17 +34,17 @@ const lines: readonly LogLine[] = [
   },
 ];
 
-/* Mirrors how the route view drives Act 1: keyed on the act's run id so a
- * reset remounts it, which is the only way the explorer's internal filter
- * gets cleared. */
+/* Mirrors how the route view drives Act 1: keyed on the investigation's
+ * run id so a reset remounts it, which is the only way the explorer's
+ * internal filter gets cleared. */
 function ResettableActOne() {
-  const { state, resetAct1 } = useDemoState();
+  const { state, reset } = useDemoState();
   return (
     <ActOne
-      key={state.act1.runId}
+      key={state.runId}
       lines={lines}
       onAdvance={() => {}}
-      onReset={resetAct1}
+      onReset={reset}
     />
   );
 }

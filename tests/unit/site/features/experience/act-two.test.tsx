@@ -43,15 +43,16 @@ const lines: readonly LogLine[] = [
 
 const noop = () => {};
 
-/* Mirrors how the route view drives Act 2: keyed on the act's run id so a
- * reset remounts it, re-seeding the explorer from the cleared store. */
+/* Mirrors how the route view drives Act 2: keyed on the investigation's
+ * run id so a reset remounts it, re-seeding the explorer from the cleared
+ * store. */
 function ResettableActTwo() {
-  const { state, resetAct2 } = useDemoState();
+  const { state, reset } = useDemoState();
   return (
     <ActTwo
-      key={state.act2.runId}
+      key={state.runId}
       lines={lines}
-      onReset={resetAct2}
+      onReset={reset}
       onCallRootCause={noop}
     />
   );
@@ -116,12 +117,12 @@ describe("ActTwo", () => {
 
     // Stamp a filter into the store, then mount the act against it.
     function Harness() {
-      const { state, setAct2Scenarios } = useDemoState();
-      return state.act2.scenarioIds.length === 0 ? (
-        <button onClick={() => setAct2Scenarios(["errors"])}>seed</button>
+      const { state, setScenarios } = useDemoState();
+      return state.scenarioIds.length === 0 ? (
+        <button onClick={() => setScenarios(["errors"])}>seed</button>
       ) : (
         <ActTwo
-          key={state.act2.runId}
+          key={state.runId}
           lines={lines}
           onReset={noop}
           onCallRootCause={noop}
