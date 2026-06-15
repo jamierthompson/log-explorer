@@ -35,7 +35,7 @@ export const CAUSES: readonly Cause[] = [
     name: "A config reload shrank @kc4qn’s DB pool",
     detail: "db.pool.max dropped 20 → 5, starving connections.",
     outcome: [
-      "At 13:30:11 a hot-reload set db.pool.max from 20 to 5 on @kc4qn alone. Within a minute the pool was saturated, and every request that touched the pool — r4d8a2 included — timed out waiting for a connection. The reload carried no request id, so the trace could never show it.",
+      "At 13:24:11 a hot-reload set db.pool.max from 20 to 5 on @kc4qn alone. Over the next several minutes the pool saturated, and every request that touched it — r4d8a2 and the add-to-cart on k9b3c7 — timed out waiting for a connection. The reload carried no request id, and it sat minutes upstream of the failures, so the trace could never show it.",
       <>
         Opening context in place, with your filter intact, put it a scroll away
         from the failure instead of a tab away.{" "}
