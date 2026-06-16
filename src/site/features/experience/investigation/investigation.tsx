@@ -47,9 +47,10 @@ function paneNote(tabCount: number): string {
  * The demo's single investigation, staged in two phases against one shared
  * store. In the old way the explorer delegates context out (onViewContext),
  * so opening a line spawns a browser-style tab and the work scatters; the
- * cut folds those slices into stacked in-place contexts and switches the
- * same explorer to expanding context where the line lives. The checklist,
- * filter, and place persist across the cut and reset as one.
+ * cut clears those tabs and returns to the filtered live tail, switching the
+ * same explorer to expanding context where the line lives — which the
+ * visitor now does by hand to earn the payoff. The checklist, filter, and
+ * place persist across the cut and reset as one.
  */
 export function Investigation({
   lines,
@@ -115,6 +116,9 @@ export function Investigation({
       observe({
         triaged: a.includes("errors"),
         traced: a.includes("trace"),
+        // The payoff is earned by opening context in place after the cut —
+        // never the old way, where context is delegated out to tabs.
+        examined: inPlace && snapshot.openContexts.length > 0,
       });
     },
     [inPlace, markFiltered, setScenarios, setContexts, observe],
@@ -147,9 +151,9 @@ export function Investigation({
       id: "together",
       title: "Hold the whole investigation in one view",
       description: inPlace
-        ? "Your scattered slices are stacked here — filter and place intact."
+        ? "Open context where a line lives — it expands inline, so the whole timeline stays in one view."
         : "The old way can’t — each look strands another slice in its own tab.",
-      done: inPlace,
+      done: progress.examined,
     },
   ];
 

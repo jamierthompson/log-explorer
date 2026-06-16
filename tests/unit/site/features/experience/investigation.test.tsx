@@ -195,7 +195,7 @@ describe("Investigation — the old way", () => {
 });
 
 describe("Investigation — the cut", () => {
-  it("folds the open tabs into stacked in-place contexts", async () => {
+  it("clears the scattered tabs and returns to the filtered live tail", async () => {
     const user = userEvent.setup();
     renderInvestigation();
 
@@ -211,11 +211,12 @@ describe("Investigation — the cut", () => {
     await cut(user);
 
     // The tab chrome is gone — the explorer now expands context in place —
-    // and the fold completes the in-place payoff step.
+    // but nothing is pre-stacked: the cut hands the work back, so the payoff
+    // step is not yet earned.
     expect(
       screen.queryByRole("tab", { name: "Live tail" }),
     ).not.toBeInTheDocument();
-    expect(getGuideStep("together")).toHaveAttribute("data-done");
+    expect(getGuideStep("together")).not.toHaveAttribute("data-done");
     // The forward action is now the closing call, not another cut.
     expect(
       screen.getByRole("button", { name: /call the root cause/i }),
@@ -239,15 +240,25 @@ describe("Investigation — in place", () => {
     expect(onCallRootCause).toHaveBeenCalledOnce();
   });
 
-  it("completes the payoff on the cut and still tracks triage in place", async () => {
+  it("earns the payoff only when the visitor opens context in place", async () => {
     const user = userEvent.setup();
     renderInvestigation();
+
+    // Filter first so a line is open-able, then cross the cut.
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
     await cut(user);
 
-    // Landing in place is itself the payoff — it completes as the fold lands.
-    expect(getGuideStep("together")).toHaveAttribute("data-done");
+    // The cut alone doesn't earn it — the visitor has to do the work.
+    expect(getGuideStep("together")).not.toHaveAttribute("data-done");
 
-    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    // Opening context in place (no tab spawns) stacks it inline and
+    // completes the payoff.
+    await user.click(screen.getByText("request timeout"));
+    expect(
+      screen.queryByText(/slice of the live tail/i),
+    ).not.toBeInTheDocument();
+    expect(getGuideStep("together")).toHaveAttribute("data-done");
+    // Triage stays latched from before the cut.
     expect(getGuideStep("triage")).toHaveAttribute("data-done");
   });
 

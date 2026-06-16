@@ -56,18 +56,30 @@ describe("demo state", () => {
   it("latches checklist steps stickily and ignores redundant observations", () => {
     const { result } = setup();
 
-    act(() => result.current.observe({ triaged: true, traced: false }));
+    act(() =>
+      result.current.observe({
+        triaged: true,
+        traced: false,
+        examined: false,
+      }),
+    );
     expect(result.current.state.progress.triaged).toBe(true);
     const latched = result.current.state;
 
     // Observing the step as false again doesn't un-latch it, and a round
     // that adds nothing new produces no new state object.
-    act(() => result.current.observe({ triaged: false, traced: false }));
+    act(() =>
+      result.current.observe({
+        triaged: false,
+        traced: false,
+        examined: false,
+      }),
+    );
     expect(result.current.state.progress.triaged).toBe(true);
     expect(result.current.state).toBe(latched);
   });
 
-  it("cuts to in place, folding open tabs into stacked contexts", () => {
+  it("cuts to in place, clearing the tabs and opening no context", () => {
     const { result } = setup();
     act(() => {
       result.current.openTab("a");
@@ -76,13 +88,13 @@ describe("demo state", () => {
 
     act(() => result.current.cut());
     expect(result.current.state.phase).toBe("in-place");
-    expect(result.current.state.openContexts).toEqual([
-      { selectedLineId: "a", range: 20 },
-      { selectedLineId: "b", range: 20 },
-    ]);
+    // The cut ends the old way without doing the work: tabs clear and no
+    // context is pre-stacked, so phase 2 starts hands-on.
+    expect(result.current.state.tabs).toEqual({ ids: [], active: null });
+    expect(result.current.state.openContexts).toEqual([]);
 
     // The cut only ever moves toward in place — a second one is a no-op, so
-    // no new state object is produced and the contexts don't duplicate.
+    // no new state object is produced.
     const after = result.current.state;
     act(() => result.current.cut());
     expect(result.current.state).toBe(after);
@@ -95,7 +107,7 @@ describe("demo state", () => {
       result.current.openTab("a");
       result.current.markFiltered();
       result.current.setContexts([{ selectedLineId: "x", range: 20 }]);
-      result.current.observe({ triaged: true, traced: true });
+      result.current.observe({ triaged: true, traced: true, examined: true });
       result.current.cut();
     });
 
@@ -111,7 +123,7 @@ describe("demo state", () => {
       everFiltered: false,
       tabs: { ids: [], active: null },
       openContexts: [],
-      progress: { triaged: false, traced: false },
+      progress: { triaged: false, traced: false, examined: false },
     });
   });
 });

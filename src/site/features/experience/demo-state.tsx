@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 
-import { DEFAULT_CONTEXT_RANGE, type OpenContext } from "@/demo";
+import { type OpenContext } from "@/demo";
 
 /** The scattered context slices of the old way: which lines are open (by
  * id) and which tab is showing (null means the live tail). */
@@ -20,11 +20,12 @@ type Tabs = {
 
 /** The investigation's sticky checklist — each step latches the first
  * time the explorer reports it and never un-latches. The in-place payoff
- * step isn't tracked here; it derives from the phase (the cut is what
- * earns it) so it can't be observed false back to undone. */
+ * (`examined`) latches when the visitor first opens context in place after
+ * the cut, so it survives closing that context again. */
 type Progress = {
   readonly triaged: boolean;
   readonly traced: boolean;
+  readonly examined: boolean;
 };
 
 /** The steps seen true in a single snapshot — transient readings, not
@@ -60,7 +61,7 @@ const INITIAL_STATE: DemoState = {
   everFiltered: false,
   tabs: { ids: [], active: null },
   openContexts: [],
-  progress: { triaged: false, traced: false },
+  progress: { triaged: false, traced: false, examined: false },
 };
 
 type Action =
@@ -108,26 +109,28 @@ function reducer(state: DemoState, action: Action): DemoState {
       const next: Progress = {
         triaged: p.triaged || o.triaged,
         traced: p.traced || o.traced,
+        examined: p.examined || o.examined,
       };
-      if (next.triaged === p.triaged && next.traced === p.traced) {
+      if (
+        next.triaged === p.triaged &&
+        next.traced === p.traced &&
+        next.examined === p.examined
+      ) {
         return state;
       }
       return { ...state, progress: next };
     }
     case "cut": {
-      // The cut migrates the scattered slices into stacked in-place
-      // contexts: each open tab becomes a context window on the same
-      // anchor, so the visitor's work carries across the switch instead of
-      // restarting. Idempotent — the demo only ever moves toward in place.
+      // The cut ends the old way: it clears the scattered tabs and returns
+      // to the filtered live tail in place, deliberately opening no context.
+      // Phase 2 is hands-on — the visitor opens context themselves to earn
+      // the payoff. Idempotent — the demo only ever moves toward in place.
       if (state.phase === "in-place") return state;
-      const existing = new Set(state.openContexts.map((c) => c.selectedLineId));
-      const migrated = state.tabs.ids
-        .filter((id) => !existing.has(id))
-        .map((id) => ({ selectedLineId: id, range: DEFAULT_CONTEXT_RANGE }));
       return {
         ...state,
         phase: "in-place",
-        openContexts: [...state.openContexts, ...migrated],
+        tabs: { ids: [], active: null },
+        openContexts: [],
       };
     }
     case "reset":
@@ -144,7 +147,8 @@ type DemoStateValue = {
   readonly markFiltered: () => void;
   readonly setContexts: (openContexts: readonly OpenContext[]) => void;
   readonly observe: (observed: ProgressSignals) => void;
-  /** Switches to in place, folding the open tabs into stacked contexts. */
+  /** Ends the old way: clears the scattered tabs and returns to the
+   * filtered live tail to open context in place. */
   readonly cut: () => void;
   /** Clears the whole investigation and starts its run over. */
   readonly reset: () => void;
