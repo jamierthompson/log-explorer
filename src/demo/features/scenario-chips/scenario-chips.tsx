@@ -25,7 +25,6 @@ export function ScenarioChips({
         <Chip
           key={preset.id}
           active={scenarioIsActive(state, preset.scenario)}
-          title={preset.hint}
           onClick={() =>
             dispatch({ type: "toggleScenario", scenario: preset.scenario })
           }
