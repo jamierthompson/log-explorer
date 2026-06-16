@@ -7,7 +7,10 @@ import { Investigation } from "@/site/features/experience/investigation/investig
 import { useDemoState } from "@/site/features/experience/demo-state";
 
 import { DemoProviders } from "../../../../helpers/demo-providers";
-import { getGuideStep } from "../../../../helpers/experience-dom";
+import {
+  getGuideHintKey,
+  getGuideStep,
+} from "../../../../helpers/experience-dom";
 
 const lines: readonly LogLine[] = [
   {
@@ -279,6 +282,42 @@ describe("Investigation — in place", () => {
     expect(
       screen.getByRole("button", { name: /piece it together/i }),
     ).toBeInTheDocument();
+  });
+});
+
+describe("Investigation — the next-step hint", () => {
+  it("nudges the next concrete move as the old way scatters", async () => {
+    const user = userEvent.setup();
+    renderInvestigation();
+
+    // Before anything, the nudge is to triage.
+    expect(getGuideHintKey()).toBe("filter");
+
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    expect(getGuideHintKey()).toBe("scatter-open");
+
+    // One slice open: the nudge is to open another and feel the scatter.
+    await user.click(screen.getByText("request timeout"));
+    expect(getGuideHintKey()).toBe("scatter-more");
+
+    // Two slices: the nudge becomes the cut.
+    await user.click(screen.getByRole("tab", { name: "Live tail" }));
+    await user.click(screen.getByText("upstream timeout"));
+    expect(getGuideHintKey()).toBe("cut");
+  });
+
+  it("nudges opening context, then looking upstream, once in place", async () => {
+    const user = userEvent.setup();
+    renderInvestigation();
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    await cut(user);
+
+    // In place with nothing open yet: the nudge is to examine context.
+    expect(getGuideHintKey()).toBe("examine");
+
+    // Opening context in place shifts the nudge upstream toward the cause.
+    await user.click(screen.getByText("request timeout"));
+    expect(getGuideHintKey()).toBe("upstream");
   });
 });
 
