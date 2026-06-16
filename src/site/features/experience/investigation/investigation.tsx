@@ -5,7 +5,6 @@ import { ArrowRight, X } from "lucide-react";
 import { useCallback, useMemo, useRef } from "react";
 
 import {
-  DEFAULT_CONTEXT_RANGE,
   filterFromScenarioIds,
   formatLogTime,
   LogExplorer,
@@ -21,7 +20,6 @@ import { useDemoAnnounce } from "../demo-shell";
 import { useDemoState } from "../demo-state";
 import { GuideBox, type GuideItem } from "../guide-box/guide-box";
 import styles from "./investigation.module.css";
-import { NextStepHint } from "./next-step-hint";
 
 /* Lines of unfiltered context a tab shows on each side of its anchor — a
  * deliberately small window, so each tab reads as a thin slice torn out of
@@ -189,17 +187,6 @@ export function Investigation({
                   ),
                   onClick: cut,
                 }
-          }
-          foot={
-            <NextStepHint
-              inPlace={inPlace}
-              triaged={progress.triaged}
-              tabCount={tabCount}
-              contextCount={openContexts.length}
-              expandedUpstream={openContexts.some(
-                (c) => c.range > DEFAULT_CONTEXT_RANGE,
-              )}
-            />
           }
         />
       }

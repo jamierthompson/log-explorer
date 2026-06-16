@@ -21,8 +21,7 @@ export type GuideAction = {
 
 /**
  * The act's side guide — a titled checklist whose items fill with the
- * accent as they complete, with an optional closing action and an
- * optional footer line beneath it for state-reactive narration.
+ * accent as they complete, with an optional closing action.
  * Completions are reported through onAnnounce so a live region elsewhere
  * can voice them.
  */
@@ -30,14 +29,12 @@ export function GuideBox({
   title,
   items,
   action,
-  foot,
   onAnnounce,
   onReset,
 }: {
   title: string;
   items: readonly GuideItem[];
   action?: GuideAction;
-  foot?: ReactNode;
   onAnnounce?: (message: string) => void;
   /** Resets the current act — clears its progress and starts its run over. */
   onReset?: () => void;
@@ -111,7 +108,6 @@ export function GuideBox({
           {action.label}
         </Button>
       )}
-      {foot && <p className={styles.foot}>{foot}</p>}
     </aside>
   );
 }
