@@ -5,6 +5,7 @@ import { ArrowRight, X } from "lucide-react";
 import { useCallback, useMemo, useRef } from "react";
 
 import {
+  DEFAULT_CONTEXT_RANGE,
   filterFromScenarioIds,
   formatLogTime,
   LogExplorer,
@@ -21,36 +22,16 @@ import { useDemoState } from "../demo-state";
 import { GuideBox, type GuideItem } from "../guide-box/guide-box";
 import styles from "./investigation.module.css";
 
-/* Lines of unfiltered context a tab shows on each side of its anchor — a
- * deliberately small window, so each tab reads as a thin slice torn out of
- * the live tail rather than a second log view. */
-const PANE_RANGE = 5;
-
 const LIVE = "live";
 
 type ContextTab = { readonly id: string; readonly line: LogLine };
 
-/* The pane's note names what the tab is — a slice of the live tail with no
- * filter — and escalates with the count so the scatter is felt, pointing
- * back to the live tail that still holds the visitor's place. */
-function paneNote(tabCount: number): string {
-  if (tabCount >= 3) {
-    return `${tabCount} slices of the live tail, each stranded in its own tab — you’re rebuilding the timeline by flipping between them.`;
-  }
-  if (tabCount === 2) {
-    return "Another slice of the live tail — two tabs now. Flip back to the live tail for your filtered place.";
-  }
-  return "A slice of the live tail around this line, opened in its own tab — and your filter didn’t come with it.";
-}
-
 /**
  * The demo's single investigation, staged in two phases against one shared
- * store. In the old way the explorer delegates context out (onViewContext),
+ * store. In phase one the explorer delegates context out (onViewContext),
  * so opening a line spawns a browser-style tab and the work scatters; the
  * cut clears those tabs and returns to the filtered live tail, switching the
- * same explorer to expanding context where the line lives — which the
- * visitor now does by hand to earn the payoff. The checklist, filter, and
- * place persist across the cut and reset as one.
+ * same explorer to phase two. The checklist and filter persist and reset as one.
  */
 export function Investigation({
   lines,
@@ -58,7 +39,7 @@ export function Investigation({
   onReset,
 }: {
   lines: readonly LogLine[];
-  /** Opens the root-cause call — the in-place phase's closing action. */
+  /** Opens the root-cause call — phase two's closing action. */
   onCallRootCause: () => void;
   /** Resets the whole investigation in place — the guide's control. */
   onReset: () => void;
@@ -79,11 +60,12 @@ export function Investigation({
   const {
     phase,
     scenarioIds,
+    everFiltered,
     tabs: storedTabs,
     openContexts,
     progress,
   } = state;
-  const inPlace = phase === "in-place";
+  const isPhaseTwo = phase === "phase-two";
   const liveTabRef = useRef<HTMLButtonElement>(null);
 
   const tabs = useMemo<readonly ContextTab[]>(
@@ -108,20 +90,19 @@ export function Investigation({
       if (snapshot.hasFilter) markFiltered();
       setScenarios(snapshot.activeScenarioIds);
 
-      // Context only opens in place; in the old way it's delegated to tabs.
+      // Context only opens in place; in phase one it's delegated to tabs.
       // Persist it so it survives navigation and re-seeds the explorer back.
-      if (inPlace) setContexts(snapshot.openContexts);
+      if (isPhaseTwo) setContexts(snapshot.openContexts);
 
       const a = snapshot.activeScenarioIds;
       observe({
-        triaged: a.includes("errors"),
         traced: a.includes("trace"),
-        // The payoff is earned by opening context in place after the cut —
-        // never the old way, where context is delegated out to tabs.
-        examined: inPlace && snapshot.openContexts.length > 0,
+        examined: isPhaseTwo && snapshot.openContexts.length > 0,
+        stacked: isPhaseTwo && snapshot.openContexts.length >= 2,
+        surfaced: isPhaseTwo && snapshot.hasExpandedContext,
       });
     },
-    [inPlace, markFiltered, setScenarios, setContexts, observe],
+    [isPhaseTwo, markFiltered, setScenarios, setContexts, observe],
   );
 
   const openContext = useCallback(
@@ -132,56 +113,82 @@ export function Investigation({
     [lines, openTab],
   );
 
-  const tabCount = tabs.length;
-  const items: readonly GuideItem[] = [
+  // Phase-scoped goals, each with always-visible subtext naming its move.
+  // The copy echoes the story's "The problem" and "The idea" so the demo
+  // and the write-up speak with one voice.
+  const phaseOneItems: readonly GuideItem[] = [
     {
-      id: "triage",
-      title: "Triage the symptom",
-      description: "Filter to errors to see what’s actually failing.",
-      done: progress.triaged,
-    },
-    {
-      id: "trace",
-      title: "Trace the failed checkout",
+      id: "filter",
+      title: "Filter the live tail",
       description:
-        "Follow req=r4d8a2 span by span. It dies waiting on the db pool — but not why.",
-      done: progress.traced,
+        "Pick a chip to narrow the stream — errors, a request, an instance.",
+      done: everFiltered,
     },
     {
-      id: "together",
-      title: "Hold the whole investigation in one view",
-      description: inPlace
-        ? "Open context where a line lives — it expands inline, so the whole timeline stays in one view."
-        : "The old way can’t — each look strands another slice in its own tab.",
-      done: progress.examined,
+      id: "open",
+      title: "Open a line for context",
+      description:
+        "Click a matching line — the slice lands in a new tab, and your filtered tail stays put, one tab back.",
+      done: progress.opened,
+    },
+    {
+      id: "pile",
+      title: "Reassemble by hand",
+      description:
+        "Two tabs, two slices — you’re piecing the timeline back together by switching between them.",
+      done: progress.piled,
     },
   ];
+  const phaseTwoItems: readonly GuideItem[] = [
+    {
+      id: "inplace",
+      title: "Open context in place",
+      description:
+        "Click a line and its context opens right here, the non-matching lines dimmed.",
+      done: progress.examined,
+    },
+    {
+      id: "stack",
+      title: "Open a second context",
+      description:
+        "Click another line and a second context opens in the same view.",
+      done: progress.stacked,
+    },
+    {
+      id: "upstream",
+      title: "Expand an open context",
+      description: "Reach further for the calls before and the calls after.",
+      done: progress.surfaced,
+    },
+  ];
+  const items = isPhaseTwo ? phaseTwoItems : phaseOneItems;
 
   return (
     <ActLayout
       step="Investigation"
-      kicker={inPlace ? "In place" : "The old way"}
       title={
-        inPlace ? "Open context where the line lives" : "A tab for every click"
+        isPhaseTwo
+          ? "Open context where the line lives"
+          : "Chasing an ID scatters the investigation across tabs"
       }
       lead={
-        inPlace
-          ? "The same investigation, kept in one view. The trace shows where checkout broke — opening context in place shows why."
-          : "Filter to the failed checkout, then open a line for context. Every look opens another tab — and the investigation starts to scatter."
+        isPhaseTwo
+          ? "The rows around the line expand inline, dimmed so the matching lines stay bright. The filter doesn’t reset. The position doesn’t reset."
+          : "Filter to the failing request and the picture narrows. But click a line for context and a new tab opens — no filter, no live tail, just a slice."
       }
       aside={
         <GuideBox
-          title={inPlace ? "The method" : "The old way"}
+          title="Your investigation"
           items={items}
           onAnnounce={announce}
           onReset={onReset}
           action={
-            inPlace
+            isPhaseTwo
               ? { label: "Call the root cause", onClick: onCallRootCause }
               : {
                   label: (
                     <>
-                      Piece it together
+                      There’s a better way
                       <ArrowRight size={16} aria-hidden="true" />
                     </>
                   ),
@@ -191,7 +198,7 @@ export function Investigation({
         />
       }
     >
-      {inPlace ? (
+      {isPhaseTwo ? (
         <LogExplorer
           lines={lines}
           service="api-gateway"
@@ -287,11 +294,7 @@ export function Investigation({
               className={styles.panel}
               tabIndex={-1}
             >
-              <ContextPane
-                lines={lines}
-                anchorId={tab.id}
-                tabCount={tabs.length}
-              />
+              <ContextPane lines={lines} anchorId={tab.id} />
             </Tabs.Content>
           ))}
         </Tabs.Root>
@@ -303,21 +306,21 @@ export function Investigation({
 function ContextPane({
   lines,
   anchorId,
-  tabCount,
 }: {
   lines: readonly LogLine[];
   anchorId: string;
-  tabCount: number;
 }) {
   const index = lines.findIndex((l) => l.id === anchorId);
   const slice =
     index === -1
       ? []
-      : lines.slice(Math.max(0, index - PANE_RANGE), index + PANE_RANGE + 1);
+      : lines.slice(
+          Math.max(0, index - DEFAULT_CONTEXT_RANGE),
+          index + DEFAULT_CONTEXT_RANGE + 1,
+        );
 
   return (
     <div className={styles.pane}>
-      <p className={styles.paneNote}>{paneNote(tabCount)}</p>
       {/* A text-only scroller: nothing inside takes focus, so the
        * viewport itself must, or keyboard users can't scroll it. */}
       <ScrollArea focusLabel="Log slice">

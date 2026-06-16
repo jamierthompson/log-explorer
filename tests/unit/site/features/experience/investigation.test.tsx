@@ -72,12 +72,14 @@ function ResettableInvestigation() {
   );
 }
 
-/** Crosses the cut into the in-place phase via the guide's action. */
+/** Crosses the cut into phase two via the guide's action. */
 async function cut(user: ReturnType<typeof userEvent.setup>) {
-  await user.click(screen.getByRole("button", { name: /piece it together/i }));
+  await user.click(
+    screen.getByRole("button", { name: /there’s a better way/i }),
+  );
 }
 
-describe("Investigation — the old way", () => {
+describe("Investigation — phase one", () => {
   it("opens a context view in a new tab instead of expanding in place", async () => {
     const user = userEvent.setup();
     renderInvestigation();
@@ -86,8 +88,10 @@ describe("Investigation — the old way", () => {
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     await user.click(screen.getByText("request timeout"));
 
-    expect(screen.getByText(/slice of the live tail/i)).toBeInTheDocument();
-    // Nothing expanded in place.
+    // It opened as its own tab, not an in-place expansion.
+    expect(
+      screen.getByRole("tab", { name: /context slice/i }),
+    ).toBeInTheDocument();
     expect(document.querySelector('[data-selected="true"]')).toBeNull();
     // The line the slice centers on is conveyed to AT, not just by color.
     expect(document.querySelector("[data-anchor]")).toHaveAttribute(
@@ -104,21 +108,6 @@ describe("Investigation — the old way", () => {
 
     await user.click(screen.getByRole("tab", { name: "Live tail" }));
     expect(screen.queryByText("Healthcheck OK")).not.toBeInTheDocument();
-  });
-
-  it("checks off triage but gates the in-place payoff behind the cut", async () => {
-    const user = userEvent.setup();
-    renderInvestigation();
-
-    expect(getGuideStep("triage")).not.toHaveAttribute("data-done");
-
-    await user.click(screen.getByRole("button", { name: /errors only/i }));
-    expect(getGuideStep("triage")).toHaveAttribute("data-done");
-
-    // Opening a tab is not holding it in one view — the payoff step can't
-    // be earned the old way.
-    await user.click(screen.getByText("request timeout"));
-    expect(getGuideStep("together")).not.toHaveAttribute("data-done");
   });
 
   it("reopening an already-open line reuses its tab", async () => {
@@ -199,7 +188,7 @@ describe("Investigation — the cut", () => {
     const user = userEvent.setup();
     renderInvestigation();
 
-    // Scatter two slices the old way.
+    // Scatter two slices in phase one.
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     await user.click(screen.getByText("request timeout"));
     await user.click(screen.getByRole("tab", { name: "Live tail" }));
@@ -211,23 +200,23 @@ describe("Investigation — the cut", () => {
     await cut(user);
 
     // The tab chrome is gone — the explorer now expands context in place —
-    // but nothing is pre-stacked: the cut hands the work back, so the payoff
-    // step is not yet earned.
+    // but nothing is pre-stacked: the cut hands the work back, so the
+    // in-place goal is not yet earned.
     expect(
       screen.queryByRole("tab", { name: "Live tail" }),
     ).not.toBeInTheDocument();
-    expect(getGuideStep("together")).not.toHaveAttribute("data-done");
+    expect(getGuideStep("inplace")).not.toHaveAttribute("data-done");
     // The forward action is now the closing call, not another cut.
     expect(
       screen.getByRole("button", { name: /call the root cause/i }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /piece it together/i }),
+      screen.queryByRole("button", { name: /there’s a better way/i }),
     ).not.toBeInTheDocument();
   });
 });
 
-describe("Investigation — in place", () => {
+describe("Investigation — phase two", () => {
   it("opens the root-cause call, which is always available", async () => {
     const user = userEvent.setup();
     const onCallRootCause = vi.fn();
@@ -240,7 +229,7 @@ describe("Investigation — in place", () => {
     expect(onCallRootCause).toHaveBeenCalledOnce();
   });
 
-  it("earns the payoff only when the visitor opens context in place", async () => {
+  it("earns the in-place goal only when the visitor opens context in place", async () => {
     const user = userEvent.setup();
     renderInvestigation();
 
@@ -249,36 +238,71 @@ describe("Investigation — in place", () => {
     await cut(user);
 
     // The cut alone doesn't earn it — the visitor has to do the work.
-    expect(getGuideStep("together")).not.toHaveAttribute("data-done");
+    expect(getGuideStep("inplace")).not.toHaveAttribute("data-done");
 
-    // Opening context in place (no tab spawns) stacks it inline and
-    // completes the payoff.
+    // Opening context in place (no tab spawns) completes the goal.
     await user.click(screen.getByText("request timeout"));
-    expect(
-      screen.queryByText(/slice of the live tail/i),
-    ).not.toBeInTheDocument();
-    expect(getGuideStep("together")).toHaveAttribute("data-done");
-    // Triage stays latched from before the cut.
-    expect(getGuideStep("triage")).toHaveAttribute("data-done");
+    expect(screen.queryByRole("tab")).not.toBeInTheDocument();
+    expect(getGuideStep("inplace")).toHaveAttribute("data-done");
+  });
+
+  it("stacks a second context in one view, no tab spawned", async () => {
+    const user = userEvent.setup();
+    renderInvestigation();
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    await cut(user);
+
+    await user.click(screen.getByText("request timeout"));
+    expect(getGuideStep("stack")).not.toHaveAttribute("data-done");
+
+    // A second context joins the first instead of opening a tab.
+    await user.click(screen.getByText("upstream timeout"));
+    expect(getGuideStep("stack")).toHaveAttribute("data-done");
+    expect(screen.queryByRole("tab")).not.toBeInTheDocument();
   });
 
   it("clears the filter, the guide, and the phase when reset", async () => {
     const user = userEvent.setup();
     render(<ResettableInvestigation />, { wrapper: DemoProviders });
 
-    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    await user.click(screen.getByRole("button", { name: /req=r4d8a2/i }));
+    expect(getGuideStep("filter")).toHaveAttribute("data-done");
     await cut(user);
-    expect(getGuideStep("triage")).toHaveAttribute("data-done");
 
     await user.click(screen.getByRole("button", { name: /reset/i }));
 
     // Remounted fresh: filter gone, checklist back to start, and back to
-    // the old way (the cut action is offered again).
+    // phase one (the cut action is offered again).
     expect(screen.getByText("Healthcheck OK")).toBeInTheDocument();
-    expect(getGuideStep("triage")).not.toHaveAttribute("data-done");
+    expect(getGuideStep("filter")).not.toHaveAttribute("data-done");
     expect(
-      screen.getByRole("button", { name: /piece it together/i }),
+      screen.getByRole("button", { name: /there’s a better way/i }),
     ).toBeInTheDocument();
+  });
+});
+
+describe("Investigation — the phase-one checklist", () => {
+  it("checks the filter goal when any chip narrows the stream", async () => {
+    const user = userEvent.setup();
+    renderInvestigation();
+    expect(getGuideStep("filter")).not.toHaveAttribute("data-done");
+
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    expect(getGuideStep("filter")).toHaveAttribute("data-done");
+  });
+
+  it("checks open, then pile, as the fan of tabs grows", async () => {
+    const user = userEvent.setup();
+    renderInvestigation();
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+
+    await user.click(screen.getByText("request timeout"));
+    expect(getGuideStep("open")).toHaveAttribute("data-done");
+    expect(getGuideStep("pile")).not.toHaveAttribute("data-done");
+
+    await user.click(screen.getByRole("tab", { name: "Live tail" }));
+    await user.click(screen.getByText("upstream timeout"));
+    expect(getGuideStep("pile")).toHaveAttribute("data-done");
   });
 });
 

@@ -11,37 +11,40 @@ import {
 
 import { type OpenContext } from "@/demo";
 
-/** The scattered context slices of the old way: which lines are open (by
+/** The scattered context slices of phase one: which lines are open (by
  * id) and which tab is showing (null means the live tail). */
 type Tabs = {
   readonly ids: readonly string[];
   readonly active: string | null;
 };
 
-/** The investigation's sticky checklist — each step latches the first
- * time the explorer reports it and never un-latches. The in-place payoff
- * (`examined`) latches when the visitor first opens context in place after
- * the cut, so it survives closing that context again. */
-type Progress = {
-  readonly triaged: boolean;
+/** The steps the explorer reports from a single snapshot — transient
+ * readings, not authoritative progress. The reducer folds these into the
+ * sticky Progress, so a false reading here can't clear a latched step. */
+type ProgressSignals = {
   readonly traced: boolean;
   readonly examined: boolean;
+  readonly stacked: boolean;
+  readonly surfaced: boolean;
 };
 
-/** The steps seen true in a single snapshot — transient readings, not
- * authoritative progress. The reducer folds these into the sticky
- * Progress, so a false reading here can't clear a latched step. */
-type ProgressSignals = Progress;
+/** The investigation's checklist — each step latches the first time it's
+ * reported and never un-latches, so the store only ever gains steps.
+ * `opened`/`piled` latch from tab opens in phase one; the rest are folded
+ * in from explorer snapshots. */
+type Progress = ProgressSignals & {
+  readonly opened: boolean;
+  readonly piled: boolean;
+};
 
-/** Which way the investigation is being run: the old way scatters context
- * into tabs; the cut switches the same explorer to expanding context in
- * place. */
-export type Phase = "old-way" | "in-place";
+/** Which phase the investigation is in: phase one scatters context into
+ * tabs; the cut advances to phase two, which expands context in place. */
+export type Phase = "phase-one" | "phase-two";
 
 /* One investigation, shared across the whole demo. `runId` bumps on reset
  * so the view remounts and the explorer's internal filter — which can't be
  * cleared any other way — starts over. The phase, filter (scenarioIds),
- * the scattered tabs of the old way, the stacked in-place contexts, and
+ * the scattered tabs of phase one, the stacked phase-two contexts, and
  * the checklist all live here, so they survive in-app navigation and reset
  * together as one investigation. */
 type DemoState = {
@@ -56,12 +59,19 @@ type DemoState = {
 
 const INITIAL_STATE: DemoState = {
   runId: 0,
-  phase: "old-way",
+  phase: "phase-one",
   scenarioIds: [],
   everFiltered: false,
   tabs: { ids: [], active: null },
   openContexts: [],
-  progress: { triaged: false, traced: false, examined: false },
+  progress: {
+    traced: false,
+    examined: false,
+    stacked: false,
+    surfaced: false,
+    opened: false,
+    piled: false,
+  },
 };
 
 type Action =
@@ -82,7 +92,18 @@ function reducer(state: DemoState, action: Action): DemoState {
     case "openTab": {
       const open = state.tabs.ids.includes(action.id);
       const ids = open ? state.tabs.ids : [...state.tabs.ids, action.id];
-      return { ...state, tabs: { ids, active: action.id } };
+      // Latch the phase-one checklist the same way the explorer-driven steps
+      // latch: the tab open is the signal, and the step never un-sets — so
+      // closing a tab can't un-check "opened a slice" or "piled two up".
+      return {
+        ...state,
+        tabs: { ids, active: action.id },
+        progress: {
+          ...state.progress,
+          opened: state.progress.opened || ids.length >= 1,
+          piled: state.progress.piled || ids.length >= 2,
+        },
+      };
     }
     case "closeTab": {
       const { tabs } = state;
@@ -107,28 +128,31 @@ function reducer(state: DemoState, action: Action): DemoState {
       const p = state.progress;
       const o = action.observed;
       const next: Progress = {
-        triaged: p.triaged || o.triaged,
+        ...p,
         traced: p.traced || o.traced,
         examined: p.examined || o.examined,
+        stacked: p.stacked || o.stacked,
+        surfaced: p.surfaced || o.surfaced,
       };
       if (
-        next.triaged === p.triaged &&
         next.traced === p.traced &&
-        next.examined === p.examined
+        next.examined === p.examined &&
+        next.stacked === p.stacked &&
+        next.surfaced === p.surfaced
       ) {
         return state;
       }
       return { ...state, progress: next };
     }
     case "cut": {
-      // The cut ends the old way: it clears the scattered tabs and returns
+      // The cut ends phase one: it clears the scattered tabs and returns
       // to the filtered live tail in place, deliberately opening no context.
-      // Phase 2 is hands-on — the visitor opens context themselves to earn
-      // the payoff. Idempotent — the demo only ever moves toward in place.
-      if (state.phase === "in-place") return state;
+      // Phase two is hands-on — the visitor opens context themselves to earn
+      // the payoff. Idempotent — the demo only ever moves forward to phase two.
+      if (state.phase === "phase-two") return state;
       return {
         ...state,
-        phase: "in-place",
+        phase: "phase-two",
         tabs: { ids: [], active: null },
         openContexts: [],
       };
@@ -147,7 +171,7 @@ type DemoStateValue = {
   readonly markFiltered: () => void;
   readonly setContexts: (openContexts: readonly OpenContext[]) => void;
   readonly observe: (observed: ProgressSignals) => void;
-  /** Ends the old way: clears the scattered tabs and returns to the
+  /** Ends phase one: clears the scattered tabs and returns to the
    * filtered live tail to open context in place. */
   readonly cut: () => void;
   /** Clears the whole investigation and starts its run over. */

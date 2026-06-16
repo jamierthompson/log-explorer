@@ -40,6 +40,21 @@ describe("demo state", () => {
     expect(result.current.state.tabs).toEqual({ ids: [], active: null });
   });
 
+  it("keeps the opened/piled steps latched after the tabs close", () => {
+    const { result } = setup();
+    act(() => result.current.openTab("a"));
+    act(() => result.current.openTab("b"));
+    expect(result.current.state.progress.piled).toBe(true);
+
+    // Closing every tab tidies up but can't un-earn the steps — opening them
+    // was the signal, and the checklist only ever moves forward.
+    act(() => result.current.closeTab("a"));
+    act(() => result.current.closeTab("b"));
+    expect(result.current.state.tabs.ids).toEqual([]);
+    expect(result.current.state.progress.opened).toBe(true);
+    expect(result.current.state.progress.piled).toBe(true);
+  });
+
   it("latches everFiltered idempotently", () => {
     const { result } = setup();
     expect(result.current.state.everFiltered).toBe(false);
@@ -58,24 +73,26 @@ describe("demo state", () => {
 
     act(() =>
       result.current.observe({
-        triaged: true,
-        traced: false,
+        traced: true,
         examined: false,
+        stacked: false,
+        surfaced: false,
       }),
     );
-    expect(result.current.state.progress.triaged).toBe(true);
+    expect(result.current.state.progress.traced).toBe(true);
     const latched = result.current.state;
 
     // Observing the step as false again doesn't un-latch it, and a round
     // that adds nothing new produces no new state object.
     act(() =>
       result.current.observe({
-        triaged: false,
         traced: false,
         examined: false,
+        stacked: false,
+        surfaced: false,
       }),
     );
-    expect(result.current.state.progress.triaged).toBe(true);
+    expect(result.current.state.progress.traced).toBe(true);
     expect(result.current.state).toBe(latched);
   });
 
@@ -86,12 +103,18 @@ describe("demo state", () => {
       result.current.openTab("b");
     });
 
+    // Opening two tabs latches the phase-one steps; they're sticky, so they
+    // stay earned across the cut that clears the tabs.
+    expect(result.current.state.progress.opened).toBe(true);
+    expect(result.current.state.progress.piled).toBe(true);
+
     act(() => result.current.cut());
-    expect(result.current.state.phase).toBe("in-place");
-    // The cut ends the old way without doing the work: tabs clear and no
-    // context is pre-stacked, so phase 2 starts hands-on.
+    expect(result.current.state.phase).toBe("phase-two");
+    // The cut ends phase one without doing the work: tabs clear and no
+    // context is pre-stacked, so phase two starts hands-on.
     expect(result.current.state.tabs).toEqual({ ids: [], active: null });
     expect(result.current.state.openContexts).toEqual([]);
+    expect(result.current.state.progress.piled).toBe(true);
 
     // The cut only ever moves toward in place — a second one is a no-op, so
     // no new state object is produced.
@@ -107,23 +130,35 @@ describe("demo state", () => {
       result.current.openTab("a");
       result.current.markFiltered();
       result.current.setContexts([{ selectedLineId: "x", range: 20 }]);
-      result.current.observe({ triaged: true, traced: true, examined: true });
+      result.current.observe({
+        traced: true,
+        examined: true,
+        stacked: true,
+        surfaced: true,
+      });
       result.current.cut();
     });
 
     const runBefore = result.current.state.runId;
     act(() => result.current.reset());
 
-    // Phase, filter, tabs, contexts, and checklist all clear at once, and
-    // the run id advances so the view remounts with a cleared explorer.
+    // Phase, filter, tabs, contexts, and checklist all clear at once, and the
+    // run id advances so the view remounts with a clean slate.
     expect(result.current.state).toEqual({
       runId: runBefore + 1,
-      phase: "old-way",
+      phase: "phase-one",
       scenarioIds: [],
       everFiltered: false,
       tabs: { ids: [], active: null },
       openContexts: [],
-      progress: { triaged: false, traced: false, examined: false },
+      progress: {
+        traced: false,
+        examined: false,
+        stacked: false,
+        surfaced: false,
+        opened: false,
+        piled: false,
+      },
     });
   });
 });
