@@ -104,9 +104,10 @@
   --overlay-scrim: light-dark(oklch(0.4 0 0 / 0.4), oklch(0 0 0 / 0.66));
 
   /* Prose scale — mobile-first; the breakpoints below step it up. */
+  --text-prose-sm: 0.875rem;
   --text-prose-base: 1.0625rem;
   --text-prose-lead: 1.1875rem;
-  --text-prose-h2: 1.5rem;
+  --text-prose-h2: 1.75rem;
   --text-prose-title: 2.5rem;
   --text-prose-pullquote: 1.875rem;
   --line-height-prose: 1.6;
@@ -154,7 +155,6 @@
    */
   --stage-surface: var(--logx-surface, var(--surface));
   --stage-border-soft: var(--logx-border-soft, var(--color-border));
-  --stage-color-error: var(--logx-color-error, var(--color-error));
   --stage-wash-accent: var(
     --logx-wash-accent,
     linear-gradient(
@@ -170,7 +170,7 @@
     --content-padding-x: 2rem;
     --text-prose-base: 1.1875rem;
     --text-prose-lead: 1.3125rem;
-    --text-prose-h2: 1.75rem;
+    --text-prose-h2: 2rem;
     /* The pull quote steps up less than its mobile ratio so the
      * display hierarchy (h2 below pull quote below title) holds at
      * every breakpoint instead of the quote crowding the title. */
