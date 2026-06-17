@@ -3,7 +3,7 @@ export type OpenContext = {
   readonly range: number;
 };
 
-export const DEFAULT_CONTEXT_RANGE = 20;
+export const DEFAULT_CONTEXT_RANGE = 5;
 export const CONTEXT_RANGE_STEP = 20;
 
 /**
