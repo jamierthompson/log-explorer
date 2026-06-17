@@ -1,40 +1,56 @@
-.title {
-  margin: 0 0 var(--space-2);
-  font-family: var(--font-sans);
-  font-size: var(--text-prose-h2);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text);
+.columns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  margin-top: var(--space-5);
 }
 
-.description {
-  margin: 0 0 var(--space-5);
-  font-family: var(--font-sans);
-  font-size: var(--text-prose-base);
-  line-height: var(--line-height-prose);
-  color: var(--color-text-muted);
+@media (--desktop) {
+  .columns {
+    flex-direction: row;
+    gap: var(--space-7);
+    min-height: 26rem;
+  }
+
+  .choices {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .verdict {
+    flex: 0 0 30rem;
+    justify-content: flex-end;
+    padding-left: var(--space-7);
+    padding-bottom: var(--space-6);
+    border-left: 1px solid var(--brand-accent);
+  }
 }
 
+/* The choices are a divided list, not filled cards: rules separate the rows
+ * and the surface shows through. */
 .choices {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--color-border);
 }
 
 .choice {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-3) var(--space-4);
+  align-items: baseline;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-4) 0;
   text-align: left;
-  background: var(--surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-1);
+  background: none;
+  /* A transparent box border reserves the picked state's outline so it can
+   * light up without shifting the row; only the bottom edge shows as the
+   * divider between choices. */
+  border: 1px solid transparent;
+  border-bottom-color: var(--color-border);
   cursor: pointer;
-  transition: border-color var(--duration-fast) var(--ease-standard);
-}
-
-.choice:hover {
-  border-color: var(--brand-accent);
 }
 
 .choice:focus-visible {
@@ -42,9 +58,53 @@
   outline-offset: var(--focus-ring-offset);
 }
 
+/* The picked choice lifts into a bordered, washed box while its verdict
+ * shows, so the call and its answer read as a pair across the divider. The
+ * negative margin lets the box bleed past the column edge without nudging
+ * the row's content out of line. */
+.choice[aria-pressed="true"] {
+  margin: 0 calc(-1 * var(--space-3));
+  padding: var(--space-4) var(--space-3);
+  border-color: var(--brand-accent);
+  border-radius: var(--radius-1);
+  background: var(--stage-wash-accent);
+}
+
+/* Drop the divider directly above the picked box so its top edge reads as
+ * the box, not a stray rule. */
+.choices li:has(+ li .choice[aria-pressed="true"]) .choice {
+  border-bottom-color: transparent;
+}
+
+/* Drop the list's top rule when the first choice is the picked one. */
+.choices:has(li:first-child .choice[aria-pressed="true"]) {
+  border-top-color: transparent;
+}
+
+.choiceNumber {
+  font-family: var(--font-sans);
+  font-size: var(--text-prose-lead);
+  color: var(--color-text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.choice:hover .choiceNumber {
+  color: var(--color-text);
+}
+
+.choice[aria-pressed="true"] .choiceNumber {
+  color: var(--brand-accent);
+}
+
+.choiceText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
 .choiceName {
-  font-family: var(--font-mono);
-  font-size: var(--font-size-base);
+  font-family: var(--font-sans);
+  font-size: var(--text-prose-base);
   color: var(--color-text);
 }
 
@@ -54,33 +114,23 @@
   color: var(--color-text-subtle);
 }
 
-.eyebrow {
-  margin: 0 0 var(--space-3);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-sm);
-  letter-spacing: var(--tracking-kicker);
-  text-transform: uppercase;
-  color: var(--color-text-subtle);
+.verdict {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
-.result[data-correct] .eyebrow {
-  color: var(--brand-accent);
-}
-
-/* Matches the question view's title size so the verdict reads as a
- * headline over its prose, not another line of it. */
-.resultName {
-  margin: 0 0 var(--space-4);
+.placeholder {
+  margin: 0;
   font-family: var(--font-sans);
-  font-size: var(--text-prose-h2);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-prose-tight);
-  color: var(--color-text);
-  text-wrap: balance;
+  font-size: var(--text-prose-base);
+  line-height: var(--line-height-prose);
+  color: var(--color-text-subtle);
+  text-wrap: pretty;
 }
 
 .lesson {
-  margin: 0 0 var(--space-3);
+  margin: 0;
   font-family: var(--font-sans);
   font-size: var(--text-prose-base);
   line-height: var(--line-height-prose);
@@ -88,27 +138,16 @@
   text-wrap: pretty;
 }
 
-.lesson:last-of-type {
-  margin-bottom: var(--space-6);
-}
-
-/* Emphasis inside a lesson lifts to full text color so the line reads
- * as the takeaway rather than another muted clause. */
-.lesson em {
+/* The opening clause sits at full text color so the verdict leads bright
+ * and trails into the muted explanation. */
+.lead {
   color: var(--color-text);
 }
 
-/* A lone centered action at natural width floats oddly; give it enough
- * width to read as the verdict's footer. */
-.wide {
-  min-width: min(10rem, 100%);
-}
-
-/* The verdict is the experience's bookend, so its actions stack as a
- * centered end-card: the onward call first, the replay beneath it. */
+/* The verdict's onward actions sit as a footer row beneath the prose. */
 .actions {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
 }

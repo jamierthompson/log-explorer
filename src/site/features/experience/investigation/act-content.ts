@@ -23,7 +23,7 @@ export type ActContent = {
 
 export const ACT_CONTENT: Record<Act, ActContent> = {
   "act-one": {
-    badge: "Act 1",
+    badge: "01",
     kicker: "The old way",
     title: "A tab for every click",
     lead: "Filter the live tail to the failing request, then open a line for context. Every look opens another tab — and the investigation starts to scatter.",
@@ -50,7 +50,7 @@ export const ACT_CONTENT: Record<Act, ActContent> = {
     ],
   },
   "act-two": {
-    badge: "Act 2",
+    badge: "02",
     kicker: "In place",
     title: "Open context where the line lives",
     lead: "The same investigation, kept in one view. The trace can show you where checkout broke — opening context in place shows you why.",
