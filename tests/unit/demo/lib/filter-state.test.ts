@@ -32,42 +32,43 @@ const instanceScenario: Scenario = {
 };
 
 describe("filterReducer", () => {
-  it("toggling an inactive scenario adds its values", () => {
+  it("selecting a scenario makes it the whole filter", () => {
     const next = filterReducer(initialFilterState, {
-      type: "toggleScenario",
+      type: "selectScenario",
       scenario: errorsScenario,
     });
     expect(next.levels).toEqual(["ERROR"]);
   });
 
-  it("toggling an active scenario removes its values", () => {
+  it("re-selecting the active scenario clears the filter", () => {
     const withErrors = filterReducer(initialFilterState, {
-      type: "toggleScenario",
+      type: "selectScenario",
       scenario: errorsScenario,
     });
     const next = filterReducer(withErrors, {
-      type: "toggleScenario",
+      type: "selectScenario",
       scenario: errorsScenario,
     });
     expect(next).toEqual(initialFilterState);
   });
 
-  it("toggles independently across facets so multiple scenarios stack", () => {
+  it("selecting a different scenario replaces the active one (single-select)", () => {
     let state = filterReducer(initialFilterState, {
-      type: "toggleScenario",
+      type: "selectScenario",
       scenario: errorsScenario,
     });
     state = filterReducer(state, {
-      type: "toggleScenario",
+      type: "selectScenario",
       scenario: instanceScenario,
     });
-    expect(state.levels).toEqual(["ERROR"]);
+    // The lens swaps wholesale: the prior facet is gone, not stacked.
+    expect(state.levels).toEqual([]);
     expect(state.instances).toEqual(["kc4qn"]);
   });
 
   it("clear returns the initial state", () => {
     const start = filterReducer(initialFilterState, {
-      type: "toggleScenario",
+      type: "selectScenario",
       scenario: errorsScenario,
     });
     expect(filterReducer(start, { type: "clear" })).toEqual(initialFilterState);

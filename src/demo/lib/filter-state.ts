@@ -17,9 +17,10 @@ export const initialFilterState: FilterState = {
 };
 
 /**
- * A scenario is a full FilterState used as a toggle preset: its values
- * are unioned into the active filter when activated and subtracted when
- * deactivated. Structurally identical to FilterState by design.
+ * A scenario is a full FilterState used as a single-select preset: the
+ * chips are lenses, so selecting one makes it the whole active filter and
+ * re-selecting the active one clears it. Structurally identical to
+ * FilterState by design.
  */
 export type Scenario = FilterState;
 
@@ -33,7 +34,7 @@ export type ScenarioPreset = {
 };
 
 export type FilterAction =
-  | { type: "toggleScenario"; scenario: Scenario }
+  | { type: "selectScenario"; scenario: Scenario }
   | { type: "clear" };
 
 export function filterReducer(
@@ -41,10 +42,13 @@ export function filterReducer(
   action: FilterAction,
 ): FilterState {
   switch (action.type) {
-    case "toggleScenario":
+    case "selectScenario":
+      // Single-select: the chosen lens becomes the whole filter, and
+      // re-selecting the active lens clears it. A scenario is itself a
+      // FilterState, so selecting just swaps it in wholesale.
       return scenarioIsActive(state, action.scenario)
-        ? removeScenario(state, action.scenario)
-        : addScenario(state, action.scenario);
+        ? initialFilterState
+        : action.scenario;
     case "clear":
       return initialFilterState;
   }
@@ -68,30 +72,6 @@ export function scenarioIsActive(
     scenario.requestIds.every((v) => state.requestIds.includes(v)) &&
     scenario.levels.every((v) => state.levels.includes(v))
   );
-}
-
-function addScenario(state: FilterState, scenario: Scenario): FilterState {
-  return {
-    instances: union(state.instances, scenario.instances),
-    requestIds: union(state.requestIds, scenario.requestIds),
-    levels: union(state.levels, scenario.levels),
-  };
-}
-
-function removeScenario(state: FilterState, scenario: Scenario): FilterState {
-  return {
-    instances: state.instances.filter((v) => !scenario.instances.includes(v)),
-    requestIds: state.requestIds.filter(
-      (v) => !scenario.requestIds.includes(v),
-    ),
-    levels: state.levels.filter((v) => !scenario.levels.includes(v)),
-  };
-}
-
-function union<T>(a: readonly T[], b: readonly T[]): readonly T[] {
-  const set = new Set<T>(a);
-  for (const v of b) set.add(v);
-  return [...set];
 }
 
 /**

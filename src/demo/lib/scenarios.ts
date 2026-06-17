@@ -40,7 +40,7 @@ export function filterFromScenarioIds(ids: readonly string[]): FilterState {
     const preset = SCENARIOS.find((s) => s.id === id);
     return preset
       ? filterReducer(state, {
-          type: "toggleScenario",
+          type: "selectScenario",
           scenario: preset.scenario,
         })
       : state;

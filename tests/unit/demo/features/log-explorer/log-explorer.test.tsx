@@ -129,7 +129,7 @@ describe("LogExplorer", () => {
     expect(document.querySelector('[data-selected="true"]')).not.toBeNull();
   });
 
-  it("applies multiple chip filters at once and toggles them independently", async () => {
+  it("selecting a chip replaces the active filter (single-select)", async () => {
     const user = userEvent.setup();
     render(<LogExplorer lines={lines} />);
     const errorsChip = screen.getByRole("button", { name: /errors only/i });
@@ -137,21 +137,22 @@ describe("LogExplorer", () => {
       name: /@kc4qn/i,
     });
 
-    // Only errors: just the ERROR line is visible.
+    // Only errors: just the ERROR line (on m7w3p) is visible.
     await user.click(errorsChip);
     expect(screen.getByText("request timeout")).toBeInTheDocument();
     expect(screen.queryByText("Healthcheck OK")).not.toBeInTheDocument();
 
-    // Add instance kc4qn: intersection (ERROR on kc4qn) has no lines.
+    // Selecting the instance swaps the lens — it doesn't intersect: now the
+    // kc4qn lines show and the m7w3p error drops out.
     await user.click(instanceChip);
     expect(screen.queryByText("request timeout")).not.toBeInTheDocument();
-    expect(screen.queryByText("Healthcheck OK")).not.toBeInTheDocument();
-
-    // Toggle errors off: instance kc4qn alone remains, so kc4qn INFO lines come back.
-    await user.click(errorsChip);
     expect(screen.getByText("Healthcheck OK")).toBeInTheDocument();
     expect(screen.getByText("GET /api/users")).toBeInTheDocument();
-    expect(screen.queryByText("request timeout")).not.toBeInTheDocument();
+
+    // Re-selecting the active chip clears it: every line returns.
+    await user.click(instanceChip);
+    expect(screen.getByText("request timeout")).toBeInTheDocument();
+    expect(screen.getByText("Healthcheck OK")).toBeInTheDocument();
   });
 
   it("pressing ? inside a focused input does not open the sheet", async () => {

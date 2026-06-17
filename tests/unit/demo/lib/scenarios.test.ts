@@ -12,11 +12,13 @@ describe("filterFromScenarioIds", () => {
     });
   });
 
-  it("stacks multiple ids across facets", () => {
+  it("rebuilds the single active lens (the host only ever persists one)", () => {
+    // Chips are single-select, so a persisted selection is one id; if more
+    // than one is somehow passed, the last wins rather than stacking.
     expect(filterFromScenarioIds(["errors", "instance"])).toEqual({
       instances: ["kc4qn"],
       requestIds: [],
-      levels: ["ERROR"],
+      levels: [],
     });
   });
 
