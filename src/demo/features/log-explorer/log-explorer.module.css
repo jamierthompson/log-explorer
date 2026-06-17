@@ -18,8 +18,12 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--logx-space-2) var(--logx-space-4);
-  padding: var(--logx-space-2) var(--logx-space-3);
-  background: var(--logx-surface-raised);
+  /* Extra room up top so the filters read as page controls set down from
+   * the chrome above, not pinned to the very top of the view. */
+  padding: var(--logx-space-4) var(--logx-space-3) var(--logx-space-2);
+  /* Sit on the same surface as the log lines so the chips read as part of
+   * the stream view, parted from the list only by the divider. */
+  background: var(--logx-surface);
   border-bottom: 1px solid var(--logx-border-soft);
   /* The Legend and Keycap assume no host tokens, so map the demo's into
    * their portable hooks here — without this their text falls back to a
