@@ -128,7 +128,7 @@
   display: flex;
   user-select: none;
   touch-action: none;
-  width: 0.625rem;
+  width: 0.35rem;
   /* Padding widens the hover hit area inward; the thumb fills the
    * content box only and remains visually flush with the right edge. */
   padding-left: var(--logx-space-2);
