@@ -36,11 +36,11 @@ export function deriveLines(
 
   return lines.map((line, index) => {
     const matchesFilter = lineMatchesFilter(line, filter);
-    const inAnyContextWindow = activeWindows.some(
+    const inContext = activeWindows.some(
       (w) => Math.abs(index - w.selectedIndex) <= w.range,
     );
-    const isVisible = matchesFilter || inAnyContextWindow;
+    const isVisible = matchesFilter || inContext;
     const isDimmed = isVisible && !matchesFilter;
-    return { ...line, isVisible, isDimmed };
+    return { ...line, index, inContext, isVisible, isDimmed };
   });
 }

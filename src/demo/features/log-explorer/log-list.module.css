@@ -81,16 +81,39 @@
   background: var(--logx-wash-neutral);
 }
 
-/* Declared after the neutral washes so an anchor always shows the pure
- * accent wash, focused or hovered or not — its accent edge carries the
- * cue, and the cursor's own wash reappears one keypress away. */
+.list > li[data-context="true"] {
+  border-left-color: color-mix(in srgb, var(--logx-accent) 35%, transparent);
+}
+
 .list > li[data-selected="true"] {
   border-left-color: var(--logx-accent);
   background: var(--logx-wash-accent);
 }
 
-.list > li[data-dimmed="true"] {
+.list > li[data-dimmed="true"] > * {
   opacity: 0.4;
+}
+
+.gap {
+  display: flex;
+  align-items: center;
+  gap: var(--logx-space-3);
+  padding: var(--logx-space-2) 0;
+  margin-left: var(--logx-space-2);
+}
+
+.gap::before,
+.gap::after {
+  content: "";
+  flex: 1;
+  border-top: 1px dashed var(--logx-border-soft);
+}
+
+.gapLabel {
+  flex: 0 0 auto;
+  font-family: var(--logx-font);
+  font-size: var(--logx-font-size-sm);
+  color: var(--logx-color-text-subtle);
 }
 
 /* Ensure a single-line clickable row still meets a comfortable tap

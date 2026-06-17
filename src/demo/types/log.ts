@@ -10,6 +10,8 @@ export type LogLine = {
 };
 
 export type DerivedLogLine = LogLine & {
+  readonly index: number;
+  readonly inContext: boolean;
   readonly isVisible: boolean;
   readonly isDimmed: boolean;
 };
