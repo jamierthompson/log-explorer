@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { ActHeader } from "@/site/features/experience/act-header/act-header";
 
 describe("ActHeader", () => {
-  it("renders the step, title, and lead", () => {
+  it("renders the step, kicker, title, and lead", () => {
     render(
       <ActHeader
         step="Act 1"
@@ -15,6 +15,7 @@ describe("ActHeader", () => {
     );
 
     expect(screen.getByText("Act 1")).toBeInTheDocument();
+    expect(screen.getByText("The old way")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "A title" }),
     ).toBeInTheDocument();

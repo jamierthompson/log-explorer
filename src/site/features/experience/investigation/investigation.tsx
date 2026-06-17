@@ -82,12 +82,13 @@ export function Investigation({
 
   return (
     <ActLayout
-      step="Investigation"
+      step={content.badge}
+      kicker={content.kicker}
       title={content.title}
       lead={content.lead}
       aside={
         <GuideBox
-          title="Your investigation"
+          title="The method"
           items={items}
           onAnnounce={announce}
           onReset={onReset}

@@ -8,10 +8,16 @@ export type GuideStepContent = {
   readonly description: string;
 };
 
-/** The static copy for one act of the staged investigation: the heading,
- * lead, forward-action label, and checklist steps. Behavior — the action's
- * onClick and each step's done-ness — is wired by the view. */
+/** The static copy for one act of the staged investigation: the badge,
+ * the overline kicker, the heading, lead, forward-action label, and
+ * checklist steps. Behavior — the action's onClick and each step's
+ * done-ness — is wired by the view. */
 export type ActContent = {
+  /** The step badge — "Act 1"/"Act 2". The visitor sees "Act"; the code
+   * keys everything by "act-one"/"act-two", so the two read alike. */
+  readonly badge: string;
+  /** The muted overline above the title. */
+  readonly kicker: string;
   readonly title: string;
   readonly lead: string;
   readonly actionLabel: string;
@@ -20,6 +26,8 @@ export type ActContent = {
 
 export const ACT_CONTENT: Record<Act, ActContent> = {
   "act-one": {
+    badge: "Act 1",
+    kicker: "The old way",
     title: "Chasing an ID scatters the investigation across tabs",
     lead: "Filter to the failing request and the picture narrows. But click a line for context and a new tab opens — no filter, no live tail, just a slice.",
     actionLabel: "There’s a better way",
@@ -45,6 +53,8 @@ export const ACT_CONTENT: Record<Act, ActContent> = {
     ],
   },
   "act-two": {
+    badge: "Act 2",
+    kicker: "In place",
     title: "Open context where the line lives",
     lead: "The rows around the line expand inline, dimmed so the matching lines stay bright. The filter doesn’t reset. The position doesn’t reset.",
     actionLabel: "Call the root cause",

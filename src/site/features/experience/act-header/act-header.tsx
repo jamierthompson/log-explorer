@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { Badge } from "@/site/ui/badge/badge";
+import { Kicker } from "@/site/ui/kicker/kicker";
 
 import styles from "./act-header.module.css";
 
@@ -20,7 +21,7 @@ export function ActHeader({
     <header className={styles.header}>
       <div className={styles.mark}>
         <Badge>{step}</Badge>
-        {kicker && <span className={styles.kicker}>{kicker}</span>}
+        {kicker && <Kicker as="span">{kicker}</Kicker>}
       </div>
       <h2 className={styles.title}>{title}</h2>
       {lead && <p className={styles.lead}>{lead}</p>}
