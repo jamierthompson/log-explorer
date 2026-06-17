@@ -114,13 +114,15 @@ describe("Investigation — act one", () => {
     const user = userEvent.setup();
     renderInvestigation();
     await user.click(screen.getByRole("button", { name: /errors only/i }));
-    await user.click(screen.getByText("request timeout"));
+    // Target the log row, not its text: the tab title now echoes the line's
+    // message, so the message appears both in the list and on the tab.
+    await user.click(screen.getByRole("option", { name: /request timeout/i }));
     expect(screen.getAllByRole("tab", { name: /context slice/i })).toHaveLength(
       1,
     );
 
     await user.click(screen.getByRole("tab", { name: "Live tail" }));
-    await user.click(screen.getByText("request timeout"));
+    await user.click(screen.getByRole("option", { name: /request timeout/i }));
 
     expect(screen.getAllByRole("tab", { name: /context slice/i })).toHaveLength(
       1,

@@ -6,12 +6,44 @@
   background: var(--surface);
 }
 
+/* The slice's page header: a brighter title naming the window, then a
+ * subtle meta line with its time span and length. Generous room and a
+ * closing rule set the lines apart from the address bar above. */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--stage-border-soft);
+}
+
+.headerTitle {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+}
+
+/* The log line that anchors the slice, set apart from the lead-in. */
+.headerSubject {
+  color: var(--color-text-muted);
+}
+
+.headerMeta {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.06em;
+  color: var(--color-text-subtle);
+}
+
 /* Mirror the live tail's row metrics so a context slice reads identically:
  * the list insets the rows, each row carries the accent-capable left
- * border, and the line component supplies the vertical rhythm. */
+ * border, and the line component supplies the vertical rhythm. The roomy
+ * top padding sets the lines below the header the way a page would. */
 .paneList {
   margin: 0;
-  padding: var(--space-2) var(--space-4) var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-4);
   list-style: none;
 }
 

@@ -37,8 +37,15 @@ export function Investigation({
   /** Resets the whole investigation in place — the guide's control. */
   onReset: () => void;
 }) {
-  const { state, setScenarios, markFiltered, setContexts, observe, openTab, cut } =
-    useDemoState();
+  const {
+    state,
+    setScenarios,
+    markFiltered,
+    setContexts,
+    observe,
+    openTab,
+    cut,
+  } = useDemoState();
   const announce = useDemoAnnounce();
 
   const { act, scenarioIds, everFiltered, openContexts, progress } = state;
@@ -125,7 +132,7 @@ export function Investigation({
       {/* Both acts live in the same tab strip. The explorer is keyed by act
           so the cut remounts it — the only way its internal filter clears —
           and act two opens on the clean live tail the cut intends. */}
-      <InvestigationStage lines={lines}>
+      <InvestigationStage lines={lines} service="api-gateway">
         {isActTwo ? (
           <LogExplorer
             key="act-two"

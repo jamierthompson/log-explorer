@@ -9,12 +9,39 @@ import { formatLogTime, type LogLine } from "@/demo";
 import { ScrollArea } from "@/site/ui/scroll-area/scroll-area";
 
 import { useDemoState } from "../demo-state";
+import { AddressBar } from "./address-bar";
 import { ContextPane } from "./context-pane";
 import styles from "./investigation-stage.module.css";
 
 const LIVE = "live";
 
 type ContextTab = { readonly id: string; readonly line: LogLine };
+
+/** The site mark, reused as the favicon every tab wears — one site, one
+ * icon across the strip, the way a real browser shows it. */
+function TabFavicon() {
+  return (
+    <svg
+      className={styles.favicon}
+      viewBox="5 5 22 22"
+      width="14"
+      height="14"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M10 8 H7 V24 H10" strokeWidth="2" opacity="0.7" />
+        <path d="M22 8 H25 V24 H22" strokeWidth="2" opacity="0.7" />
+        <path d="M14 11.5 L18 16 L14 20.5" strokeWidth="2.4" />
+      </g>
+    </svg>
+  );
+}
 
 /**
  * The browser-style tab strip both acts render into. The Live tail tab is
@@ -27,9 +54,12 @@ type ContextTab = { readonly id: string; readonly line: LogLine };
  */
 export function InvestigationStage({
   lines,
+  service,
   children,
 }: {
   lines: readonly LogLine[];
+  /** Names the slice address bars after the stream's service. */
+  service: string;
   /** The explorer rendered in the live-tail panel — act-specific. */
   children: ReactNode;
 }) {
@@ -55,7 +85,11 @@ export function InvestigationStage({
   );
 
   return (
-    <Tabs.Root className={styles.stage} value={active} onValueChange={setActive}>
+    <Tabs.Root
+      className={styles.stage}
+      value={active}
+      onValueChange={setActive}
+    >
       <div className={styles.tabBar}>
         <ScrollArea orientation="horizontal" className={styles.tabScroll}>
           <Tabs.List className={styles.tabstrip} aria-label="Open views">
@@ -64,7 +98,11 @@ export function InvestigationStage({
               value={LIVE}
               className={`${styles.tab} ${styles.tabLive}`}
             >
-              Live tail
+              <TabFavicon />
+              <span className={styles.tabLabel}>Live tail</span>
+              {/* Reserve the close control's footprint so the live tab
+                  matches a slice's width even though it can't be closed. */}
+              <span className={styles.tabClosePlaceholder} aria-hidden="true" />
             </Tabs.Trigger>
 
             {tabs.map((tab) => (
@@ -81,7 +119,11 @@ export function InvestigationStage({
                     liveTabRef.current?.focus();
                   }}
                 >
-                  {formatLogTime(tab.line.timestamp)}
+                  <TabFavicon />
+                  {/* The line's message stands in for the page title a
+                      real tab would show; the time stays in the label for
+                      assistive tech. */}
+                  <span className={styles.tabLabel}>{tab.line.message}</span>
                 </Tabs.Trigger>
                 {/*
                  * A button inside a tablist breaks the tab content
@@ -103,12 +145,6 @@ export function InvestigationStage({
             ))}
           </Tabs.List>
         </ScrollArea>
-
-        {tabs.length > 0 && (
-          <span className={styles.tabCount}>
-            {tabs.length} tab{tabs.length === 1 ? "" : "s"} open
-          </span>
-        )}
       </div>
 
       {/* The tabs primitive makes each panel a tab stop by default,
@@ -121,7 +157,10 @@ export function InvestigationStage({
         tabIndex={-1}
         forceMount
       >
-        {children}
+        {/* The live view is a page too: browser chrome (the address bar)
+            sits above the app's own chrome (the filters and list). */}
+        <AddressBar url={`logs.example.com/${service}`} />
+        <div className={styles.liveBody}>{children}</div>
       </Tabs.Content>
 
       {tabs.map((tab) => (
@@ -131,7 +170,7 @@ export function InvestigationStage({
           className={styles.panel}
           tabIndex={-1}
         >
-          <ContextPane lines={lines} anchorId={tab.id} />
+          <ContextPane lines={lines} anchorId={tab.id} service={service} />
         </Tabs.Content>
       ))}
     </Tabs.Root>

@@ -37,6 +37,7 @@
   --tracking-tight: -0.01em;
 
   --radius-1: 0.25rem;
+  --radius-2: 0.5rem;
 
   --shadow-1:
     0 1px 3px light-dark(oklch(0 0 0 / 0.06), oklch(0 0 0 / 0.2)),
@@ -88,6 +89,13 @@
   --color-on-accent: light-dark(oklch(0.985 0 0), oklch(0.205 0 0));
   --color-page-bg: light-dark(oklch(0.975 0 0), oklch(0.185 0 0));
   --color-raised: light-dark(oklch(1 0 0), oklch(0.21 0 0));
+  /* Browser-chrome neutrals for the demo's fake browser frame. The strip
+   * sits darker; the toolbar and active tab a step lighter so the active
+   * tab melts into the bar below it; the address field insets darker —
+   * the way a browser layers its own chrome above the page content. */
+  --color-chrome: light-dark(oklch(0.9 0 0), oklch(0.205 0 0));
+  --color-chrome-active: light-dark(oklch(0.97 0 0), oklch(0.255 0 0));
+  --color-chrome-field: light-dark(oklch(0.94 0 0), oklch(0.165 0 0));
   --color-accent: light-dark(oklch(0.485 0.18 349.8), oklch(0.725 0.175 349.8));
   --color-error: light-dark(oklch(0.5 0.2 27), oklch(0.73 0.2 27));
   /* Dims the page behind modal layers. Light mode uses a lifted gray
@@ -130,6 +138,11 @@
   --surface-page: var(--color-page-bg);
   --surface: var(--color-bg);
   --surface-raised: var(--color-raised);
+  /* Browser-frame roles: the tab strip, the active tab + toolbar band it
+   * merges into, and the inset address field. */
+  --chrome: var(--color-chrome);
+  --chrome-active: var(--color-chrome-active);
+  --chrome-field: var(--color-chrome-field);
   --color-prose-rule: var(--brand-accent);
 
   /*
