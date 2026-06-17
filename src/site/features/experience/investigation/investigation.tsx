@@ -53,16 +53,13 @@ export function Investigation({
       if (isActTwo) setContexts(snapshot.openContexts);
 
       // Act-two checklist readings, keyed to the chips and context windows.
-      // The blast step earns either by stacking a second context or by
-      // narrowing to the single instance — two ways to read the radius.
+      // The final step earns by stacking a second context — the new way's
+      // payoff: the cause and the failure held in one view.
       observe({
         triaged: isActTwo && snapshot.activeScenarioIds.includes("errors"),
         traced: isActTwo && snapshot.activeScenarioIds.includes("trace"),
         examined: isActTwo && snapshot.openContexts.length > 0,
-        blasted:
-          isActTwo &&
-          (snapshot.openContexts.length >= 2 ||
-            snapshot.activeScenarioIds.includes("instance")),
+        stacked: isActTwo && snapshot.openContexts.length >= 2,
       });
     },
     [isActTwo, markFiltered, setScenarios, setContexts, observe],
@@ -78,7 +75,7 @@ export function Investigation({
         triage: progress.triaged,
         trace: progress.traced,
         inplace: progress.examined,
-        blast: progress.blasted,
+        stack: progress.stacked,
       }
     : { filter: everFiltered, open: progress.opened, pile: progress.piled };
 

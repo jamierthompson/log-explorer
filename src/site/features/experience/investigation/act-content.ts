@@ -33,19 +33,19 @@ export const ACT_CONTENT: Record<Act, ActContent> = {
         id: "filter",
         title: "Filter the live tail",
         description:
-          "Pick a chip to narrow the stream — errors, a request, an instance.",
+          "Pick a chip to narrow the stream: errors, a request, an instance.",
       },
       {
         id: "open",
         title: "Open a line for context",
         description:
-          "Click a matching line — the slice lands in a new tab, and your filtered tail stays put, one tab back.",
+          "Click a matching line. The slice lands in a new tab, and your filtered tail stays put, one tab back.",
       },
       {
         id: "pile",
-        title: "Reassemble by hand",
+        title: "Piece it together",
         description:
-          "Two tabs, two slices — you’re holding the timeline together in your head.",
+          "Back on the live tail, open a second line. Two tabs, two slices, and you’re holding the timeline together in your head.",
       },
     ],
   },
@@ -59,25 +59,24 @@ export const ACT_CONTENT: Record<Act, ActContent> = {
       {
         id: "triage",
         title: "Triage the symptom",
-        description: "Filter to errors to see what’s actually failing.",
+        description: "Filter to errors. They’re all on one instance, @kc4qn.",
       },
       {
         id: "trace",
         title: "Trace the failing request",
-        description:
-          "Follow req=r4d8a2 span by span. It dies waiting on the db pool.",
+        description: "Follow req=r4d8a2. It dies waiting on the db pool.",
       },
       {
         id: "inplace",
         title: "Open context in place",
         description:
-          "The cause carries no request id — only the lines around the failure can show it. Not there yet? Shift+E widens the window.",
+          "Click the failure. The pool’s saturated all around it, but the trigger sits upstream with no request id of its own.",
       },
       {
-        id: "blast",
-        title: "Check the blast radius",
+        id: "stack",
+        title: "Open a second context",
         description:
-          "One instance, or all three? Open another context — or narrow to @kc4qn — and see.",
+          "Narrow to @kc4qn and open a second context on the reload that shrank the pool.",
       },
     ],
   },

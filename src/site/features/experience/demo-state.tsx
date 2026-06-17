@@ -27,7 +27,7 @@ type ProgressSignals = {
   readonly triaged: boolean;
   readonly traced: boolean;
   readonly examined: boolean;
-  readonly blasted: boolean;
+  readonly stacked: boolean;
 };
 
 /** The investigation's checklist — each step latches the first time it's
@@ -70,7 +70,7 @@ const INITIAL_STATE: DemoState = {
     triaged: false,
     traced: false,
     examined: false,
-    blasted: false,
+    stacked: false,
     opened: false,
     piled: false,
   },
@@ -134,27 +134,31 @@ function reducer(state: DemoState, action: Action): DemoState {
         triaged: p.triaged || o.triaged,
         traced: p.traced || o.traced,
         examined: p.examined || o.examined,
-        blasted: p.blasted || o.blasted,
+        stacked: p.stacked || o.stacked,
       };
       if (
         next.triaged === p.triaged &&
         next.traced === p.traced &&
         next.examined === p.examined &&
-        next.blasted === p.blasted
+        next.stacked === p.stacked
       ) {
         return state;
       }
       return { ...state, progress: next };
     }
     case "cut": {
-      // The cut ends act one: it clears the scattered tabs and returns
-      // to the filtered live tail in place, deliberately opening no context.
-      // Act two is hands-on — the visitor opens context themselves to earn
-      // the payoff. Idempotent — the demo only ever moves forward to act two.
+      // The cut ends act one: it clears the scattered tabs and drops the
+      // act-one filter so act two opens on a clean live tail, deliberately
+      // with no context. Act two is hands-on — the visitor re-narrows and
+      // opens context themselves to earn the payoff, starting from zero so
+      // its checklist isn't pre-satisfied by act-one's filter. Idempotent —
+      // the demo only ever moves forward to act two.
       if (state.act === "act-two") return state;
       return {
         ...state,
         act: "act-two",
+        scenarioIds: [],
+        everFiltered: false,
         tabs: { ids: [], active: null },
         openContexts: [],
       };

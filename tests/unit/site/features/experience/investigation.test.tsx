@@ -184,12 +184,13 @@ describe("Investigation — act one", () => {
 });
 
 describe("Investigation — the cut", () => {
-  it("clears the scattered tabs and returns to the filtered live tail", async () => {
+  it("clears the scattered tabs and the filter, landing act two on a clean live tail", async () => {
     const user = userEvent.setup();
     renderInvestigation();
 
-    // Scatter two slices in act one.
+    // Scatter two slices in act one, narrowed to errors.
     await user.click(screen.getByRole("button", { name: /errors only/i }));
+    expect(screen.queryByText("Healthcheck OK")).not.toBeInTheDocument();
     await user.click(screen.getByText("request timeout"));
     await user.click(screen.getByRole("tab", { name: "Live tail" }));
     await user.click(screen.getByText("upstream timeout"));
@@ -206,6 +207,10 @@ describe("Investigation — the cut", () => {
       screen.queryByRole("tab", { name: "Live tail" }),
     ).not.toBeInTheDocument();
     expect(getGuideStep("inplace")).not.toHaveAttribute("data-done");
+    // The act-one filter is dropped, so act two opens on the full stream and
+    // its triage step isn't pre-satisfied by the narrowing carried over.
+    expect(screen.getByText("Healthcheck OK")).toBeInTheDocument();
+    expect(getGuideStep("triage")).not.toHaveAttribute("data-done");
     // The forward action is now the closing call, not another cut.
     expect(
       screen.getByRole("button", { name: /call the root cause/i }),
@@ -233,43 +238,45 @@ describe("Investigation — act two", () => {
     const user = userEvent.setup();
     renderInvestigation();
 
-    // Filter first so a line is open-able, then cross the cut.
-    await user.click(screen.getByRole("button", { name: /errors only/i }));
     await cut(user);
 
     // The cut alone doesn't earn it — the visitor has to do the work.
     expect(getGuideStep("inplace")).not.toHaveAttribute("data-done");
 
-    // Opening context in place (no tab spawns) completes the goal.
+    // Context opens against a filtered view — it expands the hidden lines
+    // around a match — so narrow first, then open context in place.
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
     await user.click(screen.getByText("request timeout"));
     expect(screen.queryByRole("tab")).not.toBeInTheDocument();
     expect(getGuideStep("inplace")).toHaveAttribute("data-done");
   });
 
-  it("reads the blast radius by stacking a second context in one view", async () => {
+  it("earns the second-context step only when a second context is stacked", async () => {
     const user = userEvent.setup();
     renderInvestigation();
-    await user.click(screen.getByRole("button", { name: /errors only/i }));
     await cut(user);
+    // Narrow in act two (the cut drops act one's filter) so lines are
+    // open-able, then stack two contexts.
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
 
     await user.click(screen.getByText("request timeout"));
-    expect(getGuideStep("blast")).not.toHaveAttribute("data-done");
+    expect(getGuideStep("stack")).not.toHaveAttribute("data-done");
 
     // A second context joins the first instead of opening a tab.
     await user.click(screen.getByText("upstream timeout"));
-    expect(getGuideStep("blast")).toHaveAttribute("data-done");
+    expect(getGuideStep("stack")).toHaveAttribute("data-done");
     expect(screen.queryByRole("tab")).not.toBeInTheDocument();
   });
 
-  it("reads the blast radius by narrowing to a single instance", async () => {
+  it("does not earn the second-context step from a filter alone", async () => {
     const user = userEvent.setup();
     renderInvestigation();
     await cut(user);
-    expect(getGuideStep("blast")).not.toHaveAttribute("data-done");
 
-    // The other path to the radius: filter to one instance, no stacking.
+    // Narrowing to one instance is how you reach the cause line, but the
+    // step is earned by stacking a second context — not by the filter.
     await user.click(screen.getByRole("button", { name: /@kc4qn/i }));
-    expect(getGuideStep("blast")).toHaveAttribute("data-done");
+    expect(getGuideStep("stack")).not.toHaveAttribute("data-done");
   });
 
   it("triages by filtering to errors and traces by filtering to the request", async () => {
@@ -282,11 +289,10 @@ describe("Investigation — act two", () => {
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     expect(getGuideStep("triage")).toHaveAttribute("data-done");
 
+    // Single-select: selecting the request swaps the errors lens out, so the
+    // errors filter is no longer active — but triage stays earned (sticky).
     await user.click(screen.getByRole("button", { name: /req=r4d8a2/i }));
     expect(getGuideStep("trace")).toHaveAttribute("data-done");
-
-    // Sticky: toggling the errors chip back off can't un-earn triage.
-    await user.click(screen.getByRole("button", { name: /errors only/i }));
     expect(getGuideStep("triage")).toHaveAttribute("data-done");
   });
 

@@ -39,7 +39,7 @@ function StateProbe() {
             triaged: true,
             traced: true,
             examined: true,
-            blasted: true,
+            stacked: true,
           });
         }}
       >

@@ -76,7 +76,7 @@ describe("demo state", () => {
         triaged: false,
         traced: true,
         examined: false,
-        blasted: false,
+        stacked: false,
       }),
     );
     expect(result.current.state.progress.traced).toBe(true);
@@ -89,16 +89,18 @@ describe("demo state", () => {
         triaged: false,
         traced: false,
         examined: false,
-        blasted: false,
+        stacked: false,
       }),
     );
     expect(result.current.state.progress.traced).toBe(true);
     expect(result.current.state).toBe(latched);
   });
 
-  it("cuts to in place, clearing the tabs and opening no context", () => {
+  it("cuts to in place, clearing the tabs and the filter and opening no context", () => {
     const { result } = setup();
     act(() => {
+      result.current.setScenarios(["errors"]);
+      result.current.markFiltered();
       result.current.openTab("a");
       result.current.openTab("b");
     });
@@ -110,9 +112,12 @@ describe("demo state", () => {
 
     act(() => result.current.cut());
     expect(result.current.state.act).toBe("act-two");
-    // The cut ends act one without doing the work: tabs clear and no
-    // context is pre-stacked, so act two starts hands-on.
+    // The cut ends act one without doing the work: tabs and filter clear
+    // and no context is pre-stacked, so act two starts hands-on on a clean
+    // live tail rather than inheriting act-one's narrowing.
     expect(result.current.state.tabs).toEqual({ ids: [], active: null });
+    expect(result.current.state.scenarioIds).toEqual([]);
+    expect(result.current.state.everFiltered).toBe(false);
     expect(result.current.state.openContexts).toEqual([]);
     expect(result.current.state.progress.piled).toBe(true);
 
@@ -134,7 +139,7 @@ describe("demo state", () => {
         triaged: true,
         traced: true,
         examined: true,
-        blasted: true,
+        stacked: true,
       });
       result.current.cut();
     });
@@ -155,7 +160,7 @@ describe("demo state", () => {
         triaged: false,
         traced: false,
         examined: false,
-        blasted: false,
+        stacked: false,
         opened: false,
         piled: false,
       },
