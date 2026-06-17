@@ -118,7 +118,7 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
             failing, a reverse reload recovers it — and the cause line carries
             no request ID, so the trace filter can never surface it. Only
             context can. Every chip points at a moment in that story, and the
-            demo’s root-cause call is answerable from the lines alone.
+            debrief that closes the demo reads straight off the lines.
           </p>
         </section>
 

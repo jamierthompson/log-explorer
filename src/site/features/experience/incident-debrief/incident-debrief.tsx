@@ -11,9 +11,9 @@ import styles from "./incident-debrief.module.css";
 type Field = { readonly label: string; readonly value: string };
 
 const FIELDS: readonly Field[] = [
-  { label: "Severity", value: "SEV-2" },
-  { label: "Duration", value: "23 min" },
   { label: "Surface", value: "api-gateway · checkout" },
+  { label: "Instance", value: "kc4qn" },
+  { label: "Duration", value: "~9 min" },
   { label: "Status", value: "Resolved" },
 ];
 
@@ -54,9 +54,9 @@ export function IncidentDebrief({
               Checkout failures traced to a shrunken database pool
             </Dialog.Title>
             <Dialog.Description className={styles.summary}>
-              A slice of checkout traffic failed for twenty-three minutes. Every
-              trace dead-ended at the database — but the cause sat minutes
-              upstream, outside the trace.
+              Checkout and cart requests on one instance failed for about nine
+              minutes, each dead-ending at a database-pool timeout. The cause
+              sat minutes upstream of the first failure — outside the trace.
             </Dialog.Description>
           </header>
 
@@ -73,30 +73,31 @@ export function IncidentDebrief({
             <section className={styles.section}>
               <h3 className={styles.sectionTitle}>What happened</h3>
               <p className={styles.text}>
-                Checkout requests on api-gateway began timing out for one slice
-                of traffic, waiting on a database connection that never came.
-                Two instances kept serving 200s throughout, so the fleet looked
-                healthy at a glance.
+                On one instance, checkout and cart requests began returning 503s
+                after waiting the full five-second pool timeout for a database
+                connection. The other two instances served 200s throughout, so
+                the fleet looked healthy at a glance.
               </p>
             </section>
             <section className={styles.section}>
               <h3 className={styles.sectionTitle}>Root cause</h3>
               <p className={styles.text}>
-                A config reload cut{" "}
+                A config hot-reload had cut{" "}
                 <code className={styles.code}>db.pool.max</code> from 20 to 5 on
-                a single instance. Starved of connections, its checkouts queued
-                past the timeout and failed — while its neighbors, untouched by
-                the reload, stayed green.
+                that instance. The shrunken pool saturated over the next few
+                minutes — connections queued, waits climbed past the timeout —
+                until requests failed outright. A reverse reload back to 20
+                cleared it.
               </p>
             </section>
             <section className={styles.section}>
               <h3 className={styles.sectionTitle}>Why it was hard to see</h3>
               <p className={styles.text}>
-                The failing trace had no thread back to the reload: it landed
-                minutes earlier, with no request id to tie them together.
-                Following the trace alone, you circle the database forever.
-                Opening a second context around the instance — not the request —
-                is what surfaced the reload sitting upstream.
+                The reload carried no request id and landed minutes before the
+                first failure, so the trace filter could never reach it — follow
+                the failing request and you circle the database forever. Opening
+                context around the instance, not the request, is what surfaced
+                the reload sitting upstream.
               </p>
             </section>
           </div>
