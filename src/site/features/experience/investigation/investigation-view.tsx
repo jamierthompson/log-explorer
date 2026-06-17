@@ -16,7 +16,7 @@ export function InvestigationView() {
   const { state, reset } = useDemoState();
 
   // Keyed on the investigation's run id so a reset remounts it fresh —
-  // clearing the explorer's internal filter and returning to phase one.
+  // clearing the explorer's internal filter and returning to act one.
   return (
     <Investigation
       key={state.runId}

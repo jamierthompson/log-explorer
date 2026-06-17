@@ -72,14 +72,14 @@ function ResettableInvestigation() {
   );
 }
 
-/** Crosses the cut into phase two via the guide's action. */
+/** Crosses the cut into act two via the guide's action. */
 async function cut(user: ReturnType<typeof userEvent.setup>) {
   await user.click(
     screen.getByRole("button", { name: /there’s a better way/i }),
   );
 }
 
-describe("Investigation — phase one", () => {
+describe("Investigation — act one", () => {
   it("opens a context view in a new tab instead of expanding in place", async () => {
     const user = userEvent.setup();
     renderInvestigation();
@@ -188,7 +188,7 @@ describe("Investigation — the cut", () => {
     const user = userEvent.setup();
     renderInvestigation();
 
-    // Scatter two slices in phase one.
+    // Scatter two slices in act one.
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     await user.click(screen.getByText("request timeout"));
     await user.click(screen.getByRole("tab", { name: "Live tail" }));
@@ -216,7 +216,7 @@ describe("Investigation — the cut", () => {
   });
 });
 
-describe("Investigation — phase two", () => {
+describe("Investigation — act two", () => {
   it("opens the root-cause call, which is always available", async () => {
     const user = userEvent.setup();
     const onCallRootCause = vi.fn();
@@ -261,7 +261,7 @@ describe("Investigation — phase two", () => {
     expect(screen.queryByRole("tab")).not.toBeInTheDocument();
   });
 
-  it("clears the filter, the guide, and the phase when reset", async () => {
+  it("clears the filter, the guide, and the act when reset", async () => {
     const user = userEvent.setup();
     render(<ResettableInvestigation />, { wrapper: DemoProviders });
 
@@ -272,7 +272,7 @@ describe("Investigation — phase two", () => {
     await user.click(screen.getByRole("button", { name: /reset/i }));
 
     // Remounted fresh: filter gone, checklist back to start, and back to
-    // phase one (the cut action is offered again).
+    // act one (the cut action is offered again).
     expect(screen.getByText("Healthcheck OK")).toBeInTheDocument();
     expect(getGuideStep("filter")).not.toHaveAttribute("data-done");
     expect(
@@ -281,7 +281,7 @@ describe("Investigation — phase two", () => {
   });
 });
 
-describe("Investigation — the phase-one checklist", () => {
+describe("Investigation — the act-one checklist", () => {
   it("checks the filter goal when any chip narrows the stream", async () => {
     const user = userEvent.setup();
     renderInvestigation();

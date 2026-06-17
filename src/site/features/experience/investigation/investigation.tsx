@@ -14,14 +14,14 @@ import { ActLayout } from "../act-layout/act-layout";
 import { useDemoAnnounce } from "../demo-shell";
 import { useDemoState } from "../demo-state";
 import { GuideBox, type GuideItem } from "../guide-box/guide-box";
-import { PHASE_CONTENT } from "./phase-content";
+import { ACT_CONTENT } from "./act-content";
 import { ScatterView } from "./scatter-view";
 
 /**
- * The demo's single investigation, staged in two phases against one shared
- * store. In phase one the explorer delegates context out, so opening a line
+ * The demo's single investigation, staged in two acts against one shared
+ * store. In act one the explorer delegates context out, so opening a line
  * spawns a browser-style tab and the work scatters; the cut clears those
- * tabs and switches the same explorer to phase two — expanding context where
+ * tabs and switches the same explorer to act two — expanding context where
  * the line lives. The checklist and filter persist across the cut and reset
  * as one.
  */
@@ -31,7 +31,7 @@ export function Investigation({
   onReset,
 }: {
   lines: readonly LogLine[];
-  /** Opens the root-cause call — phase two's closing action. */
+  /** Opens the root-cause call — act two's closing action. */
   onCallRootCause: () => void;
   /** Resets the whole investigation in place — the guide's control. */
   onReset: () => void;
@@ -40,34 +40,34 @@ export function Investigation({
     useDemoState();
   const announce = useDemoAnnounce();
 
-  const { phase, scenarioIds, everFiltered, openContexts, progress } = state;
-  const isPhaseTwo = phase === "phase-two";
+  const { act, scenarioIds, everFiltered, openContexts, progress } = state;
+  const isActTwo = act === "act-two";
 
-  // The shared snapshot reporter for both phases: it latches the filter and
+  // The shared snapshot reporter for both acts: it latches the filter and
   // the explorer-driven checklist steps. Context only opens in place, so it's
-  // persisted (and the steps observed) in phase two alone.
+  // persisted (and the steps observed) in act two alone.
   const handleState = useCallback(
     (snapshot: LogExplorerSnapshot) => {
       if (snapshot.hasFilter) markFiltered();
       setScenarios(snapshot.activeScenarioIds);
-      if (isPhaseTwo) setContexts(snapshot.openContexts);
+      if (isActTwo) setContexts(snapshot.openContexts);
 
       observe({
         traced: snapshot.activeScenarioIds.includes("trace"),
-        examined: isPhaseTwo && snapshot.openContexts.length > 0,
-        stacked: isPhaseTwo && snapshot.openContexts.length >= 2,
-        surfaced: isPhaseTwo && snapshot.hasExpandedContext,
+        examined: isActTwo && snapshot.openContexts.length > 0,
+        stacked: isActTwo && snapshot.openContexts.length >= 2,
+        surfaced: isActTwo && snapshot.hasExpandedContext,
       });
     },
-    [isPhaseTwo, markFiltered, setScenarios, setContexts, observe],
+    [isActTwo, markFiltered, setScenarios, setContexts, observe],
   );
 
-  const content = PHASE_CONTENT[phase];
+  const content = ACT_CONTENT[act];
 
   // The steps are content; their done-ness is the live reading, keyed by id.
-  // Phase one's milestones latch from tab opens, phase two's from explorer
+  // Act one's milestones latch from tab opens, act two's from explorer
   // snapshots — both sticky in the store.
-  const doneById: Record<string, boolean> = isPhaseTwo
+  const doneById: Record<string, boolean> = isActTwo
     ? {
         inplace: progress.examined,
         stack: progress.stacked,
@@ -92,7 +92,7 @@ export function Investigation({
           onAnnounce={announce}
           onReset={onReset}
           action={
-            isPhaseTwo
+            isActTwo
               ? { label: content.actionLabel, onClick: onCallRootCause }
               : {
                   label: (
@@ -107,7 +107,7 @@ export function Investigation({
         />
       }
     >
-      {isPhaseTwo ? (
+      {isActTwo ? (
         <LogExplorer
           lines={lines}
           service="api-gateway"

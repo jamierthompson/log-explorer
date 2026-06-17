@@ -5,7 +5,7 @@ import { ScrollArea } from "@/site/ui/scroll-area/scroll-area";
 import styles from "./context-pane.module.css";
 
 /**
- * A phase-one context slice: the window of lines around an anchored row,
+ * A act-one context slice: the window of lines around an anchored row,
  * rendered unfiltered in its own tab. A read-only echo of the live tail's
  * rows, so a torn-out scrap reads identically to the stream it came from.
  */

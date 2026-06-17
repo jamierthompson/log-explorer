@@ -103,15 +103,15 @@ describe("demo state", () => {
       result.current.openTab("b");
     });
 
-    // Opening two tabs latches the phase-one steps; they're sticky, so they
+    // Opening two tabs latches the act-one steps; they're sticky, so they
     // stay earned across the cut that clears the tabs.
     expect(result.current.state.progress.opened).toBe(true);
     expect(result.current.state.progress.piled).toBe(true);
 
     act(() => result.current.cut());
-    expect(result.current.state.phase).toBe("phase-two");
-    // The cut ends phase one without doing the work: tabs clear and no
-    // context is pre-stacked, so phase two starts hands-on.
+    expect(result.current.state.act).toBe("act-two");
+    // The cut ends act one without doing the work: tabs clear and no
+    // context is pre-stacked, so act two starts hands-on.
     expect(result.current.state.tabs).toEqual({ ids: [], active: null });
     expect(result.current.state.openContexts).toEqual([]);
     expect(result.current.state.progress.piled).toBe(true);
@@ -142,11 +142,11 @@ describe("demo state", () => {
     const runBefore = result.current.state.runId;
     act(() => result.current.reset());
 
-    // Phase, filter, tabs, contexts, and checklist all clear at once, and the
+    // Act, filter, tabs, contexts, and checklist all clear at once, and the
     // run id advances so the view remounts with a clean slate.
     expect(result.current.state).toEqual({
       runId: runBefore + 1,
-      phase: "phase-one",
+      act: "act-one",
       scenarioIds: [],
       everFiltered: false,
       tabs: { ids: [], active: null },

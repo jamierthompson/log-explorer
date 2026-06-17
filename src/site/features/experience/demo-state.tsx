@@ -11,7 +11,7 @@ import {
 
 import { type OpenContext } from "@/demo";
 
-/** The scattered context slices of phase one: which lines are open (by
+/** The scattered context slices of act one: which lines are open (by
  * id) and which tab is showing (null means the live tail). */
 type Tabs = {
   readonly ids: readonly string[];
@@ -30,26 +30,26 @@ type ProgressSignals = {
 
 /** The investigation's checklist — each step latches the first time it's
  * reported and never un-latches, so the store only ever gains steps.
- * `opened`/`piled` latch from tab opens in phase one; the rest are folded
+ * `opened`/`piled` latch from tab opens in act one; the rest are folded
  * in from explorer snapshots. */
 type Progress = ProgressSignals & {
   readonly opened: boolean;
   readonly piled: boolean;
 };
 
-/** Which phase the investigation is in: phase one scatters context into
- * tabs; the cut advances to phase two, which expands context in place. */
-export type Phase = "phase-one" | "phase-two";
+/** Which act the investigation is in: act one scatters context into
+ * tabs; the cut advances to act two, which expands context in place. */
+export type Act = "act-one" | "act-two";
 
 /* One investigation, shared across the whole demo. `runId` bumps on reset
  * so the view remounts and the explorer's internal filter — which can't be
- * cleared any other way — starts over. The phase, filter (scenarioIds),
- * the scattered tabs of phase one, the stacked phase-two contexts, and
+ * cleared any other way — starts over. The act, filter (scenarioIds),
+ * the scattered tabs of act one, the stacked act-two contexts, and
  * the checklist all live here, so they survive in-app navigation and reset
  * together as one investigation. */
 type DemoState = {
   readonly runId: number;
-  readonly phase: Phase;
+  readonly act: Act;
   readonly scenarioIds: readonly string[];
   readonly everFiltered: boolean;
   readonly tabs: Tabs;
@@ -59,7 +59,7 @@ type DemoState = {
 
 const INITIAL_STATE: DemoState = {
   runId: 0,
-  phase: "phase-one",
+  act: "act-one",
   scenarioIds: [],
   everFiltered: false,
   tabs: { ids: [], active: null },
@@ -92,7 +92,7 @@ function reducer(state: DemoState, action: Action): DemoState {
     case "openTab": {
       const open = state.tabs.ids.includes(action.id);
       const ids = open ? state.tabs.ids : [...state.tabs.ids, action.id];
-      // Latch the phase-one checklist the same way the explorer-driven steps
+      // Latch the act-one checklist the same way the explorer-driven steps
       // latch: the tab open is the signal, and the step never un-sets — so
       // closing a tab can't un-check "opened a slice" or "piled two up".
       return {
@@ -145,14 +145,14 @@ function reducer(state: DemoState, action: Action): DemoState {
       return { ...state, progress: next };
     }
     case "cut": {
-      // The cut ends phase one: it clears the scattered tabs and returns
+      // The cut ends act one: it clears the scattered tabs and returns
       // to the filtered live tail in place, deliberately opening no context.
-      // Phase two is hands-on — the visitor opens context themselves to earn
-      // the payoff. Idempotent — the demo only ever moves forward to phase two.
-      if (state.phase === "phase-two") return state;
+      // Act two is hands-on — the visitor opens context themselves to earn
+      // the payoff. Idempotent — the demo only ever moves forward to act two.
+      if (state.act === "act-two") return state;
       return {
         ...state,
-        phase: "phase-two",
+        act: "act-two",
         tabs: { ids: [], active: null },
         openContexts: [],
       };
@@ -171,7 +171,7 @@ type DemoStateValue = {
   readonly markFiltered: () => void;
   readonly setContexts: (openContexts: readonly OpenContext[]) => void;
   readonly observe: (observed: ProgressSignals) => void;
-  /** Ends phase one: clears the scattered tabs and returns to the
+  /** Ends act one: clears the scattered tabs and returns to the
    * filtered live tail to open context in place. */
   readonly cut: () => void;
   /** Clears the whole investigation and starts its run over. */

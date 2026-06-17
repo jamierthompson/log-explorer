@@ -1,4 +1,4 @@
-import { type Phase } from "../demo-state";
+import { type Act } from "../demo-state";
 
 /** One checklist step's copy. The view resolves `done` from live
  * investigation state, keyed by `id` — so this stays pure content. */
@@ -8,18 +8,18 @@ export type GuideStepContent = {
   readonly description: string;
 };
 
-/** The static copy for one phase of the staged investigation: the heading,
+/** The static copy for one act of the staged investigation: the heading,
  * lead, forward-action label, and checklist steps. Behavior — the action's
  * onClick and each step's done-ness — is wired by the view. */
-export type PhaseContent = {
+export type ActContent = {
   readonly title: string;
   readonly lead: string;
   readonly actionLabel: string;
   readonly steps: readonly GuideStepContent[];
 };
 
-export const PHASE_CONTENT: Record<Phase, PhaseContent> = {
-  "phase-one": {
+export const ACT_CONTENT: Record<Act, ActContent> = {
+  "act-one": {
     title: "Chasing an ID scatters the investigation across tabs",
     lead: "Filter to the failing request and the picture narrows. But click a line for context and a new tab opens — no filter, no live tail, just a slice.",
     actionLabel: "There’s a better way",
@@ -44,7 +44,7 @@ export const PHASE_CONTENT: Record<Phase, PhaseContent> = {
       },
     ],
   },
-  "phase-two": {
+  "act-two": {
     title: "Open context where the line lives",
     lead: "The rows around the line expand inline, dimmed so the matching lines stay bright. The filter doesn’t reset. The position doesn’t reset.",
     actionLabel: "Call the root cause",

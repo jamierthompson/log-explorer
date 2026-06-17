@@ -23,7 +23,7 @@ const LIVE = "live";
 type ContextTab = { readonly id: string; readonly line: LogLine };
 
 /**
- * Phase one: a browser-style tab strip over the explorer. The live tail
+ * Act one: a browser-style tab strip over the explorer. The live tail
  * delegates context out (onViewContext), so each look opens its own tab and
  * the investigation scatters — the pain the cut later undoes. Owns only the
  * tab chrome; the shared snapshot reporter is handed down from the view.
@@ -33,7 +33,7 @@ export function ScatterView({
   onState,
 }: {
   lines: readonly LogLine[];
-  /** The shared state reporter — both phases fold snapshots into the store. */
+  /** The shared state reporter — both acts fold snapshots into the store. */
   onState: (snapshot: LogExplorerSnapshot) => void;
 }) {
   const { state, openTab, closeTab, activateTab } = useDemoState();
