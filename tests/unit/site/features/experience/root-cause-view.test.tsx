@@ -36,10 +36,10 @@ function StateProbe() {
         onClick={() => {
           setScenarios(["errors"]);
           observe({
+            triaged: true,
             traced: true,
             examined: true,
-            stacked: true,
-            surfaced: true,
+            blasted: true,
           });
         }}
       >

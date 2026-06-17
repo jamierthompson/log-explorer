@@ -246,19 +246,48 @@ describe("Investigation — act two", () => {
     expect(getGuideStep("inplace")).toHaveAttribute("data-done");
   });
 
-  it("stacks a second context in one view, no tab spawned", async () => {
+  it("reads the blast radius by stacking a second context in one view", async () => {
     const user = userEvent.setup();
     renderInvestigation();
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     await cut(user);
 
     await user.click(screen.getByText("request timeout"));
-    expect(getGuideStep("stack")).not.toHaveAttribute("data-done");
+    expect(getGuideStep("blast")).not.toHaveAttribute("data-done");
 
     // A second context joins the first instead of opening a tab.
     await user.click(screen.getByText("upstream timeout"));
-    expect(getGuideStep("stack")).toHaveAttribute("data-done");
+    expect(getGuideStep("blast")).toHaveAttribute("data-done");
     expect(screen.queryByRole("tab")).not.toBeInTheDocument();
+  });
+
+  it("reads the blast radius by narrowing to a single instance", async () => {
+    const user = userEvent.setup();
+    renderInvestigation();
+    await cut(user);
+    expect(getGuideStep("blast")).not.toHaveAttribute("data-done");
+
+    // The other path to the radius: filter to one instance, no stacking.
+    await user.click(screen.getByRole("button", { name: /@kc4qn/i }));
+    expect(getGuideStep("blast")).toHaveAttribute("data-done");
+  });
+
+  it("triages by filtering to errors and traces by filtering to the request", async () => {
+    const user = userEvent.setup();
+    renderInvestigation();
+    await cut(user);
+    expect(getGuideStep("triage")).not.toHaveAttribute("data-done");
+    expect(getGuideStep("trace")).not.toHaveAttribute("data-done");
+
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    expect(getGuideStep("triage")).toHaveAttribute("data-done");
+
+    await user.click(screen.getByRole("button", { name: /req=r4d8a2/i }));
+    expect(getGuideStep("trace")).toHaveAttribute("data-done");
+
+    // Sticky: toggling the errors chip back off can't un-earn triage.
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+    expect(getGuideStep("triage")).toHaveAttribute("data-done");
   });
 
   it("clears the filter, the guide, and the act when reset", async () => {

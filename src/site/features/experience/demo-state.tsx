@@ -20,12 +20,14 @@ type Tabs = {
 
 /** The steps the explorer reports from a single snapshot — transient
  * readings, not authoritative progress. The reducer folds these into the
- * sticky Progress, so a false reading here can't clear a latched step. */
+ * sticky Progress, so a false reading here can't clear a latched step.
+ * Each field mirrors an act-two checklist step's id, so the wiring reads
+ * one-to-one. */
 type ProgressSignals = {
+  readonly triaged: boolean;
   readonly traced: boolean;
   readonly examined: boolean;
-  readonly stacked: boolean;
-  readonly surfaced: boolean;
+  readonly blasted: boolean;
 };
 
 /** The investigation's checklist — each step latches the first time it's
@@ -65,10 +67,10 @@ const INITIAL_STATE: DemoState = {
   tabs: { ids: [], active: null },
   openContexts: [],
   progress: {
+    triaged: false,
     traced: false,
     examined: false,
-    stacked: false,
-    surfaced: false,
+    blasted: false,
     opened: false,
     piled: false,
   },
@@ -129,16 +131,16 @@ function reducer(state: DemoState, action: Action): DemoState {
       const o = action.observed;
       const next: Progress = {
         ...p,
+        triaged: p.triaged || o.triaged,
         traced: p.traced || o.traced,
         examined: p.examined || o.examined,
-        stacked: p.stacked || o.stacked,
-        surfaced: p.surfaced || o.surfaced,
+        blasted: p.blasted || o.blasted,
       };
       if (
+        next.triaged === p.triaged &&
         next.traced === p.traced &&
         next.examined === p.examined &&
-        next.stacked === p.stacked &&
-        next.surfaced === p.surfaced
+        next.blasted === p.blasted
       ) {
         return state;
       }

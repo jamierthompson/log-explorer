@@ -13,10 +13,7 @@ export type GuideStepContent = {
  * checklist steps. Behavior — the action's onClick and each step's
  * done-ness — is wired by the view. */
 export type ActContent = {
-  /** The step badge — "Act 1"/"Act 2". The visitor sees "Act"; the code
-   * keys everything by "act-one"/"act-two", so the two read alike. */
   readonly badge: string;
-  /** The muted overline above the title. */
   readonly kicker: string;
   readonly title: string;
   readonly lead: string;
@@ -28,8 +25,8 @@ export const ACT_CONTENT: Record<Act, ActContent> = {
   "act-one": {
     badge: "Act 1",
     kicker: "The old way",
-    title: "Chasing an ID scatters the investigation across tabs",
-    lead: "Filter to the failing request and the picture narrows. But click a line for context and a new tab opens — no filter, no live tail, just a slice.",
+    title: "A tab for every click",
+    lead: "Filter the live tail to the failing request, then open a line for context. Every look opens another tab — and the investigation starts to scatter.",
     actionLabel: "There’s a better way",
     steps: [
       {
@@ -48,7 +45,7 @@ export const ACT_CONTENT: Record<Act, ActContent> = {
         id: "pile",
         title: "Reassemble by hand",
         description:
-          "Two tabs, two slices — you’re piecing the timeline back together by switching between them.",
+          "Two tabs, two slices — you’re holding the timeline together in your head.",
       },
     ],
   },
@@ -56,25 +53,31 @@ export const ACT_CONTENT: Record<Act, ActContent> = {
     badge: "Act 2",
     kicker: "In place",
     title: "Open context where the line lives",
-    lead: "The rows around the line expand inline, dimmed so the matching lines stay bright. The filter doesn’t reset. The position doesn’t reset.",
+    lead: "The same investigation, kept in one view. The trace can show you where checkout broke — opening context in place shows you why.",
     actionLabel: "Call the root cause",
     steps: [
+      {
+        id: "triage",
+        title: "Triage the symptom",
+        description: "Filter to errors to see what’s actually failing.",
+      },
+      {
+        id: "trace",
+        title: "Trace the failing request",
+        description:
+          "Follow req=r4d8a2 span by span. It dies waiting on the db pool.",
+      },
       {
         id: "inplace",
         title: "Open context in place",
         description:
-          "Click a line and its context opens right here, the non-matching lines dimmed.",
+          "The cause carries no request id — only the lines around the failure can show it. Not there yet? Shift+E widens the window.",
       },
       {
-        id: "stack",
-        title: "Open a second context",
+        id: "blast",
+        title: "Check the blast radius",
         description:
-          "Click another line and a second context opens in the same view.",
-      },
-      {
-        id: "upstream",
-        title: "Expand an open context",
-        description: "Reach further for the calls before and the calls after.",
+          "One instance, or all three? Open another context — or narrow to @kc4qn — and see.",
       },
     ],
   },

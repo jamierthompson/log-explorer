@@ -52,11 +52,17 @@ export function Investigation({
       setScenarios(snapshot.activeScenarioIds);
       if (isActTwo) setContexts(snapshot.openContexts);
 
+      // Act-two checklist readings, keyed to the chips and context windows.
+      // The blast step earns either by stacking a second context or by
+      // narrowing to the single instance — two ways to read the radius.
       observe({
-        traced: snapshot.activeScenarioIds.includes("trace"),
+        triaged: isActTwo && snapshot.activeScenarioIds.includes("errors"),
+        traced: isActTwo && snapshot.activeScenarioIds.includes("trace"),
         examined: isActTwo && snapshot.openContexts.length > 0,
-        stacked: isActTwo && snapshot.openContexts.length >= 2,
-        surfaced: isActTwo && snapshot.hasExpandedContext,
+        blasted:
+          isActTwo &&
+          (snapshot.openContexts.length >= 2 ||
+            snapshot.activeScenarioIds.includes("instance")),
       });
     },
     [isActTwo, markFiltered, setScenarios, setContexts, observe],
@@ -69,9 +75,10 @@ export function Investigation({
   // snapshots — both sticky in the store.
   const doneById: Record<string, boolean> = isActTwo
     ? {
+        triage: progress.triaged,
+        trace: progress.traced,
         inplace: progress.examined,
-        stack: progress.stacked,
-        upstream: progress.surfaced,
+        blast: progress.blasted,
       }
     : { filter: everFiltered, open: progress.opened, pile: progress.piled };
 
@@ -88,7 +95,7 @@ export function Investigation({
       lead={content.lead}
       aside={
         <GuideBox
-          title="The method"
+          title={isActTwo ? "The method" : "What's happening"}
           items={items}
           onAnnounce={announce}
           onReset={onReset}

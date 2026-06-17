@@ -73,10 +73,10 @@ describe("demo state", () => {
 
     act(() =>
       result.current.observe({
+        triaged: false,
         traced: true,
         examined: false,
-        stacked: false,
-        surfaced: false,
+        blasted: false,
       }),
     );
     expect(result.current.state.progress.traced).toBe(true);
@@ -86,10 +86,10 @@ describe("demo state", () => {
     // that adds nothing new produces no new state object.
     act(() =>
       result.current.observe({
+        triaged: false,
         traced: false,
         examined: false,
-        stacked: false,
-        surfaced: false,
+        blasted: false,
       }),
     );
     expect(result.current.state.progress.traced).toBe(true);
@@ -131,10 +131,10 @@ describe("demo state", () => {
       result.current.markFiltered();
       result.current.setContexts([{ selectedLineId: "x", range: 20 }]);
       result.current.observe({
+        triaged: true,
         traced: true,
         examined: true,
-        stacked: true,
-        surfaced: true,
+        blasted: true,
       });
       result.current.cut();
     });
@@ -152,10 +152,10 @@ describe("demo state", () => {
       tabs: { ids: [], active: null },
       openContexts: [],
       progress: {
+        triaged: false,
         traced: false,
         examined: false,
-        stacked: false,
-        surfaced: false,
+        blasted: false,
         opened: false,
         piled: false,
       },
