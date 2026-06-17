@@ -35,13 +35,18 @@ function StateProbe() {
       <button
         onClick={() => {
           setScenarios(["errors"]);
-          observe({ triaged: true, traced: true, examined: true });
+          observe({
+            traced: true,
+            examined: true,
+            stacked: true,
+            surfaced: true,
+          });
         }}
       >
         seed
       </button>
       <output data-testid="scenarios">{state.scenarioIds.join(",")}</output>
-      <output data-testid="triaged">{String(state.progress.triaged)}</output>
+      <output data-testid="traced">{String(state.progress.traced)}</output>
     </div>
   );
 }
@@ -60,7 +65,7 @@ describe("RootCauseView", () => {
     // Seed a filter and a fully-checked checklist into the shared store.
     await user.click(screen.getByRole("button", { name: "seed" }));
     expect(screen.getByTestId("scenarios")).toHaveTextContent("errors");
-    expect(screen.getByTestId("triaged")).toHaveTextContent("true");
+    expect(screen.getByTestId("traced")).toHaveTextContent("true");
 
     // Reach the replay control by calling the correct root cause.
     await user.click(screen.getByRole("button", { name: /config reload/i }));
@@ -70,7 +75,7 @@ describe("RootCauseView", () => {
 
     // The shared investigation is wiped as one...
     expect(screen.getByTestId("scenarios")).not.toHaveTextContent("errors");
-    expect(screen.getByTestId("triaged")).toHaveTextContent("false");
+    expect(screen.getByTestId("traced")).toHaveTextContent("false");
     // ...and the visitor is sent back to the start of the demo.
     expect(push).toHaveBeenCalledWith("/demo");
   });

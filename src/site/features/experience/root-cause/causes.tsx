@@ -19,7 +19,7 @@ export const CAUSES: readonly Cause[] = [
     name: "The database is down",
     detail: "Postgres fell over and every instance is failing.",
     outcome: [
-      "Worth another look — @m7w3p and @t2x8r kept serving 200s through the whole incident, and checkout itself succeeded on @m7w3p at 13:31:55. A database that was truly down wouldn’t spare two of three instances.",
+      "Two of the three instances kept serving 200s the whole time. A downed database wouldn’t spare them.",
     ],
   },
   {
@@ -27,7 +27,7 @@ export const CAUSES: readonly Cause[] = [
     name: "A malformed checkout payload",
     detail: "Bad client input crashed the request.",
     outcome: [
-      "Follow the trace once more: the request was accepted, then sat waiting on a database connection until it timed out — it never even reached validation. And the same instance failed an unrelated add-to-cart the same way; bad input doesn’t spread between requests.",
+      "The request timed out waiting on a DB connection, before any validation ran. Bad input wouldn’t look like that.",
     ],
   },
   {
