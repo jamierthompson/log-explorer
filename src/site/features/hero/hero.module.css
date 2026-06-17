@@ -58,14 +58,6 @@
   gap: var(--space-1);
 }
 
-.coverMeta em {
-  font-style: normal;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-kicker);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-subtle);
-}
-
 .heroActions {
   display: flex;
   gap: var(--space-3);

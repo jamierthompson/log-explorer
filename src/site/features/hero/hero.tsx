@@ -1,5 +1,6 @@
 import { Button } from "@/site/ui/button/button";
 import { Eyebrow } from "@/site/ui/eyebrow/eyebrow";
+import { Kicker } from "@/site/ui/kicker/kicker";
 
 import styles from "./hero.module.css";
 
@@ -27,13 +28,13 @@ export function Hero({
       </p>
       <div className={styles.coverMeta}>
         <span>
-          <em>Service</em> api-gateway
+          <Kicker as="em">Service</Kicker> api-gateway
         </span>
         <span>
-          <em>Symptom</em> checkout 503s
+          <Kicker as="em">Symptom</Kicker> checkout 503s
         </span>
         <span>
-          <em>Instances</em> kc4qn · m7w3p · t2x8r
+          <Kicker as="em">Instances</Kicker> kc4qn · m7w3p · t2x8r
         </span>
       </div>
       <div className={styles.heroActions}>

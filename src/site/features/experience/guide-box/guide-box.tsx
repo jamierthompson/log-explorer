@@ -4,6 +4,7 @@ import { Circle, CircleCheck, RotateCcw } from "lucide-react";
 import { useEffect, useRef, type ReactNode } from "react";
 
 import { Button } from "@/site/ui/button/button";
+import { Kicker } from "@/site/ui/kicker/kicker";
 
 import styles from "./guide-box.module.css";
 
@@ -53,7 +54,7 @@ export function GuideBox({
   return (
     <aside className={styles.guide} aria-label={title}>
       <div className={styles.head}>
-        <p className={styles.title}>{title}</p>
+        <Kicker tone="accent">{title}</Kicker>
         {onReset && (
           <Button
             variant="ghost"

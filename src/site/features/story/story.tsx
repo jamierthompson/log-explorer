@@ -1,6 +1,7 @@
 import { Keycap, KeycapSequence } from "@/demo";
 import { Button } from "@/site/ui/button/button";
 import { Eyebrow } from "@/site/ui/eyebrow/eyebrow";
+import { Kicker } from "@/site/ui/kicker/kicker";
 
 import { LegendDemo } from "./legend-demo";
 import styles from "./story.module.css";
@@ -9,8 +10,8 @@ import { TableOfContents } from "./table-of-contents";
 function StoryCta({ onOpenDemo }: { onOpenDemo: () => void }) {
   return (
     <div className={styles.storyCta}>
-      <div>
-        <p className={styles.ctaKicker}>See it for yourself</p>
+      <div className={styles.ctaCopy}>
+        <Kicker tone="accent">See it for yourself</Kicker>
         <p className={styles.ctaText}>
           The whole argument is in the interaction — two minutes, live.
         </p>

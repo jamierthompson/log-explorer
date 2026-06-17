@@ -10,6 +10,7 @@
   font-weight: var(--font-weight-medium);
   line-height: var(--line-height-base);
   cursor: pointer;
+  min-width: fit-content;
   transition:
     color var(--duration-fast) var(--ease-standard),
     background-color var(--duration-fast) var(--ease-standard),
