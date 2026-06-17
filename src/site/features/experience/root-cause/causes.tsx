@@ -19,7 +19,7 @@ export const CAUSES: readonly Cause[] = [
     name: "The database is down",
     detail: "Postgres fell over and every instance is failing.",
     outcome: [
-      "Two of the three instances kept serving 200s the whole time. A downed database wouldn’t spare them.",
+      "A fair guess, but two of the three instances served 200s the whole time, and a downed database couldn’t have spared them.",
     ],
   },
   {
@@ -27,7 +27,7 @@ export const CAUSES: readonly Cause[] = [
     name: "A malformed checkout payload",
     detail: "Bad client input crashed the request.",
     outcome: [
-      "The request timed out waiting on a DB connection, before any validation ran. Bad input wouldn’t look like that.",
+      "Close, but the request timed out waiting on a DB connection before any validation ran. Malformed input wouldn’t look like that.",
     ],
   },
   {
@@ -35,12 +35,13 @@ export const CAUSES: readonly Cause[] = [
     name: "A config reload shrank @kc4qn’s DB pool",
     detail: "db.pool.max dropped 20 → 5, starving connections.",
     outcome: [
-      "At 13:24:11 a hot-reload set db.pool.max from 20 to 5 on @kc4qn alone. Over the next several minutes the pool saturated, and every request that touched it — r4d8a2 and the add-to-cart on k9b3c7 — timed out waiting for a connection. The reload carried no request id, and it sat minutes upstream of the failures, so the trace could never show it.",
+      "That’s it. At 13:24:11 a hot-reload dropped db.pool.max from 20 to 5 on @kc4qn alone. The pool saturated over the next few minutes, and every request that touched it timed out waiting for a connection. It carried no request id and sat minutes upstream, so the trace could never surface it.",
       <>
-        Opening context in place, with your filter intact, put it a scroll away
-        from the failure instead of a tab away.{" "}
+        Opening a second context where the reload lived, right beside the
+        failure, brought cause and symptom into one view, no tab away.{" "}
         <em>
-          The cause was never in the trace; it was in the lines around it.
+          The cause was never in the trace; it sat upstream, where only context
+          could reach it.
         </em>
       </>,
     ],
