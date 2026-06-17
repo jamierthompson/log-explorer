@@ -1,0 +1,208 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-scrim);
+  backdrop-filter: blur(2px);
+  z-index: var(--z-overlay);
+  /* `backwards` makes the first paint match the keyframe's 0% state instead
+   * of the element's final CSS, avoiding a one-frame pop on first open. */
+  animation: overlay-in var(--duration-fast) var(--ease-standard) backwards;
+}
+
+.overlay[data-state="closed"] {
+  animation: overlay-out var(--duration-fast) var(--ease-standard) forwards;
+}
+
+.content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: calc(var(--z-overlay) + 1);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+
+  width: calc(100vw - 2rem);
+  max-width: 40rem;
+  max-height: calc(100dvh - 4rem);
+  overflow-y: auto;
+
+  padding: var(--space-6);
+  background: var(--surface-raised);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-1);
+
+  animation: content-in var(--duration-fast) var(--ease-standard) backwards;
+}
+
+.content[data-state="closed"] {
+  animation: content-out var(--duration-fast) var(--ease-standard) forwards;
+}
+
+.close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--color-text-subtle);
+  background: none;
+  border: 0;
+  border-radius: var(--radius-1);
+  cursor: pointer;
+}
+
+.close:hover {
+  color: var(--color-text);
+}
+
+.close:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  /* Leave room for the close control tucked in the corner. */
+  padding-right: var(--space-6);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-prose-h2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-prose-tight);
+  color: var(--color-text);
+  text-wrap: balance;
+}
+
+.summary {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-prose-base);
+  line-height: var(--line-height-prose);
+  color: var(--color-text-muted);
+  text-wrap: pretty;
+}
+
+/* The report's facts, set in mono so they read as fielded metadata. */
+.fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: var(--space-4);
+  margin: 0;
+  padding: var(--space-4) 0;
+  border-block: 1px solid var(--color-border);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.fieldLabel {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+.fieldValue {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+.text {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-prose-base);
+  line-height: var(--line-height-prose);
+  color: var(--color-text-muted);
+  text-wrap: pretty;
+}
+
+.code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  color: var(--color-text);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes content-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes content-out {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.97);
+  }
+}
