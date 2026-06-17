@@ -95,7 +95,7 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
             inline, dimmed for contrast so the matching lines stay bright. Open
             a second context without losing the first. The filter doesn’t reset.
             The position doesn’t reset. The view stays in place; the application
-            carries the state it should have been carrying all along.
+            carries the work it should have been carrying all along.
           </p>
         </section>
 
@@ -103,13 +103,13 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
 
         <section id="what-i-built" tabIndex={-1} className={styles.section}>
           <SectionHead eyebrow="What I built">
-            A small prototype built around one tight incident
+            A small prototype built around one incident
           </SectionHead>
           <p className={styles.body}>
             The investigation moment is the whole subject. The logs are mocked,
             filtering is three preset chips, and there’s no search, no
-            virtualization, no loading states. Everything else was cut to keep
-            the subject in frame.
+            virtualization, no loading states. Scope is narrow to keep the
+            subject in frame.
           </p>
           <p className={styles.body}>
             The mock data got real work, though. It tells one tight incident — a
@@ -217,11 +217,11 @@ export function Story({ onOpenDemo }: { onOpenDemo: () => void }) {
             The application carries the work
           </SectionHead>
           <p className={styles.body}>
-            The fan of tabs collapses. The filter persists, several
-            investigations share one view, the bindings tell you what they’d do
-            before you commit, and the actions you can’t see still announce
-            themselves. None of it is dramatic alone — but it adds up to an
-            application that holds your place so you don’t have to.
+            The fan of tabs collapses. The filter persists, several contexts
+            share one view, the bindings tell you what they’d do before you
+            commit, and the actions you can’t see still announce themselves.
+            None of it is dramatic alone. Together they make the application
+            carry the work it should have been carrying all along.
           </p>
           <p className={styles.body}>
             If one rule survives the build, it’s the one the Legend taught me:
