@@ -2,42 +2,39 @@
 
 import * as Tabs from "@radix-ui/react-tabs";
 import { X } from "lucide-react";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, type ReactNode } from "react";
 
-import {
-  filterFromScenarioIds,
-  formatLogTime,
-  LogExplorer,
-  type LogExplorerSnapshot,
-  type LogLine,
-} from "@/demo";
+import { formatLogTime, type LogLine } from "@/demo";
 
 import { ScrollArea } from "@/site/ui/scroll-area/scroll-area";
 
 import { useDemoState } from "../demo-state";
 import { ContextPane } from "./context-pane";
-import styles from "./scatter-view.module.css";
+import styles from "./investigation-stage.module.css";
 
 const LIVE = "live";
 
 type ContextTab = { readonly id: string; readonly line: LogLine };
 
 /**
- * Act one: a browser-style tab strip over the explorer. The live tail
- * delegates context out (onViewContext), so each look opens its own tab and
- * the investigation scatters — the pain the cut later undoes. Owns only the
- * tab chrome; the shared snapshot reporter is handed down from the view.
+ * The browser-style tab strip both acts render into. The Live tail tab is
+ * permanent and uncloseable — it holds the filtered stream that survives the
+ * cut, so the strip and the layout stay put from act to act. Act one
+ * delegates each context look into its own slice tab beside it (the
+ * scatter); act two opens context in place, so no slice tabs ever join the
+ * Live tail. Owns the tab chrome only; the explorer for the live panel is
+ * handed in as children.
  */
-export function ScatterView({
+export function InvestigationStage({
   lines,
-  onState,
+  children,
 }: {
   lines: readonly LogLine[];
-  /** The shared state reporter — both acts fold snapshots into the store. */
-  onState: (snapshot: LogExplorerSnapshot) => void;
+  /** The explorer rendered in the live-tail panel — act-specific. */
+  children: ReactNode;
 }) {
-  const { state, openTab, closeTab, activateTab } = useDemoState();
-  const { scenarioIds, tabs: storedTabs } = state;
+  const { state, closeTab, activateTab } = useDemoState();
+  const { tabs: storedTabs } = state;
   const liveTabRef = useRef<HTMLButtonElement>(null);
 
   const tabs = useMemo<readonly ContextTab[]>(
@@ -57,20 +54,8 @@ export function ScatterView({
     [activateTab],
   );
 
-  const openContext = useCallback(
-    (lineId: string) => {
-      if (!lines.some((l) => l.id === lineId)) return;
-      openTab(lineId);
-    },
-    [lines, openTab],
-  );
-
   return (
-    <Tabs.Root
-      className={styles.stage}
-      value={active}
-      onValueChange={setActive}
-    >
+    <Tabs.Root className={styles.stage} value={active} onValueChange={setActive}>
       <div className={styles.tabBar}>
         <ScrollArea orientation="horizontal" className={styles.tabScroll}>
           <Tabs.List className={styles.tabstrip} aria-label="Open views">
@@ -136,14 +121,7 @@ export function ScatterView({
         tabIndex={-1}
         forceMount
       >
-        <LogExplorer
-          lines={lines}
-          service="api-gateway"
-          showLegend={false}
-          initialFilter={filterFromScenarioIds(scenarioIds)}
-          onViewContext={openContext}
-          onStateChange={onState}
-        />
+        {children}
       </Tabs.Content>
 
       {tabs.map((tab) => (

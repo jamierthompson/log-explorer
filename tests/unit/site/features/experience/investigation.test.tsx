@@ -200,11 +200,13 @@ describe("Investigation — the cut", () => {
 
     await cut(user);
 
-    // The tab chrome is gone — the explorer now expands context in place —
-    // but nothing is pre-stacked: the cut hands the work back, so the
-    // in-place goal is not yet earned.
+    // The scattered slice tabs are gone, but the live tail tab stays —
+    // the strip and layout hold from act to act. The explorer now expands
+    // context in place, and nothing is pre-stacked: the cut hands the work
+    // back, so the in-place goal is not yet earned.
+    expect(screen.getByRole("tab", { name: "Live tail" })).toBeInTheDocument();
     expect(
-      screen.queryByRole("tab", { name: "Live tail" }),
+      screen.queryByRole("tab", { name: /context slice/i }),
     ).not.toBeInTheDocument();
     expect(getGuideStep("inplace")).not.toHaveAttribute("data-done");
     // The act-one filter is dropped, so act two opens on the full stream and
@@ -247,7 +249,10 @@ describe("Investigation — act two", () => {
     // around a match — so narrow first, then open context in place.
     await user.click(screen.getByRole("button", { name: /errors only/i }));
     await user.click(screen.getByText("request timeout"));
-    expect(screen.queryByRole("tab")).not.toBeInTheDocument();
+    // It expanded in place — no slice tab joined the standing live tail.
+    expect(
+      screen.queryByRole("tab", { name: /context slice/i }),
+    ).not.toBeInTheDocument();
     expect(getGuideStep("inplace")).toHaveAttribute("data-done");
   });
 
@@ -265,7 +270,9 @@ describe("Investigation — act two", () => {
     // A second context joins the first instead of opening a tab.
     await user.click(screen.getByText("upstream timeout"));
     expect(getGuideStep("stack")).toHaveAttribute("data-done");
-    expect(screen.queryByRole("tab")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("tab", { name: /context slice/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("does not earn the second-context step from a filter alone", async () => {

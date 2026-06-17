@@ -15,15 +15,16 @@ import { useDemoAnnounce } from "../demo-shell";
 import { useDemoState } from "../demo-state";
 import { GuideBox, type GuideItem } from "../guide-box/guide-box";
 import { ACT_CONTENT } from "./act-content";
-import { ScatterView } from "./scatter-view";
+import { InvestigationStage } from "./investigation-stage";
 
 /**
  * The demo's single investigation, staged in two acts against one shared
- * store. In act one the explorer delegates context out, so opening a line
- * spawns a browser-style tab and the work scatters; the cut clears those
- * tabs and switches the same explorer to act two — expanding context where
- * the line lives. The checklist and filter persist across the cut and reset
- * as one.
+ * store. Both acts render into the same browser-style tab strip: in act one
+ * the explorer delegates context out, so opening a line spawns a slice tab
+ * beside the live tail and the work scatters; the cut clears those slice
+ * tabs — leaving the live tail standing — and switches the same explorer to
+ * act two, which expands context where the line lives. The checklist and
+ * filter persist across the cut and reset as one.
  */
 export function Investigation({
   lines,
@@ -36,12 +37,21 @@ export function Investigation({
   /** Resets the whole investigation in place — the guide's control. */
   onReset: () => void;
 }) {
-  const { state, setScenarios, markFiltered, setContexts, observe, cut } =
+  const { state, setScenarios, markFiltered, setContexts, observe, openTab, cut } =
     useDemoState();
   const announce = useDemoAnnounce();
 
   const { act, scenarioIds, everFiltered, openContexts, progress } = state;
   const isActTwo = act === "act-two";
+
+  // Act one delegates each context look out to its own tab; ignore ids the
+  // stream doesn't carry so a stale anchor can't open an empty tab.
+  const openContext = useCallback(
+    (id: string) => {
+      if (lines.some((l) => l.id === id)) openTab(id);
+    },
+    [lines, openTab],
+  );
 
   // The shared snapshot reporter for both acts: it latches the filter and
   // the explorer-driven checklist steps. Context only opens in place, so it's
@@ -112,17 +122,31 @@ export function Investigation({
         />
       }
     >
-      {isActTwo ? (
-        <LogExplorer
-          lines={lines}
-          service="api-gateway"
-          initialFilter={filterFromScenarioIds(scenarioIds)}
-          initialContexts={openContexts}
-          onStateChange={handleState}
-        />
-      ) : (
-        <ScatterView lines={lines} onState={handleState} />
-      )}
+      {/* Both acts live in the same tab strip. The explorer is keyed by act
+          so the cut remounts it — the only way its internal filter clears —
+          and act two opens on the clean live tail the cut intends. */}
+      <InvestigationStage lines={lines}>
+        {isActTwo ? (
+          <LogExplorer
+            key="act-two"
+            lines={lines}
+            service="api-gateway"
+            initialFilter={filterFromScenarioIds(scenarioIds)}
+            initialContexts={openContexts}
+            onStateChange={handleState}
+          />
+        ) : (
+          <LogExplorer
+            key="act-one"
+            lines={lines}
+            service="api-gateway"
+            showLegend={false}
+            initialFilter={filterFromScenarioIds(scenarioIds)}
+            onViewContext={openContext}
+            onStateChange={handleState}
+          />
+        )}
+      </InvestigationStage>
     </ActLayout>
   );
 }
