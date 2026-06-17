@@ -11,7 +11,11 @@ describe("GuideBox", () => {
         title="The Method"
         items={[
           { id: "a", title: "First step", done: true },
-          { id: "b", title: "Second step" },
+          {
+            id: "b",
+            title: "Second step",
+            description: "Do the second thing.",
+          },
         ]}
       />,
     );
@@ -19,6 +23,8 @@ describe("GuideBox", () => {
     expect(screen.getByText("The Method")).toBeInTheDocument();
     expect(screen.getByText("First step")).toBeInTheDocument();
     expect(screen.getByText("Second step")).toBeInTheDocument();
+    // The subtext under a step renders.
+    expect(screen.getByText("Do the second thing.")).toBeInTheDocument();
     // Completion is conveyed to assistive tech, not just by color.
     expect(screen.getByText(/^Done:/)).toBeInTheDocument();
     expect(screen.getByText(/^To do:/)).toBeInTheDocument();
@@ -82,7 +88,7 @@ describe("GuideBox", () => {
     );
     // No reset affordance without a handler.
     expect(
-      screen.queryByRole("button", { name: /reset this act/i }),
+      screen.queryByRole("button", { name: /reset the investigation/i }),
     ).toBeNull();
 
     rerender(
@@ -92,7 +98,9 @@ describe("GuideBox", () => {
         onReset={onReset}
       />,
     );
-    await user.click(screen.getByRole("button", { name: /reset this act/i }));
+    await user.click(
+      screen.getByRole("button", { name: /reset the investigation/i }),
+    );
     expect(onReset).toHaveBeenCalledOnce();
   });
 });

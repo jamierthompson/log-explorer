@@ -19,12 +19,6 @@ export type GuideAction = {
   readonly onClick: () => void;
 };
 
-/**
- * The act's side guide — a titled checklist whose items fill with the
- * accent as they complete, with an optional closing action.
- * Completions are reported through onAnnounce so a live region elsewhere
- * can voice them.
- */
 export function GuideBox({
   title,
   items,
@@ -36,7 +30,6 @@ export function GuideBox({
   items: readonly GuideItem[];
   action?: GuideAction;
   onAnnounce?: (message: string) => void;
-  /** Resets the current act — clears its progress and starts its run over. */
   onReset?: () => void;
 }) {
   /*
@@ -66,8 +59,8 @@ export function GuideBox({
             variant="ghost"
             size="icon"
             className={styles.reset}
-            aria-label="Reset this act"
-            title="Reset this act"
+            aria-label="Reset the investigation"
+            title="Reset the investigation"
             onClick={onReset}
           >
             <RotateCcw size={16} aria-hidden="true" />
