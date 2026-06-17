@@ -54,7 +54,7 @@ export const ACT_CONTENT: Record<Act, ActContent> = {
     kicker: "In place",
     title: "Open context where the line lives",
     lead: "The same investigation, kept in one view. The trace can show you where checkout broke — opening context in place shows you why.",
-    actionLabel: "Call the root cause",
+    actionLabel: "See what actually happened",
     steps: [
       {
         id: "triage",

@@ -44,13 +44,13 @@ const lines: readonly LogLine[] = [
 const noop = () => {};
 
 function renderInvestigation(props?: {
-  onCallRootCause?: () => void;
+  onConclude?: () => void;
   onReset?: () => void;
 }) {
   return render(
     <Investigation
       lines={lines}
-      onCallRootCause={props?.onCallRootCause ?? noop}
+      onConclude={props?.onConclude ?? noop}
       onReset={props?.onReset ?? noop}
     />,
     { wrapper: DemoProviders },
@@ -66,7 +66,7 @@ function ResettableInvestigation() {
     <Investigation
       key={state.runId}
       lines={lines}
-      onCallRootCause={noop}
+      onConclude={noop}
       onReset={reset}
     />
   );
@@ -217,7 +217,7 @@ describe("Investigation — the cut", () => {
     expect(getGuideStep("triage")).not.toHaveAttribute("data-done");
     // The forward action is now the closing call, not another cut.
     expect(
-      screen.getByRole("button", { name: /call the root cause/i }),
+      screen.getByRole("button", { name: /what actually happened/i }),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: /there’s a better way/i }),
@@ -226,16 +226,18 @@ describe("Investigation — the cut", () => {
 });
 
 describe("Investigation — act two", () => {
-  it("opens the root-cause call, which is always available", async () => {
+  it("concludes the investigation, which is always available", async () => {
     const user = userEvent.setup();
-    const onCallRootCause = vi.fn();
-    renderInvestigation({ onCallRootCause });
+    const onConclude = vi.fn();
+    renderInvestigation({ onConclude });
     await cut(user);
 
-    const call = screen.getByRole("button", { name: /call the root cause/i });
-    expect(call).toBeEnabled();
-    await user.click(call);
-    expect(onCallRootCause).toHaveBeenCalledOnce();
+    const conclude = screen.getByRole("button", {
+      name: /what actually happened/i,
+    });
+    expect(conclude).toBeEnabled();
+    await user.click(conclude);
+    expect(onConclude).toHaveBeenCalledOnce();
   });
 
   it("earns the in-place goal only when the visitor opens context in place", async () => {
@@ -362,7 +364,7 @@ describe("Investigation — persistence", () => {
         <Investigation
           key={state.runId}
           lines={lines}
-          onCallRootCause={noop}
+          onConclude={noop}
           onReset={noop}
         />
       );

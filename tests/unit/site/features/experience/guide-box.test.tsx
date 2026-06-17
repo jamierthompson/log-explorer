@@ -70,12 +70,12 @@ describe("GuideBox", () => {
       <GuideBox
         title="The Method"
         items={[{ id: "a", title: "Step" }]}
-        action={{ label: "Call the root cause", onClick }}
+        action={{ label: "See what actually happened", onClick }}
       />,
     );
 
     await user.click(
-      screen.getByRole("button", { name: "Call the root cause" }),
+      screen.getByRole("button", { name: "See what actually happened" }),
     );
     expect(onClick).toHaveBeenCalledOnce();
   });

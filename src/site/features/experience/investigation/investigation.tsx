@@ -28,12 +28,13 @@ import { InvestigationStage } from "./investigation-stage";
  */
 export function Investigation({
   lines,
-  onCallRootCause,
+  onConclude,
   onReset,
 }: {
   lines: readonly LogLine[];
-  /** Opens the root-cause call — act two's closing action. */
-  onCallRootCause: () => void;
+  /** Concludes the investigation — act two's closing action; opens the
+   * incident debrief. */
+  onConclude: () => void;
   /** Resets the whole investigation in place — the guide's control. */
   onReset: () => void;
 }) {
@@ -115,7 +116,7 @@ export function Investigation({
           onReset={onReset}
           action={
             isActTwo
-              ? { label: content.actionLabel, onClick: onCallRootCause }
+              ? { label: content.actionLabel, onClick: onConclude }
               : {
                   label: (
                     <>
