@@ -1,0 +1,28 @@
+.pane {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  background: var(--surface);
+}
+
+/* Mirror the live tail's row metrics so a context slice reads identically:
+ * the list insets the rows, each row carries the accent-capable left
+ * border, and the line component supplies the vertical rhythm. */
+.paneList {
+  margin: 0;
+  padding: var(--space-2) var(--space-4) var(--space-4);
+  list-style: none;
+}
+
+/* Every row carries a faded accent edge so it reads as one context slice */
+.paneRow {
+  border-left: var(--space-1) solid
+    color-mix(in srgb, var(--brand-accent) 35%, transparent);
+  padding-left: var(--space-2);
+}
+
+.paneRow[data-anchor] {
+  background: var(--stage-wash-accent);
+  border-left-color: var(--brand-accent);
+}
