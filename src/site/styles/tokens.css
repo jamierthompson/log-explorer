@@ -146,6 +146,11 @@
   --chrome-field: var(--color-chrome-field);
   --color-prose-rule: var(--brand-accent);
 
+  /* Reskin the embedded demo's chrome headings (its shortcut sheet) with the
+   * site's heading face, so that surface reads in site typography instead of
+   * the demo's monospace default. */
+  --logx-font-display: var(--font-sans);
+
   /*
    * Stage: site chrome that abuts the embedded demo (the stage frame,
    * tab strip, slice panes) mirrors the demo's public tokens through

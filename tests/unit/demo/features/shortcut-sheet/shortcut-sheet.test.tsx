@@ -7,12 +7,17 @@ import { SHORTCUTS, SHORTCUT_GROUPS } from "@/demo/lib/keyboard-shortcuts";
 describe("ShortcutSheet", () => {
   it("renders nothing when closed", () => {
     render(<ShortcutSheet open={false} onOpenChange={() => {}} />);
-    expect(screen.queryByText("Keyboard Shortcuts")).not.toBeInTheDocument();
+    expect(screen.queryByText("Keyboard shortcuts")).not.toBeInTheDocument();
   });
 
-  it("renders every group title when open", () => {
+  it("renders a section title for each multi-binding group when open", () => {
     render(<ShortcutSheet open={true} onOpenChange={() => {}} />);
     for (const group of SHORTCUT_GROUPS) {
+      // The lone meta-binding rides in the header without a section label.
+      if ((group.ids as readonly string[]).includes("openShortcuts")) {
+        expect(screen.queryByText(group.title)).not.toBeInTheDocument();
+        continue;
+      }
       expect(screen.getByText(group.title)).toBeInTheDocument();
     }
   });

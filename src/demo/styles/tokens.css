@@ -23,6 +23,12 @@
   --logx-color-on-accent: light-dark(oklch(0.985 0 0), oklch(0.205 0 0));
   --logx-font:
     var(--logx-font-family, ui-monospace), "SF Mono", Menlo, Consolas, monospace;
+  /* Display face for chrome headings that shouldn't read as log text (the
+   * shortcut sheet's title). Defaults to the system sans so the component
+   * is non-mono out of the box; a consumer overrides it to its own heading
+   * face, the same way it overrides the accent or surfaces. */
+  --logx-font-display:
+    var(--logx-font-display-family, ui-sans-serif), system-ui, sans-serif;
   --logx-radius: 0.25rem;
   /* Stacking slot for the component's modal overlay. Public so a host
    * can slot it into its own stacking order; the panel above the
@@ -72,6 +78,7 @@
   --logx-space-3: 0.75rem;
   --logx-space-4: 1rem;
   --logx-space-5: 1.5rem;
+  --logx-space-6: 2rem;
   /* Floor for coarse-pointer hit areas; consumers apply it only under
    * touch media queries so compact pointer-driven sizing survives. */
   --logx-tap-target: 44px;

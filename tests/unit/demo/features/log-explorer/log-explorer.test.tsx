@@ -107,10 +107,10 @@ describe("LogExplorer", () => {
   it("pressing ? opens the shortcut sheet", async () => {
     const user = userEvent.setup();
     render(<LogExplorer lines={lines} />);
-    expect(screen.queryByText("Keyboard Shortcuts")).not.toBeInTheDocument();
+    expect(screen.queryByText("Keyboard shortcuts")).not.toBeInTheDocument();
 
     await user.keyboard("?");
-    expect(screen.getByText("Keyboard Shortcuts")).toBeInTheDocument();
+    expect(screen.getByText("Keyboard shortcuts")).toBeInTheDocument();
   });
 
   it("pressing Esc with the sheet open closes only the sheet", async () => {
@@ -121,10 +121,10 @@ describe("LogExplorer", () => {
     expect(document.querySelector('[data-selected="true"]')).not.toBeNull();
 
     await user.keyboard("?");
-    expect(screen.getByText("Keyboard Shortcuts")).toBeInTheDocument();
+    expect(screen.getByText("Keyboard shortcuts")).toBeInTheDocument();
 
     await user.keyboard("{Escape}");
-    expect(screen.queryByText("Keyboard Shortcuts")).not.toBeInTheDocument();
+    expect(screen.queryByText("Keyboard shortcuts")).not.toBeInTheDocument();
     // Context underneath stays open — Esc was consumed by the sheet.
     expect(document.querySelector('[data-selected="true"]')).not.toBeNull();
   });
@@ -168,7 +168,7 @@ describe("LogExplorer", () => {
     await user.click(input);
     await user.keyboard("?");
 
-    expect(screen.queryByText("Keyboard Shortcuts")).not.toBeInTheDocument();
+    expect(screen.queryByText("Keyboard shortcuts")).not.toBeInTheDocument();
   });
 });
 
@@ -196,9 +196,9 @@ describe("LogExplorer document shortcut scoping", () => {
     // Only the visible explorer answers `?`: a single sheet opens and a
     // single Esc closes it.
     await user.keyboard("?");
-    expect(screen.getAllByText("Keyboard Shortcuts")).toHaveLength(1);
+    expect(screen.getAllByText("Keyboard shortcuts")).toHaveLength(1);
     await user.keyboard("{Escape}");
-    expect(screen.queryByText("Keyboard Shortcuts")).not.toBeInTheDocument();
+    expect(screen.queryByText("Keyboard shortcuts")).not.toBeInTheDocument();
 
     // Esc on the page must not reach the hidden explorer's filter.
     await user.keyboard("{Escape}");
