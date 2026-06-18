@@ -27,7 +27,6 @@ describe("deriveSnapshot", () => {
     expect(deriveSnapshot(EMPTY_FILTER, [], SCENARIOS)).toEqual({
       hasFilter: false,
       activeScenarioIds: [],
-      openContextCount: 0,
       openContexts: [],
       hasExpandedContext: false,
     });
@@ -44,7 +43,7 @@ describe("deriveSnapshot", () => {
     expect(snapshot.activeScenarioIds).toEqual(["trace"]);
   });
 
-  it("counts open context windows", () => {
+  it("carries the open context windows for a host to persist and restore", () => {
     const snapshot = deriveSnapshot(
       EMPTY_FILTER,
       [
@@ -53,8 +52,6 @@ describe("deriveSnapshot", () => {
       ],
       SCENARIOS,
     );
-    expect(snapshot.openContextCount).toBe(2);
-    // The windows themselves are carried for a host to persist and restore.
     expect(snapshot.openContexts).toEqual([
       { selectedLineId: "a", range: DEFAULT_CONTEXT_RANGE },
       { selectedLineId: "b", range: DEFAULT_CONTEXT_RANGE },
