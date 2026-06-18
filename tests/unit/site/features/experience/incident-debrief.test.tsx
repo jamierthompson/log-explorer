@@ -25,8 +25,11 @@ describe("IncidentDebrief", () => {
       />,
     );
 
-    // The report names the root cause, not just the symptom.
-    expect(screen.getByRole("dialog")).toHaveTextContent(/db\.pool\.max/i);
+    // The sign-off names the cause, not just the symptom, and lands the
+    // line the whole demo was built around.
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toHaveTextContent(/config reload/i);
+    expect(dialog).toHaveTextContent(/in the lines around it/i);
 
     await user.click(
       screen.getByRole("button", { name: /read how it was built/i }),
