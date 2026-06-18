@@ -83,7 +83,7 @@
 /* The head mirrors the site's incident debrief so the two modals read as
  * one family: accent caps overline, then a display-face title and lead.
  * Sizes are literals because the demo's token scale is tuned for log text,
- * not prose — a temporary measure until the sheet's chrome is decomposed. */
+ * not prose. */
 .eyebrow {
   margin: 0;
   font-size: var(--logx-font-size-sm);
@@ -198,8 +198,8 @@
 
 /* Wide enough for two readable columns: widen the sheet and split the
  * groups across two equal-height columns. The first group fills the left;
- * the rest stack in the right. Spanning the first across every row ties the
- * two columns to one height. Assumes the current three-group structure. */
+ * the rest stack in the right. The first group must span every row for the
+ * two columns to share a height; groups beyond the first fill the right. */
 @media (min-width: 48rem) {
   .content {
     max-width: 46rem;
