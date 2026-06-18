@@ -79,6 +79,14 @@ export function InvestigationStage({
   );
   const active = storedTabs.active ?? LIVE;
 
+  // "N of M": the active tab's place in the strip over the total. Live tail
+  // is position 1; slices follow in order. A stale/missing active falls back
+  // to the live tail rather than a phantom position.
+  const total = tabs.length + 1;
+  const sliceIndex = tabs.findIndex((t) => t.id === active);
+  const activePosition =
+    active === LIVE || sliceIndex === -1 ? 1 : sliceIndex + 2;
+
   const setActive = useCallback(
     (next: string) => activateTab(next === LIVE ? null : next),
     [activateTab],
@@ -145,6 +153,12 @@ export function InvestigationStage({
             ))}
           </Tabs.List>
         </ScrollArea>
+        {/* The active tab's place in the strip over the total — counting the
+         * whole strip (live tail + slices) so it matches what's on screen.
+         * Decorative for assistive tech; the tablist already announces it. */}
+        <span className={styles.tabCount} aria-hidden="true">
+          {activePosition} of {total}
+        </span>
       </div>
 
       {/* The tabs primitive makes each panel a tab stop by default,

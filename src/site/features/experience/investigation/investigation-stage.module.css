@@ -3,6 +3,11 @@
   flex: 1;
   min-height: 0;
   flex-direction: column;
+
+  /* Shared right-edge fade: opaque until the last 2rem, then dissolves to
+   * transparent. Used as a mask so clipped content (a scrolled-off tab, a
+   * long title or URL) melts at the edge instead of hard-clipping. */
+  --edge-fade: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
 }
 
 /* The browser's tab strip: a darker chrome surface the tabs sit on. The
@@ -20,6 +25,24 @@
 .tabScroll {
   flex: 1;
   min-width: 0;
+}
+
+/* The open-tab tally at the strip's trailing edge: quiet, monospaced, and
+ * tabular so the digit holds its place as it counts up and down. */
+.tabCount {
+  flex: 0 0 auto;
+  align-self: center;
+  padding: 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-subtle);
+}
+
+/* A tab scrolled against the strip's right edge dissolves there rather
+ * than clipping to a hard vertical line. */
+.tabScroll [data-radix-scroll-area-viewport] {
+  mask-image: var(--edge-fade);
 }
 
 .tabstrip {
@@ -113,6 +136,13 @@
   overflow: hidden;
 }
 
+/* A long slice title (the line's message) dissolves toward the close
+ * control rather than clipping to a hard edge. Scoped to slice triggers,
+ * so the short, branded live-tail label is left to read in full. */
+.tabTrigger .tabLabel {
+  mask-image: var(--edge-fade);
+}
+
 /* A slice's clickable favicon-and-label row, sitting inside the box next
  * to the close control — no box of its own. */
 .tabTrigger {
@@ -120,6 +150,7 @@
   align-items: center;
   gap: var(--space-2);
   flex: 0 1 auto;
+  padding-right: 0;
   min-width: 0;
   overflow: hidden;
   color: inherit;

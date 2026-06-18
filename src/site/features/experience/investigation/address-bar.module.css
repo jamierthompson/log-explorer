@@ -32,4 +32,7 @@
 
 .url {
   overflow: hidden;
+  /* A long permalink dissolves at the field's right edge instead of
+   * clipping hard. --edge-fade cascades from the stage that frames this. */
+  mask-image: var(--edge-fade);
 }
