@@ -45,8 +45,9 @@ export function ContextPane({
     <div className={styles.pane}>
       {/* The slice is a whole separate page, one tab away — so it carries
           its own address bar, then a page header that says what the window
-          is before the lines below it. */}
-      {anchor && (
+          is before the lines below it. Guard on the slice we index into, so
+          the header's bounds can't read off an empty window. */}
+      {anchor && slice.length > 0 && (
         <>
           <AddressBar url={sliceUrl(service, anchor)} />
           <header className={styles.header}>
