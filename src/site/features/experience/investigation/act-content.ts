@@ -1,9 +1,17 @@
 import { type Act } from "../demo-state";
 
+/** The checklist step ids for each act. These are load-bearing keys: the
+ * view joins live progress to a step by id, so the ids here and the
+ * progress map that resolves them must stay in lockstep. Typing them as
+ * unions makes a rename on either side a compile error. */
+export type ActOneStepId = "filter" | "open" | "pile";
+export type ActTwoStepId = "triage" | "trace" | "inplace" | "stack";
+export type StepId = ActOneStepId | ActTwoStepId;
+
 /** One checklist step's copy. The view resolves `done` from live
  * investigation state, keyed by `id` — so this stays pure content. */
 export type GuideStepContent = {
-  readonly id: string;
+  readonly id: StepId;
   readonly title: string;
   readonly description: string;
 };

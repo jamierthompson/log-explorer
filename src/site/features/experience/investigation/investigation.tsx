@@ -14,7 +14,11 @@ import { ActLayout } from "../act-layout/act-layout";
 import { useDemoAnnounce } from "../demo-shell";
 import { useDemoState } from "../demo-state";
 import { GuideBox, type GuideItem } from "../guide-box/guide-box";
-import { ACT_CONTENT } from "./act-content";
+import {
+  ACT_CONTENT,
+  type ActOneStepId,
+  type ActTwoStepId,
+} from "./act-content";
 import { InvestigationStage } from "./investigation-stage";
 
 /**
@@ -88,14 +92,21 @@ export function Investigation({
   // The steps are content; their done-ness is the live reading, keyed by id.
   // Act one's milestones latch from tab opens, act two's from explorer
   // snapshots — both sticky in the store.
+  // `satisfies` pins each branch's keys to its act's step-id union, so a
+  // renamed or missing step is a compile error rather than a step that
+  // silently never lights up.
   const doneById: Record<string, boolean> = isActTwo
-    ? {
+    ? ({
         triage: progress.triaged,
         trace: progress.traced,
         inplace: progress.examined,
         stack: progress.stacked,
-      }
-    : { filter: everFiltered, open: progress.opened, pile: progress.piled };
+      } satisfies Record<ActTwoStepId, boolean>)
+    : ({
+        filter: everFiltered,
+        open: progress.opened,
+        pile: progress.piled,
+      } satisfies Record<ActOneStepId, boolean>);
 
   const items: readonly GuideItem[] = content.steps.map((step) => ({
     ...step,
