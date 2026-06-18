@@ -12,7 +12,14 @@
   font-size: var(--font-size-base);
 }
 
-.link[aria-current] {
+/*
+ * A muted-color rule elsewhere carries the same specificity as a bare
+ * `.link[aria-current]`, so whichever loads later wins on source order
+ * alone. On routes where the muted rule loads after this one, the accent
+ * silently drops (aria-current stays correct, but the color never paints).
+ * Scoping under the container raises specificity so the accent always wins.
+ */
+.toc .link[aria-current] {
   color: var(--brand-accent);
 }
 

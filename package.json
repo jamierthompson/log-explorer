@@ -1,6 +1,7 @@
 {
   "name": "log-explorer",
   "version": "0.1.0",
+  "description": "A log explorer prototype for investigating an incident without losing your place.",
   "private": true,
   "license": "MIT",
   "packageManager": "pnpm@10.21.0",
