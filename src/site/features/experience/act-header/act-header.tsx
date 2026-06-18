@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
 
-import { Badge } from "@/site/ui/badge/badge";
+import { Kicker } from "@/site/ui/kicker/kicker";
 
 import styles from "./act-header.module.css";
 
-/** Narration above an act: a step badge, a kicker, a title, and a lead. */
+/** Narration above an act: a numbered kicker ("01 — The old way"), a
+ * title, and a lead. The number and label read as one overline rather than
+ * a separate badge. */
 export function ActHeader({
   step,
   kicker,
@@ -18,10 +20,7 @@ export function ActHeader({
 }) {
   return (
     <header className={styles.header}>
-      <div className={styles.mark}>
-        <Badge>{step}</Badge>
-        {kicker && <span className={styles.kicker}>{kicker}</span>}
-      </div>
+      <Kicker>{kicker ? `${step} — ${kicker}` : step}</Kicker>
       <h2 className={styles.title}>{title}</h2>
       {lead && <p className={styles.lead}>{lead}</p>}
     </header>

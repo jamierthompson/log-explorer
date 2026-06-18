@@ -1,0 +1,254 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-scrim);
+  backdrop-filter: blur(2px);
+  z-index: var(--z-overlay);
+  /* `backwards` makes the first paint match the keyframe's 0% state instead
+   * of the element's final CSS, avoiding a one-frame pop on first open. */
+  animation: overlay-in var(--duration-fast) var(--ease-standard) backwards;
+}
+
+.overlay[data-state="closed"] {
+  animation: overlay-out var(--duration-fast) var(--ease-standard) forwards;
+}
+
+.content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: calc(var(--z-overlay) + 1);
+
+  /* Grid over flex so the scrolling row gets a definite, shrinkable track
+   * (minmax(0, 1fr)): the shared scroll primitive needs a bounded parent
+   * height to scroll against, which a flex item under `max-height` alone
+   * doesn't reliably provide. The actions row stays auto-height and pinned. */
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: var(--space-5);
+
+  width: calc(100vw - 2rem);
+  max-width: 34rem;
+  max-height: calc(100dvh - 4rem);
+  /* The body scrolls with the shared scrollbar; the shell clips so the
+   * pinned actions below it never scroll out of reach. */
+  overflow: hidden;
+
+  /* No padding on the shell so the scroll thumb rides the modal's edge
+   * (not inset under the close); the scroll region and actions carry it. */
+  background: var(--surface-raised);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-1);
+
+  animation: content-in var(--duration-fast) var(--ease-standard) backwards;
+}
+
+.content[data-state="closed"] {
+  animation: content-out var(--duration-fast) var(--ease-standard) forwards;
+}
+
+.close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  /* Above the scroll region, which is a later, relatively-positioned sibling
+   * and would otherwise paint over this corner and eat its pointer events. */
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--color-text-subtle);
+  background: none;
+  border: 0;
+  border-radius: var(--radius-1);
+  cursor: pointer;
+}
+
+.close:hover {
+  color: var(--color-text);
+}
+
+.close:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Grow the hit area to the touch floor on coarse pointers; the icon stays
+ * centered, so only the tappable area changes. */
+@media (pointer: coarse) {
+  .close {
+    width: var(--tap-target);
+    height: var(--tap-target);
+  }
+}
+
+/* Fills the scrolling track above the pinned actions; the shared scroll
+ * primitive supplies the brand-accent thumb so this matches every other
+ * scroller. min-height:0 lets it shrink below its content so it scrolls. */
+.scroll {
+  min-height: 0;
+}
+
+.scrollInner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  /* The shell carries no padding (so the scrollbar meets the edge); the
+   * inset lives here instead. No bottom — the grid gap spaces the actions. */
+  padding: var(--space-6) var(--space-6) 0;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  /* Leave room for the close control tucked in the corner. */
+  padding-right: var(--space-6);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-prose-h2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-prose-tight);
+  color: var(--color-text);
+  text-wrap: balance;
+}
+
+.summary {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-prose-base);
+  line-height: var(--line-height-prose);
+  color: var(--color-text-muted);
+  text-wrap: pretty;
+}
+
+/* The report's facts, set in mono so they read as fielded metadata. Two
+ * up by default (a tidy 2×2 on narrow screens); all four share one row
+ * once the modal widens below. */
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: 0;
+  padding: var(--space-4) 0;
+  border-block: 1px solid var(--color-border);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.fieldLabel {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+.fieldValue {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+}
+
+/* The sign-off — the point the whole demo was built around. It closes the
+ * lead inline; italic and at full text weight so it lifts off the muted
+ * sentences before it and lands as the final beat. */
+.closer {
+  font-style: italic;
+  color: var(--color-text);
+}
+
+/* Mobile: stacked and centered, with the primary filling the width as the
+ * confident tap target. Extra room above the group sets it off from the
+ * lead. The inset matches the scroll region; the shell has no padding so
+ * the scrollbar can meet the edge. */
+.actions {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-6) var(--space-6);
+}
+
+.actions [data-variant="primary"] {
+  align-self: stretch;
+}
+
+/* Wide enough to widen the modal and lay all four facts on one row.
+ * Width matches the demo's shortcut sheet so the two modals stay a pair. */
+@media (min-width: 48rem) {
+  .content {
+    max-width: 46rem;
+  }
+
+  .fields {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  /* Desktop: a row with the primary trailing (bottom-right). row-reverse
+   * keeps the primary first in the DOM/tab order while painting it right.
+   * No extra top padding and no full-width primary here — those are mobile. */
+  .actions {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    gap: var(--space-3);
+    padding-top: 0;
+  }
+
+  .actions [data-variant="primary"] {
+    align-self: auto;
+  }
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes content-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes content-out {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.97);
+  }
+}

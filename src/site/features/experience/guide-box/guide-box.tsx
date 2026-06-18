@@ -4,6 +4,7 @@ import { Circle, CircleCheck, RotateCcw } from "lucide-react";
 import { useEffect, useRef, type ReactNode } from "react";
 
 import { Button } from "@/site/ui/button/button";
+import { Kicker } from "@/site/ui/kicker/kicker";
 
 import styles from "./guide-box.module.css";
 
@@ -19,27 +20,17 @@ export type GuideAction = {
   readonly onClick: () => void;
 };
 
-/**
- * The act's side guide — a titled checklist whose items fill with the
- * accent as they complete, with an optional closing action and an
- * optional footer line beneath it for state-reactive narration.
- * Completions are reported through onAnnounce so a live region elsewhere
- * can voice them.
- */
 export function GuideBox({
   title,
   items,
   action,
-  foot,
   onAnnounce,
   onReset,
 }: {
   title: string;
   items: readonly GuideItem[];
   action?: GuideAction;
-  foot?: ReactNode;
   onAnnounce?: (message: string) => void;
-  /** Resets the current act — clears its progress and starts its run over. */
   onReset?: () => void;
 }) {
   /*
@@ -63,14 +54,14 @@ export function GuideBox({
   return (
     <aside className={styles.guide} aria-label={title}>
       <div className={styles.head}>
-        <p className={styles.title}>{title}</p>
+        <Kicker tone="accent">{title}</Kicker>
         {onReset && (
           <Button
             variant="ghost"
             size="icon"
             className={styles.reset}
-            aria-label="Reset this act"
-            title="Reset this act"
+            aria-label="Reset the investigation"
+            title="Reset the investigation"
             onClick={onReset}
           >
             <RotateCcw size={16} aria-hidden="true" />
@@ -111,7 +102,6 @@ export function GuideBox({
           {action.label}
         </Button>
       )}
-      {foot && <p className={styles.foot}>{foot}</p>}
     </aside>
   );
 }

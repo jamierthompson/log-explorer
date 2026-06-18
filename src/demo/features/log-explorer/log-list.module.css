@@ -30,11 +30,17 @@
 .list {
   list-style: none;
   margin: 0;
-  padding: 0 var(--logx-space-4) var(--logx-space-1);
+  /* Real top room so the first row clears the header band rather than
+   * crowding it — the lines read as a chunk set below the chrome. */
+  padding: var(--logx-space-4) var(--logx-space-4) var(--logx-space-1);
 }
 
+/* The stream header sits between the toolbar's rule and its own, so it
+ * leans on generous vertical room — rather than centering, which would
+ * clash with the centered hidden-stretch rows — to read as a calm band
+ * the lines hang below. Its left edge lines up with the rows' inset. */
 .dayMarker {
-  padding: var(--logx-space-2) var(--logx-space-3);
+  padding: var(--logx-space-4) var(--logx-space-4);
   border-bottom: 1px solid var(--logx-border-soft);
 }
 
@@ -81,16 +87,39 @@
   background: var(--logx-wash-neutral);
 }
 
-/* Declared after the neutral washes so an anchor always shows the pure
- * accent wash, focused or hovered or not — its accent edge carries the
- * cue, and the cursor's own wash reappears one keypress away. */
+.list > li[data-context="true"] {
+  border-left-color: color-mix(in srgb, var(--logx-accent) 35%, transparent);
+}
+
 .list > li[data-selected="true"] {
   border-left-color: var(--logx-accent);
   background: var(--logx-wash-accent);
 }
 
-.list > li[data-dimmed="true"] {
+.list > li[data-dimmed="true"] > * {
   opacity: 0.4;
+}
+
+.gap {
+  display: flex;
+  align-items: center;
+  gap: var(--logx-space-3);
+  padding: var(--logx-space-2) 0;
+  margin-left: var(--logx-space-2);
+}
+
+.gap::before,
+.gap::after {
+  content: "";
+  flex: 1;
+  border-top: 1px dashed var(--logx-border-soft);
+}
+
+.gapLabel {
+  flex: 0 0 auto;
+  font-family: var(--logx-font);
+  font-size: var(--logx-font-size-sm);
+  color: var(--logx-color-text-subtle);
 }
 
 /* Ensure a single-line clickable row still meets a comfortable tap
@@ -105,7 +134,7 @@
   display: flex;
   user-select: none;
   touch-action: none;
-  width: 0.625rem;
+  width: 0.35rem;
   /* Padding widens the hover hit area inward; the thumb fills the
    * content box only and remains visually flush with the right edge. */
   padding-left: var(--logx-space-2);

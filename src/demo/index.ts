@@ -7,8 +7,10 @@ export type { LogExplorerSnapshot } from "./features/log-explorer/log-explorer-s
 /** Filter seeding for hosts that persist a chip selection across mounts. */
 export type { FilterState } from "./lib/filter-state";
 export { filterFromScenarioIds } from "./lib/scenarios";
-/** An open context window, for hosts that persist and restore them. */
+/** An open context window, for hosts that persist and restore them, and
+ * the default span a freshly opened window covers on each side. */
 export type { OpenContext } from "./lib/context-state";
+export { DEFAULT_CONTEXT_RANGE } from "./lib/context-state";
 /**
  * The bare, read-only log row — for composing slices outside the explorer.
  * Self-contained: it carries the demo's surface marker, scoped reset,

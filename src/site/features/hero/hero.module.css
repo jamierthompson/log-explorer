@@ -13,7 +13,12 @@
   color: var(--color-text);
 }
 
-.heroEyebrow {
+/* Scoped under .hero so it outranks Eyebrow's own `margin: 0` reset. The
+ * two are otherwise equal specificity, and CSS-module insertion order shifts
+ * across client navigations — without this, arriving from a route that
+ * already loaded Eyebrow's styles can let the reset win and collapse the
+ * gap under the kicker. */
+.hero .heroEyebrow {
   margin-bottom: var(--space-5);
 }
 
@@ -56,14 +61,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-}
-
-.coverMeta em {
-  font-style: normal;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-kicker);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-subtle);
 }
 
 .heroActions {

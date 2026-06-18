@@ -9,175 +9,187 @@ import {
   type ReactNode,
 } from "react";
 
-import type { OpenContext } from "@/demo";
+import { type OpenContext } from "@/demo";
 
-/** The open context slices in Act 1: which lines are open (by id) and
- * which tab is showing (null means the live tail). */
-type Act1Tabs = {
+/** The scattered context slices of act one: which lines are open (by
+ * id) and which tab is showing (null means the live tail). */
+type Tabs = {
   readonly ids: readonly string[];
   readonly active: string | null;
 };
 
-/** Act 2's sticky checklist — each step latches the first time the
- * explorer reports it and never un-latches. */
-type Act2Progress = {
+/** The steps the explorer reports from a single snapshot — transient
+ * readings, not authoritative progress. The reducer folds these into the
+ * sticky Progress, so a false reading here can't clear a latched step.
+ * Each field mirrors an act-two checklist step's id, so the wiring reads
+ * one-to-one. */
+type ProgressSignals = {
   readonly triaged: boolean;
   readonly traced: boolean;
-  readonly context: boolean;
-  readonly radius: boolean;
+  readonly examined: boolean;
+  readonly stacked: boolean;
 };
 
-/** The steps seen true in a single snapshot — transient readings, not
- * authoritative progress. The reducer folds these into the sticky
- * Act2Progress, so a false reading here can't clear a latched step. */
-type Act2Signals = Act2Progress;
+/** The investigation's checklist — each step latches the first time it's
+ * reported and never un-latches, so the store only ever gains steps.
+ * `opened`/`piled` latch from tab opens in act one; the rest are folded
+ * in from explorer snapshots. */
+type Progress = ProgressSignals & {
+  readonly opened: boolean;
+  readonly piled: boolean;
+};
 
-/* Each act carries a run id, bumped when that act resets, so the view
- * remounts it — clearing the explorer's internal filter, which can't be
- * cleared any other way. The ids are per-act, so resetting one act leaves
- * the other intact. */
+/** Which act the investigation is in: act one scatters context into
+ * tabs; the cut advances to act two, which expands context in place. */
+export type Act = "act-one" | "act-two";
+
+/* One investigation, shared across the whole demo. `runId` bumps on reset
+ * so the view remounts and the explorer's internal filter — which can't be
+ * cleared any other way — starts over. The act, filter (scenarioIds),
+ * the scattered tabs of act one, the stacked act-two contexts, and
+ * the checklist all live here, so they survive in-app navigation and reset
+ * together as one investigation. */
 type DemoState = {
-  readonly act1: {
-    readonly runId: number;
-    readonly scenarioIds: readonly string[];
-    readonly tabs: Act1Tabs;
-    readonly everFiltered: boolean;
-  };
-  readonly act2: {
-    readonly runId: number;
-    readonly scenarioIds: readonly string[];
-    readonly openContexts: readonly OpenContext[];
-    readonly progress: Act2Progress;
-  };
+  readonly runId: number;
+  readonly act: Act;
+  readonly scenarioIds: readonly string[];
+  readonly everFiltered: boolean;
+  readonly tabs: Tabs;
+  readonly openContexts: readonly OpenContext[];
+  readonly progress: Progress;
 };
 
-const INITIAL_ACT1: DemoState["act1"] = {
+const INITIAL_STATE: DemoState = {
   runId: 0,
+  act: "act-one",
   scenarioIds: [],
-  tabs: { ids: [], active: null },
   everFiltered: false,
-};
-
-const INITIAL_ACT2: DemoState["act2"] = {
-  runId: 0,
-  scenarioIds: [],
+  tabs: { ids: [], active: null },
   openContexts: [],
-  progress: { triaged: false, traced: false, context: false, radius: false },
+  progress: {
+    triaged: false,
+    traced: false,
+    examined: false,
+    stacked: false,
+    opened: false,
+    piled: false,
+  },
 };
-
-const INITIAL_STATE: DemoState = { act1: INITIAL_ACT1, act2: INITIAL_ACT2 };
 
 type Action =
-  | { type: "act1/filter"; scenarioIds: readonly string[] }
-  | { type: "act1/openTab"; id: string }
-  | { type: "act1/closeTab"; id: string }
-  | { type: "act1/activateTab"; active: string | null }
-  | { type: "act1/markFiltered" }
-  | { type: "act2/filter"; scenarioIds: readonly string[] }
-  | { type: "act2/contexts"; openContexts: readonly OpenContext[] }
-  | { type: "act2/observe"; observed: Act2Signals }
-  | { type: "act1/reset" }
-  | { type: "act2/reset" };
+  | { type: "filter"; scenarioIds: readonly string[] }
+  | { type: "openTab"; id: string }
+  | { type: "closeTab"; id: string }
+  | { type: "activateTab"; active: string | null }
+  | { type: "markFiltered" }
+  | { type: "contexts"; openContexts: readonly OpenContext[] }
+  | { type: "observe"; observed: ProgressSignals }
+  | { type: "cut" }
+  | { type: "reset" };
 
 function reducer(state: DemoState, action: Action): DemoState {
   switch (action.type) {
-    case "act1/filter":
+    case "filter":
+      return { ...state, scenarioIds: action.scenarioIds };
+    case "openTab": {
+      const open = state.tabs.ids.includes(action.id);
+      const ids = open ? state.tabs.ids : [...state.tabs.ids, action.id];
+      // Latch the act-one checklist the same way the explorer-driven steps
+      // latch: the tab open is the signal, and the step never un-sets — so
+      // closing a tab can't un-check "opened a slice" or "piled two up".
       return {
         ...state,
-        act1: { ...state.act1, scenarioIds: action.scenarioIds },
-      };
-    case "act1/openTab": {
-      const open = state.act1.tabs.ids.includes(action.id);
-      const ids = open
-        ? state.act1.tabs.ids
-        : [...state.act1.tabs.ids, action.id];
-      return {
-        ...state,
-        act1: { ...state.act1, tabs: { ids, active: action.id } },
-      };
-    }
-    case "act1/closeTab": {
-      const tabs = state.act1.tabs;
-      return {
-        ...state,
-        act1: {
-          ...state.act1,
-          tabs: {
-            ids: tabs.ids.filter((id) => id !== action.id),
-            // Fall back to the live tail when the active slice closes.
-            active: tabs.active === action.id ? null : tabs.active,
-          },
+        tabs: { ids, active: action.id },
+        progress: {
+          ...state.progress,
+          opened: state.progress.opened || ids.length >= 1,
+          piled: state.progress.piled || ids.length >= 2,
         },
       };
     }
-    case "act1/activateTab":
+    case "closeTab": {
+      const { tabs } = state;
       return {
         ...state,
-        act1: {
-          ...state.act1,
-          tabs: { ...state.act1.tabs, active: action.active },
+        tabs: {
+          ids: tabs.ids.filter((id) => id !== action.id),
+          // Fall back to the live tail when the active slice closes.
+          active: tabs.active === action.id ? null : tabs.active,
         },
       };
-    case "act1/markFiltered":
-      return state.act1.everFiltered
-        ? state
-        : { ...state, act1: { ...state.act1, everFiltered: true } };
-    case "act2/filter":
-      return {
-        ...state,
-        act2: { ...state.act2, scenarioIds: action.scenarioIds },
-      };
-    case "act2/contexts":
-      return {
-        ...state,
-        act2: { ...state.act2, openContexts: action.openContexts },
-      };
-    case "act2/observe": {
+    }
+    case "activateTab": {
+      // `active` must name an open tab or the live tail (null). Clamp
+      // anything else back to the live tail so the store can never hold a
+      // pointer to a tab that isn't in the strip.
+      const active =
+        action.active === null || state.tabs.ids.includes(action.active)
+          ? action.active
+          : null;
+      return { ...state, tabs: { ...state.tabs, active } };
+    }
+    case "markFiltered":
+      return state.everFiltered ? state : { ...state, everFiltered: true };
+    case "contexts":
+      return { ...state, openContexts: action.openContexts };
+    case "observe": {
       // The checklist is sticky: a step latches the first time it's
       // observed and never un-latches, so the store only ever gains steps.
-      const p = state.act2.progress;
+      const p = state.progress;
       const o = action.observed;
-      const next: Act2Progress = {
+      const next: Progress = {
+        ...p,
         triaged: p.triaged || o.triaged,
         traced: p.traced || o.traced,
-        context: p.context || o.context,
-        radius: p.radius || o.radius,
+        examined: p.examined || o.examined,
+        stacked: p.stacked || o.stacked,
       };
       if (
         next.triaged === p.triaged &&
         next.traced === p.traced &&
-        next.context === p.context &&
-        next.radius === p.radius
+        next.examined === p.examined &&
+        next.stacked === p.stacked
       ) {
         return state;
       }
-      return { ...state, act2: { ...state.act2, progress: next } };
+      return { ...state, progress: next };
     }
-    case "act1/reset":
+    case "cut": {
+      // The cut ends act one: it clears the scattered tabs and drops the
+      // act-one filter so act two opens on a clean live tail, deliberately
+      // with no context. Act two is hands-on — the visitor re-narrows and
+      // opens context themselves to earn the payoff, starting from zero so
+      // its checklist isn't pre-satisfied by act-one's filter. Idempotent —
+      // the demo only ever moves forward to act two.
+      if (state.act === "act-two") return state;
       return {
         ...state,
-        act1: { ...INITIAL_ACT1, runId: state.act1.runId + 1 },
+        act: "act-two",
+        scenarioIds: [],
+        everFiltered: false,
+        tabs: { ids: [], active: null },
+        openContexts: [],
       };
-    case "act2/reset":
-      return {
-        ...state,
-        act2: { ...INITIAL_ACT2, runId: state.act2.runId + 1 },
-      };
+    }
+    case "reset":
+      return { ...INITIAL_STATE, runId: state.runId + 1 };
   }
 }
 
 type DemoStateValue = {
   readonly state: DemoState;
-  readonly setAct1Scenarios: (ids: readonly string[]) => void;
-  readonly openAct1Tab: (id: string) => void;
-  readonly closeAct1Tab: (id: string) => void;
-  readonly activateAct1Tab: (active: string | null) => void;
-  readonly markAct1Filtered: () => void;
-  readonly setAct2Scenarios: (ids: readonly string[]) => void;
-  readonly setAct2Contexts: (openContexts: readonly OpenContext[]) => void;
-  readonly observeAct2: (observed: Act2Signals) => void;
-  readonly resetAct1: () => void;
-  readonly resetAct2: () => void;
+  readonly setScenarios: (ids: readonly string[]) => void;
+  readonly openTab: (id: string) => void;
+  readonly closeTab: (id: string) => void;
+  readonly activateTab: (active: string | null) => void;
+  readonly markFiltered: () => void;
+  readonly setContexts: (openContexts: readonly OpenContext[]) => void;
+  readonly observe: (observed: ProgressSignals) => void;
+  /** Ends act one: clears the scattered tabs and returns to the
+   * filtered live tail to open context in place. */
+  readonly cut: () => void;
+  /** Clears the whole investigation and starts its run over. */
+  readonly reset: () => void;
 };
 
 const DemoStateContext = createContext<DemoStateValue | null>(null);
@@ -191,81 +203,74 @@ export function useDemoState(): DemoStateValue {
 }
 
 /**
- * The demo's progress, held above every route so it survives in-app
- * navigation — a visitor can break off to read the story and return to
- * the demo exactly where they left it. Plain React state, so a full page
- * reload (leaving the app) starts fresh; the reset control clears it
+ * The demo's single investigation, held above every route so it survives
+ * in-app navigation — a visitor can break off to read the story and return
+ * to the demo exactly where they left it. Plain React state, so a full
+ * page reload (leaving the app) starts fresh; the reset control clears it
  * deliberately within a session.
  */
 export function DemoStateProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
-  // dispatch is stable, so these wrappers stay stable too — the acts wire
+  // dispatch is stable, so these wrappers stay stable too — the views wire
   // them into report effects whose deps must not churn on every change.
-  const setAct1Scenarios = useCallback(
+  const setScenarios = useCallback(
     (scenarioIds: readonly string[]) =>
-      dispatch({ type: "act1/filter", scenarioIds }),
+      dispatch({ type: "filter", scenarioIds }),
     [],
   );
-  const openAct1Tab = useCallback(
-    (id: string) => dispatch({ type: "act1/openTab", id }),
+  const openTab = useCallback(
+    (id: string) => dispatch({ type: "openTab", id }),
     [],
   );
-  const closeAct1Tab = useCallback(
-    (id: string) => dispatch({ type: "act1/closeTab", id }),
+  const closeTab = useCallback(
+    (id: string) => dispatch({ type: "closeTab", id }),
     [],
   );
-  const activateAct1Tab = useCallback(
-    (active: string | null) => dispatch({ type: "act1/activateTab", active }),
+  const activateTab = useCallback(
+    (active: string | null) => dispatch({ type: "activateTab", active }),
     [],
   );
-  const markAct1Filtered = useCallback(
-    () => dispatch({ type: "act1/markFiltered" }),
+  const markFiltered = useCallback(
+    () => dispatch({ type: "markFiltered" }),
     [],
   );
-  const setAct2Scenarios = useCallback(
-    (scenarioIds: readonly string[]) =>
-      dispatch({ type: "act2/filter", scenarioIds }),
-    [],
-  );
-  const setAct2Contexts = useCallback(
+  const setContexts = useCallback(
     (openContexts: readonly OpenContext[]) =>
-      dispatch({ type: "act2/contexts", openContexts }),
+      dispatch({ type: "contexts", openContexts }),
     [],
   );
-  const observeAct2 = useCallback(
-    (observed: Act2Signals) => dispatch({ type: "act2/observe", observed }),
+  const observe = useCallback(
+    (observed: ProgressSignals) => dispatch({ type: "observe", observed }),
     [],
   );
-  const resetAct1 = useCallback(() => dispatch({ type: "act1/reset" }), []);
-  const resetAct2 = useCallback(() => dispatch({ type: "act2/reset" }), []);
+  const cut = useCallback(() => dispatch({ type: "cut" }), []);
+  const reset = useCallback(() => dispatch({ type: "reset" }), []);
 
   const value = useMemo<DemoStateValue>(
     () => ({
       state,
-      setAct1Scenarios,
-      openAct1Tab,
-      closeAct1Tab,
-      activateAct1Tab,
-      markAct1Filtered,
-      setAct2Scenarios,
-      setAct2Contexts,
-      observeAct2,
-      resetAct1,
-      resetAct2,
+      setScenarios,
+      openTab,
+      closeTab,
+      activateTab,
+      markFiltered,
+      setContexts,
+      observe,
+      cut,
+      reset,
     }),
     [
       state,
-      setAct1Scenarios,
-      openAct1Tab,
-      closeAct1Tab,
-      activateAct1Tab,
-      markAct1Filtered,
-      setAct2Scenarios,
-      setAct2Contexts,
-      observeAct2,
-      resetAct1,
-      resetAct2,
+      setScenarios,
+      openTab,
+      closeTab,
+      activateTab,
+      markFiltered,
+      setContexts,
+      observe,
+      cut,
+      reset,
     ],
   );
 

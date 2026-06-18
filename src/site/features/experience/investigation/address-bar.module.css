@@ -1,0 +1,38 @@
+/* The browser toolbar band: continuous with the active tab above it (same
+ * chrome surface) and parted from the page content below by a hairline —
+ * the frame the app sits inside. */
+.toolbar {
+  display: flex;
+  padding: var(--space-2) var(--space-3);
+  background: var(--chrome-active);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* The omnibox: an inset field spanning the band, showing where the view
+ * lives. */
+.field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-1) var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-subtle);
+  background: var(--chrome-field);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2);
+  white-space: nowrap;
+}
+
+.icon {
+  flex: 0 0 auto;
+}
+
+.url {
+  overflow: hidden;
+  /* A long permalink dissolves at the field's right edge instead of
+   * clipping hard. --edge-fade cascades from the stage that frames this. */
+  mask-image: var(--edge-fade);
+}

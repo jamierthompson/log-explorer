@@ -94,4 +94,36 @@ describe("deriveLines", () => {
     expect(derived.find((l) => l.id === "3")?.isVisible).toBe(true);
     expect(derived.find((l) => l.id === "5")?.isVisible).toBe(true);
   });
+
+  it("tags each line with its position in the full stream", () => {
+    const derived = deriveLines(lines, initialFilterState, []);
+    expect(derived.map((l) => l.index)).toEqual([0, 1, 2, 3, 4]);
+    // index is the stream position regardless of which filter is active —
+    // it's derived before any visibility narrowing.
+    const filtered = deriveLines(lines, traceFilter, []);
+    expect(filtered.find((l) => l.id === "3")?.index).toBe(2);
+    expect(filtered.find((l) => l.id === "5")?.index).toBe(4);
+  });
+
+  it("marks inContext for lines within ±range of an open, matching anchor", () => {
+    const ctx: OpenContext[] = [{ selectedLineId: "3", range: 1 }];
+    const derived = deriveLines(lines, traceFilter, ctx);
+    // Anchor (index 2) and its ±1 neighbors (indices 1 and 3) are in context.
+    expect(derived.find((l) => l.id === "2")?.inContext).toBe(true);
+    expect(derived.find((l) => l.id === "3")?.inContext).toBe(true);
+    expect(derived.find((l) => l.id === "4")?.inContext).toBe(true);
+    // Outside the ±1 window: not in context.
+    expect(derived.find((l) => l.id === "1")?.inContext).toBe(false);
+    expect(derived.find((l) => l.id === "5")?.inContext).toBe(false);
+  });
+
+  it("does not mark inContext when the anchor doesn't pass the active filter", () => {
+    // Anchor on line "1" doesn't pass the trace filter, so its window is
+    // silent — no line, including the anchor itself, is in context.
+    const ctx: OpenContext[] = [{ selectedLineId: "1", range: 1 }];
+    const derived = deriveLines(lines, traceFilter, ctx);
+    for (const l of derived) {
+      expect(l.inContext).toBe(false);
+    }
+  });
 });

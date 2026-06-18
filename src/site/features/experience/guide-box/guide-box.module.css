@@ -13,16 +13,6 @@
   margin-bottom: var(--space-4);
 }
 
-.title {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-kicker);
-  text-transform: uppercase;
-  color: var(--brand-accent);
-}
-
 /* Tuck the icon control into the guide's top-right corner so it doesn't
  * add height to the title row. */
 .reset {
@@ -83,6 +73,7 @@
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);
   color: var(--color-text-muted);
+  text-wrap: pretty;
 }
 
 .srStatus {
@@ -100,14 +91,6 @@
 .action {
   width: 100%;
   margin-top: var(--space-5);
+  margin-bottom: var(--space-2);
   justify-content: center;
-}
-
-.foot {
-  margin: var(--space-4) 0 0;
-  font-family: var(--font-mono);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-base);
-  color: var(--color-text-subtle);
-  text-wrap: pretty;
 }

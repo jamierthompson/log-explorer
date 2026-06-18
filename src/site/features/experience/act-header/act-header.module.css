@@ -6,20 +6,6 @@
   padding: var(--space-6) 0 var(--space-5);
 }
 
-.mark {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.kicker {
-  font-family: var(--font-mono);
-  font-size: var(--font-size-sm);
-  letter-spacing: var(--tracking-kicker);
-  text-transform: uppercase;
-  color: var(--color-text-subtle);
-}
-
 .title {
   margin: 0;
   font-family: var(--font-sans);

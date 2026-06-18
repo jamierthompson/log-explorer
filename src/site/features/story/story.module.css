@@ -173,14 +173,14 @@
   }
 }
 
-.ctaKicker {
-  margin: 0 0 var(--space-1);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-kicker);
-  text-transform: uppercase;
-  color: var(--brand-accent);
+.ctaCopy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  /* Nudge the overline down so it reads level with the action across the
+   * row: the description's line height otherwise centers this block lower
+   * than the kicker's cap line, leaving the kicker sitting high. */
+  padding-top: var(--space-1);
 }
 
 .ctaText {

@@ -24,8 +24,8 @@
   align-items: center;
   gap: var(--space-2);
   font-family: var(--font-mono);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--text-prose-sm);
+  font-weight: var(--font-weight-regular);
   color: var(--color-text);
   text-decoration: none;
   background: none;

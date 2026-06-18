@@ -1,0 +1,16 @@
+.kicker {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  /* Normalize for the inline `em` callers, whose default italic would
+   * otherwise fight the mono caps. */
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-kicker);
+  color: var(--color-text-subtle);
+}
+
+.kicker[data-tone="accent"] {
+  color: var(--brand-accent);
+}

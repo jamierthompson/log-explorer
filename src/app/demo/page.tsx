@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { ActOneView } from "@/site/features/experience/act-one/act-one-view";
+import { InvestigationView } from "@/site/features/experience/investigation/investigation-view";
 import { SITE_NAME } from "@/site/lib/site-meta";
 
 export const metadata: Metadata = {
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function DemoPage() {
-  return <ActOneView />;
+  return <InvestigationView />;
 }

@@ -75,13 +75,30 @@ describe("mock incident data", () => {
     expect(after.every((l) => l.level !== "ERROR")).toBe(true);
   });
 
-  it("puts the cause within the first context window of the trace", () => {
+  it("fails a second request the same way, on the saturated instance", () => {
+    const secondTrace = mockLogs.filter((l) => l.requestId === "k9b3c7");
+    const failures = secondTrace.filter(
+      (l) =>
+        l.level === "ERROR" &&
+        l.timestamp > causeLine!.timestamp &&
+        l.timestamp < recoveryLine!.timestamp,
+    );
+    expect(failures.length).toBeGreaterThan(0);
+    for (const f of failures) {
+      expect(f.instance).toBe("kc4qn");
+      expect(f.message).not.toContain("hot-reload");
+    }
+  });
+
+  it("keeps the cause outside the first context window of the trace", () => {
+    // The whole argument for opening context in place: the cause sits
+    // far enough upstream that opening one context on the trace can't
+    // reveal it. A single look is never enough — a regression that pulls
+    // the cause back next to the failure would quietly undo that.
     const causeIndex = mockLogs.findIndex((l) => l.message === CAUSE_MESSAGE);
     const firstTraceIndex = mockLogs.findIndex((l) => l.requestId === "r4d8a2");
     expect(causeIndex).toBeGreaterThanOrEqual(0);
     expect(firstTraceIndex).toBeGreaterThan(causeIndex);
-    expect(firstTraceIndex - causeIndex).toBeLessThanOrEqual(
-      DEFAULT_CONTEXT_RANGE,
-    );
+    expect(firstTraceIndex - causeIndex).toBeGreaterThan(DEFAULT_CONTEXT_RANGE);
   });
 });

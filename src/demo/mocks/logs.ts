@@ -43,17 +43,29 @@ const dbg: typeof info = (min, sec, inst, msg, req) =>
 
 /*
  * The incident every surface of the demo cites: a config hot-reload
- * shrinks one instance's DB pool, the pool saturates, and a checkout
- * request times out against it until the reverse reload recovers
- * traffic. The cause line deliberately carries no request id — a trace
- * filter can never surface it, which is the prototype's whole argument
- * for opening context in place.
+ * shrinks one instance's DB pool, the pool saturates over several
+ * minutes, two requests time out against it, and the reverse reload
+ * recovers traffic. The cause line deliberately carries no request id —
+ * a trace filter can never surface it, which is the prototype's whole
+ * argument for opening context in place.
+ *
+ * The evidence is spread on purpose so no single context window holds
+ * the whole story: the cause sits minutes upstream of the first failure,
+ * a second request fails the same way on its own, and the blast-radius
+ * proof lives on the other instances. Assembling it takes several
+ * separate looks — a fan of tabs the old way, a stack of contexts the
+ * new way.
  *
  * Invariants the rest of the demo leans on:
  * - ERROR is reserved for the incident, so the errors-only filter
  *   reads as pure signal.
+ * - The cause sits far enough upstream that it falls outside the
+ *   default context window of the trace — only a deliberate, separate
+ *   look can surface it.
  * - req=r4d8a2 exists only inside the incident, so its trace is a
  *   clean, short story that ends at the timeout — without the cause.
+ * - req=k9b3c7 fails the same way on a separate request, so the trace
+ *   is not the only failing thread.
  * - The two healthy instances keep serving 200s throughout, which the
  *   root-cause verdicts rely on to rule out a global outage.
  */
@@ -70,16 +82,23 @@ const STORY: readonly PartialLogLine[] = [
   info(11, 9, "kc4qn", "POST /api/cart/items → 201 in 18ms", "k9b3c7"),
   dbg(14, 52, "m7w3p", "Cache warm complete: catalog (8041 keys)"),
   info(18, 3, "t2x8r", "GET /api/cart → 200 in 9ms", "p2x6n1"),
+  warn(20, 24, "m7w3p", "Upstream latency p99 218ms (inventory-svc)"),
   info(21, 36, "kc4qn", "GET /api/products/42 → 200 in 15ms", "k9b3c7"),
-  warn(24, 10, "m7w3p", "Upstream latency p99 218ms (inventory-svc)"),
-  info(26, 48, "t2x8r", "GET /api/cart → 200 in 11ms", "p2x6n1"),
-  info(28, 22, "kc4qn", "GET /api/products → 200 in 16ms", "k9b3c7"),
-  dbg(29, 50, "m7w3p", "Healthcheck ok — 3/3 instances ready"),
+  dbg(23, 20, "m7w3p", "Healthcheck ok — 3/3 instances ready"),
 
-  // The cause: a hot-reload starves one instance's pool. No request id.
-  warn(30, 11, "kc4qn", "Config hot-reload applied: db.pool.max 20 → 5"),
+  // The cause: a hot-reload starves one instance's pool. No request id,
+  // and minutes ahead of the first failure — the rest of the incident
+  // points back here, but the trace never reaches it.
+  warn(24, 11, "kc4qn", "Config hot-reload applied: db.pool.max 20 → 5"),
 
-  info(30, 40, "t2x8r", "GET /api/cart → 200 in 10ms", "p2x6n1"),
+  // The slow bleed: the shrunken pool fills over the next several
+  // minutes while the fleet looks otherwise healthy.
+  dbg(25, 8, "kc4qn", "db pool: 4/5 in use, 1 waiting", "k9b3c7"),
+  info(26, 2, "kc4qn", "GET /api/products → 200 in 240ms", "k9b3c7"),
+  warn(27, 33, "kc4qn", "db pool wait 1200ms", "k9b3c7"),
+  info(28, 30, "t2x8r", "GET /api/cart → 200 in 10ms", "p2x6n1"),
+  dbg(28, 50, "kc4qn", "db pool: 5/5 in use, 2 waiting", "k9b3c7"),
+  warn(29, 44, "kc4qn", "db pool wait 2600ms — 0 idle connections"),
   dbg(31, 2, "kc4qn", "db pool: 5/5 in use, 3 waiting", "k9b3c7"),
   warn(31, 18, "kc4qn", "db pool wait 1900ms", "k9b3c7"),
 
@@ -96,6 +115,11 @@ const STORY: readonly PartialLogLine[] = [
     "r4d8a2",
   ),
   info(32, 3, "kc4qn", "POST /api/checkout → 503 in 5002ms", "r4d8a2"),
+
+  // A second request fails the same way — an add-to-cart on its own
+  // session, so the failure isn't unique to one request or one payload.
+  info(32, 5, "kc4qn", "POST /api/cart/items received", "k9b3c7"),
+  warn(32, 7, "kc4qn", "db pool wait 4600ms — 0 idle connections", "k9b3c7"),
   err(
     32,
     9,
@@ -103,6 +127,8 @@ const STORY: readonly PartialLogLine[] = [
     "add-to-cart failed: db pool timeout after 5000ms",
     "k9b3c7",
   ),
+  info(32, 12, "kc4qn", "POST /api/cart/items → 503 in 5001ms", "k9b3c7"),
+
   info(32, 14, "t2x8r", "GET /api/cart → 200 in 12ms", "p2x6n1"),
   dbg(32, 20, "kc4qn", "Retry scheduled for checkout (attempt 2)", "r4d8a2"),
   warn(32, 31, "kc4qn", "db pool wait 4800ms — 0 idle connections", "r4d8a2"),
@@ -113,7 +139,7 @@ const STORY: readonly PartialLogLine[] = [
     "checkout retry failed: db pool timeout after 5000ms",
     "r4d8a2",
   ),
-  info(32, 44, "m7w3p", "GET /api/products → 200 in 19ms", "k9b3c7"),
+  info(32, 44, "m7w3p", "GET /api/products → 200 in 19ms", "p2x6n1"),
   err(32, 50, "kc4qn", "health: db pool saturated 5/5 — 11 requests queued"),
   info(
     32,
@@ -133,8 +159,10 @@ const STORY: readonly PartialLogLine[] = [
 const WINDOW_SEC = 35 * 60;
 
 // Bounds of the shrunken-pool window, matching the hot-reload pair in
-// the spine above.
-const INCIDENT_START_S = 30 * 60 + 11;
+// the spine above — from the cause through the reverse reload, so the
+// whole degraded stretch (not just the failures) steers traffic off the
+// saturated instance and stays free of unrelated warnings.
+const INCIDENT_START_S = 24 * 60 + 11;
 const INCIDENT_END_S = 33 * 60 + 6;
 const duringIncident = (s: number): boolean =>
   s >= INCIDENT_START_S && s <= INCIDENT_END_S;

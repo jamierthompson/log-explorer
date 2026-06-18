@@ -25,18 +25,45 @@ export function ShortcutSheet({
         <Dialog.Content className={styles.content} data-logx-surface>
           {/* Esc still works; this gives pointer and AT users a visible,
            * labeled way out. */}
+          {/* Inline X (matching the site's close icon) so the demo's chrome
+           * stays free of an icon-library dependency. */}
           <Dialog.Close className={styles.close} aria-label="Close">
-            <span aria-hidden="true">✕</span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
           </Dialog.Close>
-          <Dialog.Title className={styles.title}>
-            Keyboard Shortcuts
-          </Dialog.Title>
-          <Dialog.Description className={styles.subtitle}>
-            Every binding the log explorer responds to.
-          </Dialog.Description>
+          <header className={styles.head}>
+            <p className={styles.eyebrow}>Reference</p>
+            <Dialog.Title className={styles.title}>
+              Keyboard shortcuts
+            </Dialog.Title>
+            <Dialog.Description className={styles.subtitle}>
+              Every binding the log explorer responds to.
+            </Dialog.Description>
+            {/* The lone meta-binding rides in the header instead of a
+             * one-row section of its own. */}
+            <p className={styles.headHint}>
+              <KeycapSequence keys={SHORTCUTS.openShortcuts.keys} />
+              {SHORTCUTS.openShortcuts.description}
+            </p>
+          </header>
 
           <div className={styles.groups}>
-            {SHORTCUT_GROUPS.map((group) => (
+            {SHORTCUT_GROUPS.filter(
+              (group) =>
+                !(group.ids as readonly string[]).includes("openShortcuts"),
+            ).map((group) => (
               <section key={group.title} className={styles.group}>
                 <h3 className={styles.groupTitle}>{group.title}</h3>
                 <dl className={styles.list}>

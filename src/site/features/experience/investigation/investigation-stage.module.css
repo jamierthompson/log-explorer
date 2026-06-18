@@ -1,0 +1,224 @@
+.stage {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+
+  /* Shared right-edge fade: opaque until the last 2rem, then dissolves to
+   * transparent. Used as a mask so clipped content (a scrolled-off tab, a
+   * long title or URL) melts at the edge instead of hard-clipping. */
+  --edge-fade: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
+}
+
+/* The browser's tab strip: a darker chrome surface the tabs sit on. The
+ * active tab carries the lighter toolbar surface, so it melts into the
+ * address-bar band directly below it while the darker inactive tabs stay
+ * up on the strip. */
+.tabBar {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3) 0;
+  background: var(--chrome);
+}
+
+.tabScroll {
+  flex: 1;
+  min-width: 0;
+}
+
+/* The open-tab tally at the strip's trailing edge: quiet, monospaced, and
+ * tabular so the digit holds its place as it counts up and down. */
+.tabCount {
+  flex: 0 0 auto;
+  align-self: center;
+  padding: 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-subtle);
+}
+
+/* A tab scrolled against the strip's right edge dissolves there rather
+ * than clipping to a hard vertical line. */
+.tabScroll [data-radix-scroll-area-viewport] {
+  mask-image: var(--edge-fade);
+}
+
+.tabstrip {
+  /* The close control is the tallest thing a tab can hold, so it sets
+   * the box height every tab shares — the bare live-tail box matches
+   * the slice boxes via an equal-size spacer in place of the control. */
+  --tab-control-size: 1.5rem;
+
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+/* The tab box, used both as the bare "Live tail" trigger and as the
+ * wrapper around a slice's trigger + close control. Inactive tabs sit
+ * flush and flat — parted only by a thin divider, letting the bar's line
+ * show beneath them — while the active or hovered tab lifts into a
+ * rounded fill. The top corners round like a browser tab; the bottom
+ * stays square so a filled tab seats into the bar. */
+.tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 0 0 auto;
+  max-width: 13rem;
+  min-height: calc(var(--tab-control-size) + 2 * var(--space-2) + 1px);
+  padding: var(--space-2) var(--space-3);
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-subtle);
+  white-space: nowrap;
+  background: transparent;
+  /* The live-tail tab is a button; clear the default control border so
+   * only the divider and the active fill shape it. */
+  border: none;
+  border-radius: var(--radius-2) var(--radius-2) 0 0;
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+/* A short vertical rule parts adjacent tabs so they sit flush without
+ * each carrying a full border, the way a browser packs its strip. Lit by
+ * lifting the strip toward the foreground so it reads on the dark chrome. */
+.tab + .tab::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 1px;
+  background: color-mix(in oklab, var(--chrome), var(--color-fg) 28%);
+}
+
+/* The divider gives way around a filled tab — none on the active or
+ * hovered tab, nor on the tab abutting its right edge. */
+.tab[data-state="active"]::before,
+.tab:has([data-state="active"])::before,
+.tab:hover::before,
+.tab[data-state="active"] + .tab::before,
+.tab:has([data-state="active"]) + .tab::before,
+.tab:hover + .tab::before {
+  display: none;
+}
+
+.tab:hover {
+  color: var(--color-text);
+  background: color-mix(in oklab, var(--chrome), var(--color-fg) 7%);
+}
+
+/* Active either as the bare trigger ("Live tail") or as the box wrapping
+ * the active slice trigger. It wears the lighter toolbar surface so it
+ * reads as one piece with the address-bar band directly beneath it. */
+.tab[data-state="active"],
+.tab:has([data-state="active"]) {
+  color: var(--color-text);
+  background: var(--chrome-active);
+}
+
+/* The site mark every tab wears. It stays full-strength on active and
+ * inactive tabs alike, the way a browser shows a site's favicon. */
+.favicon {
+  flex: 0 0 auto;
+  color: var(--brand-accent);
+}
+
+.tabLabel {
+  overflow: hidden;
+}
+
+/* A long slice title (the line's message) dissolves toward the close
+ * control rather than clipping to a hard edge. Scoped to slice triggers,
+ * so the short, branded live-tail label is left to read in full. */
+.tabTrigger .tabLabel {
+  mask-image: var(--edge-fade);
+}
+
+/* A slice's clickable favicon-and-label row, sitting inside the box next
+ * to the close control — no box of its own. */
+.tabTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 0 1 auto;
+  padding-right: 0;
+  min-width: 0;
+  overflow: hidden;
+  color: inherit;
+  font: inherit;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* The tab box's padding leaves room for the ring, so the box's own
+ * overflow clipping can't cut it off. */
+.tabTrigger:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* The bare trigger is the tab box itself; the strip's scroller and its
+ * edge fade would clip an outset ring, so draw it just inside. */
+.tab:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: calc(-2 * var(--focus-ring-width));
+}
+
+/* The pointer-only close control, and — on the live tail — an equal-size
+ * spacer standing in for it so every tab keeps the same shape. */
+.tabClose,
+.tabClosePlaceholder {
+  flex: 0 0 auto;
+  width: var(--tab-control-size);
+  height: var(--tab-control-size);
+}
+
+/* Sized to the minimum comfortable pointer target — this control is
+ * pointer-only, so the hit area has to carry the interaction alone. */
+.tabClose {
+  display: inline-grid;
+  place-items: center;
+  color: var(--color-text-subtle);
+  background: none;
+  border: none;
+  border-radius: var(--radius-1);
+  cursor: pointer;
+}
+
+.tabClose:hover {
+  color: var(--color-text);
+  background: var(--color-border);
+}
+
+.panel {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+}
+
+/* Holds the live explorer below its address bar, taking the rest of the
+ * panel so the app chrome and list fill the same as before the bar. */
+.liveBody {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+}
+
+/* The live-tail panel is force-mounted to preserve its filter, so the
+ * tabs primitive leaves it visible and only marks it inactive — hide
+ * it ourselves. */
+.panel[data-state="inactive"] {
+  display: none;
+}

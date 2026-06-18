@@ -451,6 +451,7 @@ export function LogExplorer({
       </div>
       <LogList
         lines={visibleLines}
+        totalLines={lines.length}
         header={header}
         focusedLineId={focusedLineId}
         selectedContextLineIds={selectedContextLineIds}
