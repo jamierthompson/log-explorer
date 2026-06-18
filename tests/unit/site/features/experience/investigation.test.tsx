@@ -375,3 +375,32 @@ describe("Investigation — persistence", () => {
     expect(screen.queryByText("Healthcheck OK")).not.toBeInTheDocument();
   });
 });
+
+describe("Investigation — tab strip position counter", () => {
+  // The decorative "N of M" only matches on the count span, not its
+  // ancestors, because the regex is anchored to the whole text content.
+  const count = () => screen.getByText(/^\d+ of \d+$/).textContent;
+
+  it("counts the live tail as 1 of 1 before any slice opens", () => {
+    renderInvestigation();
+    expect(count()).toBe("1 of 1");
+  });
+
+  it("places an opened slice after the live tail and follows the active tab", async () => {
+    const user = userEvent.setup();
+    renderInvestigation();
+    await user.click(screen.getByRole("button", { name: /errors only/i }));
+
+    // Opening a slice activates it: live tail is 1, the slice is 2 of 2.
+    await user.click(screen.getByText("request timeout"));
+    expect(count()).toBe("2 of 2");
+
+    // Returning to the live tail falls back to position 1.
+    await user.click(screen.getByRole("tab", { name: "Live tail" }));
+    expect(count()).toBe("1 of 2");
+
+    // A second slice extends the strip and takes the next position.
+    await user.click(screen.getByText("upstream timeout"));
+    expect(count()).toBe("3 of 3");
+  });
+});
