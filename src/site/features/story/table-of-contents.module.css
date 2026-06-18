@@ -13,12 +13,11 @@
 }
 
 /*
- * The active entry must outrank the Button base styles no matter the
- * CSS-module insertion order. `.link[aria-current]` and the quiet-variant
- * button rule carry equal specificity, so on a route reached after the
- * Button styles have loaded, source order alone lets the muted color win
- * and the highlight silently drops (aria-current stays correct, but the
- * accent never paints). The descendant scope settles it.
+ * A muted-color rule elsewhere carries the same specificity as a bare
+ * `.link[aria-current]`, so whichever loads later wins on source order
+ * alone. On routes where the muted rule loads after this one, the accent
+ * silently drops (aria-current stays correct, but the color never paints).
+ * Scoping under the container raises specificity so the accent always wins.
  */
 .toc .link[aria-current] {
   color: var(--brand-accent);
