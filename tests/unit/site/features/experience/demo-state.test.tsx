@@ -26,6 +26,20 @@ describe("demo state", () => {
     expect(result.current.state.tabs).toEqual({ ids: ["a", "b"], active: "a" });
   });
 
+  it("clamps activation to an open tab, falling back to the live tail", () => {
+    const { result } = setup();
+    act(() => result.current.openTab("a"));
+
+    // Activating a tab that isn't in the strip can't leave a phantom
+    // pointer behind — it lands on the live tail instead.
+    act(() => result.current.activateTab("ghost"));
+    expect(result.current.state.tabs).toEqual({ ids: ["a"], active: null });
+
+    // Activating a real open tab still works.
+    act(() => result.current.activateTab("a"));
+    expect(result.current.state.tabs).toEqual({ ids: ["a"], active: "a" });
+  });
+
   it("falls back to the live tail only when the active tab closes", () => {
     const { result } = setup();
     act(() => result.current.openTab("a"));

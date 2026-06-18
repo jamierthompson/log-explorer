@@ -118,8 +118,16 @@ function reducer(state: DemoState, action: Action): DemoState {
         },
       };
     }
-    case "activateTab":
-      return { ...state, tabs: { ...state.tabs, active: action.active } };
+    case "activateTab": {
+      // `active` must name an open tab or the live tail (null). Clamp
+      // anything else back to the live tail so the store can never hold a
+      // pointer to a tab that isn't in the strip.
+      const active =
+        action.active === null || state.tabs.ids.includes(action.active)
+          ? action.active
+          : null;
+      return { ...state, tabs: { ...state.tabs, active } };
+    }
     case "markFiltered":
       return state.everFiltered ? state : { ...state, everFiltered: true };
     case "contexts":
