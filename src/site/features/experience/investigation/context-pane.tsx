@@ -18,7 +18,7 @@ function sliceUrl(service: string, anchor: LogLine): string {
 }
 
 /**
- * A act-one context slice: the window of lines around an anchored row,
+ * An act-one context slice: the window of lines around an anchored row,
  * rendered unfiltered in its own tab. A read-only echo of the live tail's
  * rows, so a torn-out scrap reads identically to the stream it came from.
  */
