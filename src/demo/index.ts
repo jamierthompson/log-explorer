@@ -1,6 +1,5 @@
 /**
- * Public API for the demo — the surface that will become the npm package.
- * Consumers (the site) import from here, never from internal paths.
+ * Public API for the demo. Consumers (the site) import from here, never from internal paths.
  */
 export { LogExplorer } from "./features/log-explorer/log-explorer";
 export type { LogExplorerSnapshot } from "./features/log-explorer/log-explorer-state";
